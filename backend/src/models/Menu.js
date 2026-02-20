@@ -25,6 +25,11 @@ const menuSchema = mongoose.Schema({
     isAvailable: {
         type: Boolean,
         default: true
+    },
+    stock: {
+        type: Number,
+        default: 0,
+        required: true
     }
 }, {
     timestamps: true

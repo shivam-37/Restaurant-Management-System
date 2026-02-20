@@ -13,7 +13,7 @@ const getMenuItems = asyncHandler(async (req, res) => {
 // @route   POST /api/menu
 // @access  Private/Admin
 const createMenuItem = asyncHandler(async (req, res) => {
-    const { name, description, price, category, image } = req.body;
+    const { name, description, price, category, image, stock } = req.body;
 
     if (!name || !description || !price || !category) {
         res.status(400);
@@ -25,7 +25,8 @@ const createMenuItem = asyncHandler(async (req, res) => {
         description,
         price,
         category,
-        image
+        image,
+        stock: stock || 0
     });
 
     res.status(201).json(menuItem);

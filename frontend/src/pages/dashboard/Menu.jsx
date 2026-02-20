@@ -11,7 +11,8 @@ const Menu = () => {
         description: '',
         price: '',
         category: 'Main Course',
-        image: 'https://via.placeholder.com/150'
+        image: 'https://via.placeholder.com/150',
+        stock: 0
     });
 
     useEffect(() => {
@@ -35,7 +36,8 @@ const Menu = () => {
                 description: item.description,
                 price: item.price,
                 category: item.category,
-                image: item.image
+                image: item.image,
+                stock: item.stock || 0
             });
         } else {
             setCurrentItem(null);
@@ -44,7 +46,8 @@ const Menu = () => {
                 description: '',
                 price: '',
                 category: 'Main Course',
-                image: 'https://via.placeholder.com/150'
+                image: 'https://via.placeholder.com/150',
+                stock: 0
             });
         }
         setIsModalOpen(true);
@@ -96,9 +99,15 @@ const Menu = () => {
                         <div className="p-4">
                             <div className="flex justify-between items-start mb-2">
                                 <h3 className="text-lg font-bold text-gray-900">{item.name}</h3>
-                                <span className="px-2 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full">
-                                    ${item.price}
-                                </span>
+                                <div className="flex flex-col items-end">
+                                    <span className="px-2 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full mb-1">
+                                        ${item.price}
+                                    </span>
+                                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${(item.stock || 0) > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                        }`}>
+                                        Stock: {item.stock || 0}
+                                    </span>
+                                </div>
                             </div>
                             <p className="text-gray-500 text-sm mb-4 line-clamp-2">{item.description}</p>
                             <div className="flex justify-end gap-2">
@@ -157,18 +166,28 @@ const Menu = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                                    <select
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                                    <input
+                                        type="number"
+                                        required
                                         className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                                        value={formData.category}
-                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    >
-                                        <option>Appetizer</option>
-                                        <option>Main Course</option>
-                                        <option>Dessert</option>
-                                        <option>Beverage</option>
-                                    </select>
+                                        value={formData.stock}
+                                        onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                                    />
                                 </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <select
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                                    value={formData.category}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                >
+                                    <option>Main Course</option>
+                                    <option>Appetizer</option>
+                                    <option>Dessert</option>
+                                    <option>Beverage</option>
+                                </select>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>

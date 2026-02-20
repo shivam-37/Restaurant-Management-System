@@ -4,6 +4,7 @@ import AuthContext from '../../context/AuthContext';
 import { getAnalytics } from '../../services/api';
 import Menu from './Menu';
 import Orders from './Orders';
+import Settings from './Settings';
 import {
     HomeIcon,
     UsersIcon,
@@ -52,6 +53,7 @@ const Dashboard = () => {
         { name: 'Menu', icon: ClipboardDocumentListIcon },
         { name: 'Orders', icon: ChartBarIcon },
         { name: 'Customers', icon: UsersIcon },
+        { name: 'Settings', icon: Cog6ToothIcon },
     ];
 
     return (
@@ -70,8 +72,8 @@ const Dashboard = () => {
                             key={item.name}
                             onClick={() => setActiveTab(item.name)}
                             className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${activeTab === item.name
-                                    ? 'bg-indigo-50 text-indigo-600 shadow-sm'
-                                    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+                                ? 'bg-indigo-50 text-indigo-600 shadow-sm'
+                                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                                 }`}
                         >
                             <item.icon className={`h-6 w-6 mr-3 ${activeTab === item.name ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-500'
@@ -136,6 +138,7 @@ const Dashboard = () => {
                 {/* Render Active Tab Content */}
                 {activeTab === 'Menu' && <Menu />}
                 {activeTab === 'Orders' && <Orders />}
+                {activeTab === 'Settings' && <Settings />}
                 {activeTab === 'Customers' && <div className="p-4 text-center text-gray-500">Customer Management Coming Soon</div>}
 
                 {/* Content Placeholder for Overview */}

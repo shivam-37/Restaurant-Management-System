@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
 
 const generateToken = (id) => {
@@ -10,8 +11,8 @@ const generateToken = (id) => {
 // @desc    Register new user
 // @route   POST /api/auth/register
 // @access  Public
-const registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
+const registerUser = asyncHandler(async (req, res) => {
+    const { name, email, password, role } = req.body;
 
     if (!name || !email || !password) {
         res.status(400);
@@ -31,6 +32,7 @@ const registerUser = async (req, res) => {
         name,
         email,
         password,
+        role: role ? role.toLowerCase() : 'user'
     });
 
     if (user) {
@@ -45,12 +47,12 @@ const registerUser = async (req, res) => {
         res.status(400);
         throw new Error('Invalid user data');
     }
-};
+});
 
 // @desc    Authenticate a user
 // @route   POST /api/auth/login
 // @access  Public
-const loginUser = async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     // Check for user email
@@ -68,14 +70,14 @@ const loginUser = async (req, res) => {
         res.status(400);
         throw new Error('Invalid credentials');
     }
-};
+});
 
 // @desc    Get user data
 // @route   GET /api/auth/me
 // @access  Private
-const getMe = async (req, res) => {
+const getMe = asyncHandler(async (req, res) => {
     res.status(200).json(req.user);
-};
+});
 
 module.exports = {
     registerUser,
