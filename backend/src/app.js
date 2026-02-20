@@ -11,6 +11,12 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 
 // Security Middleware
+app.use((req, res, next) => {
+    Object.defineProperty(req, 'query', { value: req.query, writable: true, enumerable: true, configurable: true });
+    Object.defineProperty(req, 'params', { value: req.params, writable: true, enumerable: true, configurable: true });
+    next();
+});
+
 app.use(helmet());
 // app.use(xss());
 app.use(mongoSanitize());

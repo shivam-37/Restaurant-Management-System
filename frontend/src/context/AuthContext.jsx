@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
                             Authorization: `Bearer ${token}`
                         }
                     }
-                    const { data } = await axios.get('http://localhost:5000/api/auth/me', config);
+                    const { data } = await axios.get(`${window.location.protocol}//${window.location.hostname}:5000/api/auth/me`, config);
                     setUser(data);
                 }
             } catch (error) {
@@ -35,14 +35,14 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        const { data } = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+        const { data } = await axios.post(`${window.location.protocol}//${window.location.hostname}:5000/api/auth/login`, { email, password });
         localStorage.setItem('token', data.token);
         setUser(data);
         return data;
     };
 
     const register = async (name, email, password, role) => {
-        const { data } = await axios.post('http://localhost:5000/api/auth/register', { name, email, password, role });
+        const { data } = await axios.post(`${window.location.protocol}//${window.location.hostname}:5000/api/auth/register`, { name, email, password, role });
         localStorage.setItem('token', data.token);
         setUser(data);
         return data;
