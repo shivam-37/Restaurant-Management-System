@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import { getAnalytics } from '../../services/api';
 import Menu from './Menu';
@@ -11,13 +12,23 @@ import {
     ChartBarIcon,
     Cog6ToothIcon,
     ArrowLeftOnRectangleIcon,
-    ClipboardDocumentListIcon
+    ClipboardDocumentListIcon,
+    BellIcon,
+    MagnifyingGlassIcon,
+    ChevronDownIcon,
+    ShoppingBagIcon,
+    CurrencyDollarIcon,
+    ClockIcon,
+    UserGroupIcon,
+    SparklesIcon
 } from '@heroicons/react/24/outline';
 
 const Dashboard = () => {
     const { user, logout, loading } = useContext(AuthContext);
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('Overview');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
     const [analytics, setAnalytics] = useState({
         totalOrders: 0,
         activeOrders: 0,
@@ -43,111 +54,367 @@ const Dashboard = () => {
     };
 
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="min-h-screen bg-black flex items-center justify-center">
+            <div className="relative">
+                <div className="w-20 h-20 border-4 border-gray-800 border-t-indigo-600 rounded-full animate-spin"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full animate-pulse"></div>
+                </div>
+            </div>
         </div>
     );
 
     const navItems = [
-        { name: 'Overview', icon: HomeIcon },
-        { name: 'Menu', icon: ClipboardDocumentListIcon },
-        { name: 'Orders', icon: ChartBarIcon },
-        { name: 'Customers', icon: UsersIcon },
-        { name: 'Settings', icon: Cog6ToothIcon },
+        { name: 'Overview', icon: HomeIcon, color: 'from-blue-500 to-cyan-500' },
+        { name: 'Menu', icon: ClipboardDocumentListIcon, color: 'from-purple-500 to-pink-500' },
+        { name: 'Orders', icon: ShoppingBagIcon, color: 'from-green-500 to-emerald-500' },
+        { name: 'Customers', icon: UsersIcon, color: 'from-orange-500 to-red-500' },
+        { name: 'Analytics', icon: ChartBarIcon, color: 'from-indigo-500 to-purple-500' },
+        { name: 'Settings', icon: Cog6ToothIcon, color: 'from-gray-500 to-gray-600' },
     ];
 
+    const stats = [
+        { 
+            label: 'Total Sales', 
+            value: `$${analytics.totalSales}`, 
+            change: '+12.5%',
+            icon: CurrencyDollarIcon,
+            color: 'from-green-500 to-emerald-500',
+            bgColor: 'bg-gradient-to-br from-green-500/20 to-emerald-500/20',
+            textColor: 'text-green-400'
+        },
+        { 
+            label: 'Active Orders', 
+            value: analytics.activeOrders, 
+            change: '+8.2%',
+            icon: ClockIcon,
+            color: 'from-blue-500 to-cyan-500',
+            bgColor: 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20',
+            textColor: 'text-blue-400'
+        },
+        { 
+            label: 'Total Orders', 
+            value: analytics.totalOrders, 
+            change: '+23.1%',
+            icon: ShoppingBagIcon,
+            color: 'from-purple-500 to-pink-500',
+            bgColor: 'bg-gradient-to-br from-purple-500/20 to-pink-500/20',
+            textColor: 'text-purple-400'
+        },
+        { 
+            label: 'New Customers', 
+            value: analytics.newCustomers, 
+            change: '+5.7%',
+            icon: UserGroupIcon,
+            color: 'from-orange-500 to-red-500',
+            bgColor: 'bg-gradient-to-br from-orange-500/20 to-red-500/20',
+            textColor: 'text-orange-400'
+        }
+    ];
+
+    const fadeInUp = {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.4 }
+    };
+
+    const staggerContainer = {
+        animate: {
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    };
+
     return (
-        <div className="flex h-screen bg-gray-50 text-gray-800 font-sans">
+        <div className="flex h-screen bg-black text-white overflow-hidden">
+            {/* Animated Background */}
+            <div className="fixed inset-0 overflow-hidden -z-10">
+                <div className="absolute top-0 -left-40 w-[500px] h-[500px] bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+                <div className="absolute top-0 -right-40 w-[500px] h-[500px] bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+                <div className="absolute bottom-40 left-20 w-[500px] h-[500px] bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+                <div 
+                    className="absolute inset-0 opacity-5"
+                    style={{ 
+                        backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)',
+                        backgroundSize: '40px 40px'
+                    }}
+                />
+            </div>
+
             {/* Sidebar */}
-            <aside className="fixed inset-y-0 left-0 w-64 bg-white shadow-xl z-10 hidden md:flex flex-col">
-                <div className="p-6 border-b border-gray-100">
-                    <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-                        RestoManager
-                    </h1>
+            <motion.aside 
+                initial={{ x: -100 }}
+                animate={{ x: 0 }}
+                transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
+                className={`fixed inset-y-0 left-0 w-72 bg-gradient-to-b from-gray-900 to-black border-r border-gray-800/50 z-20 hidden md:flex flex-col backdrop-blur-xl`}
+            >
+                {/* Logo */}
+                <div className="p-6 border-b border-gray-800/50">
+                    <motion.div 
+                        whileHover={{ scale: 1.05 }}
+                        className="flex items-center space-x-3"
+                    >
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur-lg opacity-50"></div>
+                            <div className="relative w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
+                                <SparklesIcon className="w-5 h-5 text-white" />
+                            </div>
+                        </div>
+                        <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                            RestoManager
+                        </span>
+                    </motion.div>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-1">
-                    {navItems.map((item) => (
-                        <button
-                            key={item.name}
-                            onClick={() => setActiveTab(item.name)}
-                            className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${activeTab === item.name
-                                ? 'bg-indigo-50 text-indigo-600 shadow-sm'
-                                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
+                {/* Navigation */}
+                <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+                    {navItems.map((item, index) => {
+                        const Icon = item.icon;
+                        return (
+                            <motion.button
+                                key={item.name}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                onClick={() => setActiveTab(item.name)}
+                                className={`relative w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 group overflow-hidden ${
+                                    activeTab === item.name
+                                        ? 'text-white'
+                                        : 'text-gray-400 hover:text-white'
                                 }`}
-                        >
-                            <item.icon className={`h-6 w-6 mr-3 ${activeTab === item.name ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-500'
+                            >
+                                {activeTab === item.name && (
+                                    <motion.div 
+                                        layoutId="activeTab"
+                                        className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-20`}
+                                        transition={{ type: "spring", duration: 0.5 }}
+                                    />
+                                )}
+                                <div className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-0 group-hover:opacity-10 transition-opacity`} />
+                                <div className={`absolute left-0 w-1 h-8 bg-gradient-to-b ${item.color} rounded-r-full transition-all duration-200 ${
+                                    activeTab === item.name ? 'opacity-100' : 'opacity-0 group-hover:opacity-50'
                                 }`} />
-                            <span className="font-medium">{item.name}</span>
-                        </button>
-                    ))}
+                                <Icon className={`h-6 w-6 mr-3 relative z-10 transition-colors ${
+                                    activeTab === item.name ? 'text-indigo-400' : 'text-gray-500 group-hover:text-gray-300'
+                                }`} />
+                                <span className="font-medium relative z-10">{item.name}</span>
+                            </motion.button>
+                        );
+                    })}
                 </nav>
 
-                <div className="p-4 border-t border-gray-100">
-                    <div className="flex items-center gap-3 px-4 py-3">
-                        <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
-                            {user?.name?.charAt(0) || 'U'}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">
-                                {user?.name}
-                            </p>
-                            <p className="text-xs text-gray-500 truncate">
-                                {user?.email}
-                            </p>
-                        </div>
+                {/* User Profile */}
+                <div className="p-4 border-t border-gray-800/50">
+                    <div className="relative">
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800/50 transition"
+                        >
+                            <div className="relative">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold">
+                                    {user?.name?.charAt(0) || 'U'}
+                                </div>
+                                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
+                            </div>
+                            <div className="flex-1 min-w-0 text-left">
+                                <p className="text-sm font-medium text-white truncate">
+                                    {user?.name}
+                                </p>
+                                <p className="text-xs text-gray-400 truncate">
+                                    {user?.email}
+                                </p>
+                            </div>
+                            <ChevronDownIcon className={`w-5 h-5 text-gray-400 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
+                        </motion.button>
+
+                        {/* Profile Dropdown */}
+                        <AnimatePresence>
+                            {isProfileMenuOpen && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="absolute bottom-full left-0 w-full mb-2 bg-gray-900 rounded-xl border border-gray-800 shadow-xl overflow-hidden"
+                                >
+                                    <button
+                                        onClick={logout}
+                                        className="w-full flex items-center px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition"
+                                    >
+                                        <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" />
+                                        Sign Out
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
-                    <button
-                        onClick={logout}
-                        className="mt-2 w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition"
-                    >
-                        <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" />
-                        Sign Out
-                    </button>
                 </div>
-            </aside>
+            </motion.aside>
 
             {/* Main Content */}
-            <main className="flex-1 md:ml-64 p-8 overflow-y-auto">
-                <header className="flex justify-between items-center mb-8">
-                    <div>
-                        <h2 className="text-3xl font-bold text-gray-900">{activeTab}</h2>
-                        <p className="text-gray-500 mt-1">Welcome back, here's what's happening today.</p>
-                    </div>
-                </header>
+            <main className={`flex-1 ${isSidebarOpen ? 'md:ml-72' : ''} relative overflow-y-auto`}>
+                {/* Header */}
+                <motion.header 
+                    initial={{ y: -100 }}
+                    animate={{ y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-gray-800/50"
+                >
+                    <div className="flex items-center justify-between px-8 py-4">
+                        <div>
+                            <motion.h1 
+                                key={activeTab}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="text-2xl font-bold text-white"
+                            >
+                                {activeTab}
+                            </motion.h1>
+                            <motion.p 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.1 }}
+                                className="text-sm text-gray-400 mt-1"
+                            >
+                                Welcome back, here's what's happening today.
+                            </motion.p>
+                        </div>
 
-                {/* Dashboard Stats */}
-                {activeTab === 'Overview' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        {[
-                            { label: 'Total Sales', value: `$${analytics.totalSales}`, color: 'indigo' },
-                            { label: 'Active Orders', value: analytics.activeOrders, color: 'purple' },
-                            { label: 'Total Orders', value: analytics.totalOrders, color: 'green' },
-                            { label: 'New Customers', value: analytics.newCustomers, color: 'orange' }
-                        ].map((stat, idx) => (
-                            <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-                                <p className="text-sm font-medium text-gray-500">{stat.label}</p>
-                                <div className="mt-2 flex items-baseline gap-2">
-                                    <span className="text-2xl font-bold text-gray-900">{stat.value}</span>
-                                </div>
+                        <div className="flex items-center space-x-4">
+                            {/* Search */}
+                            <div className="relative">
+                                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                <input
+                                    type="text"
+                                    placeholder="Search..."
+                                    className="pl-10 pr-4 py-2 bg-gray-900/50 border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 w-64"
+                                />
                             </div>
-                        ))}
-                    </div>
-                )}
 
-                {/* Render Active Tab Content */}
-                {activeTab === 'Menu' && <Menu />}
-                {activeTab === 'Orders' && <Orders />}
-                {activeTab === 'Settings' && <Settings />}
-                {activeTab === 'Customers' && <div className="p-4 text-center text-gray-500">Customer Management Coming Soon</div>}
-
-                {/* Content Placeholder for Overview */}
-                {activeTab === 'Overview' && (
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 min-h-[400px] flex items-center justify-center text-gray-400">
-                        Chart visuals would go here
+                            {/* Notifications */}
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="relative p-2 bg-gray-900/50 border border-gray-800 rounded-xl hover:bg-gray-800 transition"
+                            >
+                                <BellIcon className="w-5 h-5 text-gray-400" />
+                                <span className="absolute top-1 right-1 w-2 h-2 bg-indigo-500 rounded-full"></span>
+                            </motion.button>
+                        </div>
                     </div>
-                )}
+                </motion.header>
+
+                {/* Dashboard Content */}
+                <div className="p-8">
+                    {/* Dashboard Stats */}
+                    {activeTab === 'Overview' && (
+                        <motion.div 
+                            variants={staggerContainer}
+                            initial="initial"
+                            animate="animate"
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+                        >
+                            {stats.map((stat, idx) => {
+                                const Icon = stat.icon;
+                                return (
+                                    <motion.div
+                                        key={idx}
+                                        variants={fadeInUp}
+                                        whileHover={{ y: -4 }}
+                                        className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition-all duration-300 overflow-hidden"
+                                    >
+                                        <div className={`absolute inset-0 ${stat.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-2xl" />
+                                        
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
+                                                <p className="text-2xl font-bold text-white">{stat.value}</p>
+                                                <p className="text-xs text-green-400 mt-1">{stat.change}</p>
+                                            </div>
+                                            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} p-3 shadow-lg`}>
+                                                <Icon className="w-6 h-6 text-white" />
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </motion.div>
+                    )}
+
+                    {/* Render Active Tab Content */}
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeTab}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            {activeTab === 'Menu' && <Menu />}
+                            {activeTab === 'Orders' && <Orders />}
+                            {activeTab === 'Settings' && <Settings />}
+                            {activeTab === 'Customers' && (
+                                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-800 p-12 text-center">
+                                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl flex items-center justify-center">
+                                        <UsersIcon className="w-10 h-10 text-orange-400" />
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-white mb-2">Customer Management</h3>
+                                    <p className="text-gray-400">Coming Soon</p>
+                                </div>
+                            )}
+                            {activeTab === 'Analytics' && (
+                                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-800 p-12 text-center">
+                                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center">
+                                        <ChartBarIcon className="w-10 h-10 text-indigo-400" />
+                                    </div>
+                                    <h3 className="text-xl font-semibold text-white mb-2">Advanced Analytics</h3>
+                                    <p className="text-gray-400">Coming Soon</p>
+                                </div>
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
+
+                    {/* Chart Placeholder for Overview */}
+                    {activeTab === 'Overview' && (
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-800 p-8 min-h-[400px] flex items-center justify-center"
+                        >
+                            <div className="text-center">
+                                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center">
+                                    <ChartBarIcon className="w-10 h-10 text-indigo-400" />
+                                </div>
+                                <p className="text-gray-400">Chart visuals will appear here</p>
+                            </div>
+                        </motion.div>
+                    )}
+                </div>
             </main>
+
+            {/* Add custom animations */}
+            <style jsx>{`
+                @keyframes blob {
+                    0% { transform: translate(0px, 0px) scale(1); }
+                    33% { transform: translate(30px, -50px) scale(1.1); }
+                    66% { transform: translate(-20px, 20px) scale(0.9); }
+                    100% { transform: translate(0px, 0px) scale(1); }
+                }
+                .animate-blob {
+                    animation: blob 7s infinite;
+                }
+                .animation-delay-2000 {
+                    animation-delay: 2s;
+                }
+                .animation-delay-4000 {
+                    animation-delay: 4s;
+                }
+            `}</style>
         </div>
     );
 };
