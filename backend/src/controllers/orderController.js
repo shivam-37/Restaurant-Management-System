@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/Order');
 const Menu = require('../models/Menu');
+const User = require('../models/User');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -182,13 +183,17 @@ const addOrderReview = asyncHandler(async (req, res) => {
     if (comment) {
         try {
             const { GoogleGenAI } = require("@google/genai");
-            const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-            const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" }); // Use stable flash for fast sentiment
+            const ai = new GoogleGenAI({
+                apiKey: process.env.GEMINI_API_KEY,
+                apiVersion: 'v1'
+            });
 
             const prompt = `Analyze the sentiment of this restaurant review. Respond with exactly one word: Positive, Neutral, or Negative. Review: "${comment}"`;
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            const text = response.text().trim();
+            const result = await ai.models.generateContent({
+                model: "models/gemini-2.5-flash",
+                contents: prompt
+            });
+            const text = result.candidates[0].content.parts[0].text.trim();
 
             if (['Positive', 'Neutral', 'Negative'].includes(text)) {
                 sentiment = text;
