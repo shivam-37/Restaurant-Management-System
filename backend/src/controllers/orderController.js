@@ -185,12 +185,12 @@ const addOrderReview = asyncHandler(async (req, res) => {
             const { GoogleGenAI } = require("@google/genai");
             const ai = new GoogleGenAI({
                 apiKey: process.env.GEMINI_API_KEY,
-                apiVersion: 'v1'
+                apiVersion: 'v1beta'
             });
 
             const prompt = `Analyze the sentiment of this restaurant review. Respond with exactly one word: Positive, Neutral, or Negative. Review: "${comment}"`;
             const result = await ai.models.generateContent({
-                model: "models/gemini-2.5-flash",
+                model: "models/gemini-3-flash-preview",
                 contents: prompt
             });
             const text = result.candidates[0].content.parts[0].text.trim();

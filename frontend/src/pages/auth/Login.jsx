@@ -241,34 +241,6 @@ const Login = () => {
                                 </span>
                             </button>
                         </motion.div>
-
-                        {/* Demo Credentials */}
-                        <motion.div
-                            variants={fadeInUp}
-                            className="relative"
-                        >
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-700"></div>
-                            </div>
-                            <div className="relative flex justify-center text-xs">
-                                <span className="px-2 bg-gray-800 text-gray-400">Demo Credentials</span>
-                            </div>
-                        </motion.div>
-
-                        <motion.div
-                            variants={fadeInUp}
-                            className="bg-gray-800/30 rounded-xl p-4 border border-gray-700"
-                        >
-                            <p className="text-sm text-gray-400 mb-2">Use these for testing:</p>
-                            <div className="space-y-1 text-xs">
-                                <p className="text-gray-300">
-                                    <span className="text-indigo-400">Email:</span> admin@example.com
-                                </p>
-                                <p className="text-gray-300">
-                                    <span className="text-indigo-400">Password:</span> password123
-                                </p>
-                            </div>
-                        </motion.div>
                     </form>
                 </motion.div>
 

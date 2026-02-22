@@ -4,8 +4,10 @@ const asyncHandler = require('express-async-handler');
 // The client gets the API key from the environment variable `GEMINI_API_KEY`.
 const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY,
-    apiVersion: 'v1'
+    apiVersion: 'v1beta'
 });
+
+const MODEL_NAME = "models/gemini-3-flash-preview";
 
 // @desc    Generate menu item description
 // @route   POST /api/ai/generate-description
@@ -20,7 +22,7 @@ const generateDescription = asyncHandler(async (req, res) => {
 
     try {
         const result = await ai.models.generateContent({
-            model: "models/gemini-2.5-flash",
+            model: MODEL_NAME,
             contents: `You are a gourmet food critic and menu writer. Write a short, appetizing description (max 2 sentences) for the following menu item. Item: ${name}, Category: ${category || 'Main Course'}`
         });
 
@@ -47,7 +49,7 @@ const generateOrderInstructions = asyncHandler(async (req, res) => {
 
     try {
         const result = await ai.models.generateContent({
-            model: "models/gemini-2.5-flash",
+            model: MODEL_NAME,
             contents: `You are a helpful restaurant assistant. Convert the user's rough notes into polite, clear special instructions for the kitchen. Notes: ${prompt}`
         });
         const text = result.candidates[0].content.parts[0].text.trim();
@@ -94,7 +96,7 @@ const getRecommendations = asyncHandler(async (req, res) => {
 
     try {
         const result = await ai.models.generateContent({
-            model: "models/gemini-2.5-flash",
+            model: MODEL_NAME,
             contents: prompt
         });
         const text = result.candidates[0].content.parts[0].text.trim();
@@ -154,7 +156,7 @@ const predictInventory = asyncHandler(async (req, res) => {
 
     try {
         const result = await ai.models.generateContent({
-            model: "models/gemini-2.5-flash",
+            model: MODEL_NAME,
             contents: prompt
         });
         const text = result.candidates[0].content.parts[0].text.trim();
