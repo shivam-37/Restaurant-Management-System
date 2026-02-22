@@ -39,7 +39,7 @@ const Register = () => {
             setIsLoading(false);
         } else {
             try {
-                await register(name, email, password, role);
+                await register(name.trim(), email.trim(), password.trim(), role);
                 navigate('/dashboard');
             } catch (err) {
                 setError(err.response?.data?.message || 'Registration failed');
@@ -71,9 +71,9 @@ const Register = () => {
                 <div className="absolute top-0 -right-40 w-[500px] h-[500px] bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
                 <div className="absolute bottom-40 left-20 w-[500px] h-[500px] bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
                 {/* Dot pattern overlay */}
-                <div 
+                <div
                     className="absolute inset-0 opacity-20 w-full h-full"
-                    style={{ 
+                    style={{
                         backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)',
                         backgroundSize: '40px 40px'
                     }}
@@ -81,14 +81,14 @@ const Register = () => {
             </div>
 
             {/* Back to Home Link */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
                 className="absolute top-8 left-8"
             >
-                <Link 
-                    to="/" 
+                <Link
+                    to="/"
                     className="flex items-center space-x-2 text-gray-400 hover:text-white transition group"
                 >
                     <ArrowRight className="w-5 h-5 rotate-180 group-hover:-translate-x-1 transition" />
@@ -97,7 +97,7 @@ const Register = () => {
             </motion.div>
 
             {/* Logo */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
@@ -117,20 +117,20 @@ const Register = () => {
             </motion.div>
 
             {/* Main Content */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 className="w-full max-w-md"
             >
                 {/* Header */}
-                <motion.div 
+                <motion.div
                     variants={fadeInUp}
                     initial="initial"
                     animate="animate"
                     className="text-center mb-8"
                 >
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5 }}
@@ -138,7 +138,7 @@ const Register = () => {
                     >
                         <User className="w-8 h-8 text-white" />
                     </motion.div>
-                    
+
                     <h2 className="text-3xl font-bold text-white mb-2">
                         Create Account
                     </h2>
@@ -148,7 +148,7 @@ const Register = () => {
                 </motion.div>
 
                 {/* Register Card */}
-                <motion.div 
+                <motion.div
                     variants={staggerContainer}
                     initial="initial"
                     animate="animate"
@@ -156,7 +156,7 @@ const Register = () => {
                 >
                     {/* Error Message */}
                     {error && (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6"
@@ -306,7 +306,7 @@ const Register = () => {
 
                         {/* Password Strength Indicator */}
                         {password && (
-                            <motion.div 
+                            <motion.div
                                 variants={fadeInUp}
                                 className="space-y-2"
                             >
@@ -314,23 +314,22 @@ const Register = () => {
                                     {[1, 2, 3, 4].map((level) => (
                                         <div
                                             key={level}
-                                            className={`flex-1 rounded-full transition-all duration-300 ${
-                                                password.length >= level * 3
+                                            className={`flex-1 rounded-full transition-all duration-300 ${password.length >= level * 3
                                                     ? password.length >= 12
                                                         ? 'bg-green-500'
                                                         : password.length >= 8
-                                                        ? 'bg-yellow-500'
-                                                        : 'bg-red-500'
+                                                            ? 'bg-yellow-500'
+                                                            : 'bg-red-500'
                                                     : 'bg-gray-700'
-                                            }`}
+                                                }`}
                                         />
                                     ))}
                                 </div>
                                 <p className="text-xs text-gray-400">
                                     Password strength: {
                                         password.length >= 12 ? 'Strong' :
-                                        password.length >= 8 ? 'Medium' :
-                                        password.length >= 4 ? 'Weak' : 'Too short'
+                                            password.length >= 8 ? 'Medium' :
+                                                password.length >= 4 ? 'Weak' : 'Too short'
                                     }
                                 </p>
                             </motion.div>
@@ -388,7 +387,7 @@ const Register = () => {
                 </motion.div>
 
                 {/* Sign In Link */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.7 }}
@@ -396,8 +395,8 @@ const Register = () => {
                 >
                     <p className="text-gray-400">
                         Already have an account?{' '}
-                        <Link 
-                            to="/login" 
+                        <Link
+                            to="/login"
                             className="text-indigo-400 hover:text-indigo-300 font-medium transition inline-flex items-center space-x-1 group"
                         >
                             <span>Sign in</span>
@@ -407,7 +406,7 @@ const Register = () => {
                 </motion.div>
 
                 {/* Feature Badges */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.9 }}

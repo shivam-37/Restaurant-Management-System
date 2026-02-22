@@ -42,6 +42,8 @@ app.use('/api/menu', require('./routes/menuRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/reservations', require('./routes/reservationRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 app.use(errorHandler);
 

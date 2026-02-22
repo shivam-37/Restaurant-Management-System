@@ -32,12 +32,25 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Get all users
+// @desc    Get all users with their order stats
 // @route   GET /api/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
-    const users = await User.find({});
-    res.json(users);
+    const users = await User.find({ role: 'user' }).select('-password');
+
+    // Enrich users with order stats
+    const enrichedUsers = await Promise.all(users.map(async (user) => {
+        const Order = require('../models/Order');
+        const orders = await Order.find({ user: user._id });
+        const totalSpent = orders.reduce((acc, order) => acc + (order.totalPrice || 0), 0);
+        return {
+            ...user._doc,
+            orderCount: orders.length,
+            totalSpent: totalSpent.toFixed(2)
+        };
+    }));
+
+    res.json(enrichedUsers);
 });
 
 // @desc    Delete user

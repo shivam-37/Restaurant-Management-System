@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { getOrders, updateOrderStatus } from '../../services/api';
+import AuthContext from '../../context/AuthContext';
 
 const Orders = () => {
+    const { user } = useContext(AuthContext);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,9 @@ const Orders = () => {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">Order Management</h1>
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">
+                {(user?.role === 'admin' || user?.role === 'staff') ? 'Order Management' : 'My Orders'}
+            </h1>
 
             <div className="grid gap-4">
                 {orders.map((order) => (
@@ -82,40 +86,42 @@ const Orders = () => {
                             </div>
                         </div>
 
-                        <div className="flex gap-2">
-                            {order.status === 'Pending' && (
-                                <button
-                                    onClick={() => handleStatusUpdate(order._id, 'Preparing')}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
-                                >
-                                    Start Preparing
-                                </button>
-                            )}
-                            {order.status === 'Preparing' && (
-                                <button
-                                    onClick={() => handleStatusUpdate(order._id, 'Ready')}
-                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
-                                >
-                                    Mark Ready
-                                </button>
-                            )}
-                            {order.status === 'Ready' && (
-                                <button
-                                    onClick={() => handleStatusUpdate(order._id, 'Completed')}
-                                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm font-medium"
-                                >
-                                    Complete
-                                </button>
-                            )}
-                            {order.status !== 'Completed' && order.status !== 'Cancelled' && (
-                                <button
-                                    onClick={() => handleStatusUpdate(order._id, 'Cancelled')}
-                                    className="px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition text-sm font-medium"
-                                >
-                                    Cancel
-                                </button>
-                            )}
-                        </div>
+                        {(user?.role === 'admin' || user?.role === 'staff') && (
+                            <div className="flex gap-2">
+                                {order.status === 'Pending' && (
+                                    <button
+                                        onClick={() => handleStatusUpdate(order._id, 'Preparing')}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium"
+                                    >
+                                        Start Preparing
+                                    </button>
+                                )}
+                                {order.status === 'Preparing' && (
+                                    <button
+                                        onClick={() => handleStatusUpdate(order._id, 'Ready')}
+                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
+                                    >
+                                        Mark Ready
+                                    </button>
+                                )}
+                                {order.status === 'Ready' && (
+                                    <button
+                                        onClick={() => handleStatusUpdate(order._id, 'Completed')}
+                                        className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm font-medium"
+                                    >
+                                        Complete
+                                    </button>
+                                )}
+                                {order.status !== 'Completed' && order.status !== 'Cancelled' && (
+                                    <button
+                                        onClick={() => handleStatusUpdate(order._id, 'Cancelled')}
+                                        className="px-4 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition text-sm font-medium"
+                                    >
+                                        Cancel
+                                    </button>
+                                )}
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>

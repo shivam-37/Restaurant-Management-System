@@ -9,7 +9,9 @@ const userSchema = mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Please add an email'],
-        unique: true
+        unique: true,
+        lowercase: true,
+        trim: true
     },
     password: {
         type: String,
@@ -25,7 +27,6 @@ const userSchema = mongoose.Schema({
 });
 
 userSchema.pre('save', async function (next) {
-    console.log('User pre-save hook. this:', this);
     if (!this.isModified('password')) {
         return next();
     }

@@ -30,6 +30,10 @@ const orderSchema = mongoose.Schema({
     tableNumber: {
         type: Number,
         required: true
+    },
+    specialInstructions: {
+        type: String,
+        default: ''
     }
 }, {
     timestamps: true

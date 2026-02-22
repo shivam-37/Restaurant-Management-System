@@ -6,7 +6,7 @@ const Menu = require('../models/Menu');
 // @route   POST /api/orders
 // @access  Private
 const createOrder = asyncHandler(async (req, res) => {
-    const { items, totalPrice, tableNumber } = req.body;
+    const { items, totalPrice, tableNumber, specialInstructions } = req.body;
 
     if (items && items.length === 0) {
         res.status(400);
@@ -31,7 +31,8 @@ const createOrder = asyncHandler(async (req, res) => {
             user: req.user._id,
             items,
             totalPrice,
-            tableNumber
+            tableNumber,
+            specialInstructions
         });
 
         const createdOrder = await order.save();
@@ -41,9 +42,16 @@ const createOrder = asyncHandler(async (req, res) => {
 
 // @desc    Get all orders
 // @route   GET /api/orders
-// @access  Private (Staff/Admin)
+// @access  Private
 const getOrders = asyncHandler(async (req, res) => {
-    const orders = await Order.find({}).populate('user', 'id name');
+    let query = {};
+
+    // If user is not admin or staff, only get their own orders
+    if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+        query.user = req.user._id;
+    }
+
+    const orders = await Order.find(query).populate('user', 'id name');
     res.json(orders);
 });
 
@@ -54,6 +62,11 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (order) {
+        // Only admin/staff can update status
+        if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+            res.status(401);
+            throw new Error('Not authorized to update order status');
+        }
         order.status = req.body.status || order.status;
         const updatedOrder = await order.save();
         res.json(updatedOrder);
@@ -65,27 +78,67 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 
 // @desc    Get total sales and stats
 // @route   GET /api/orders/analytics
-// @access  Private/Admin
+// @access  Private
 const getAnalytics = asyncHandler(async (req, res) => {
-    const totalOrders = await Order.countDocuments();
-    const activeOrders = await Order.countDocuments({ status: { $ne: 'Completed' } });
+    let totalOrders, activeOrders, totalSales, newCustomers;
 
-    // Calculate total sales
-    const orders = await Order.find({ status: 'Completed' });
-    const totalSales = orders.reduce((acc, order) => acc + order.totalPrice, 0);
+    if (req.user.role === 'admin' || req.user.role === 'staff') {
+        // Global stats for admin/staff
+        totalOrders = await Order.countDocuments();
+        activeOrders = await Order.countDocuments({ status: { $ne: 'Completed' } });
 
-    // Get today's activity
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
+        const orders = await Order.find({ status: 'Completed' });
+        totalSales = orders.reduce((acc, order) => acc + order.totalPrice, 0);
 
-    const todaysOrders = await Order.find({ createdAt: { $gte: todayStart } });
-    const newCustomers = new Set(todaysOrders.map(o => o.user.toString())).size;
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+
+        const todaysOrders = await Order.find({ createdAt: { $gte: todayStart } });
+        newCustomers = new Set(todaysOrders.map(o => o.user.toString())).size;
+    } else {
+        // Personalized stats for regular users
+        totalOrders = await Order.countDocuments({ user: req.user._id });
+        activeOrders = await Order.countDocuments({
+            user: req.user._id,
+            status: { $nin: ['Completed', 'Cancelled'] }
+        });
+
+        const userOrders = await Order.find({ user: req.user._id, status: 'Completed' });
+        totalSales = userOrders.reduce((acc, order) => acc + order.totalPrice, 0);
+
+        newCustomers = 0; // Not applicable for regular users
+    }
+
+    // Get daily sales for the last 7 days (Admin only)
+    let dailySales = [];
+    if (req.user.role === 'admin' || req.user.role === 'staff') {
+        const last7Days = [...Array(7)].map((_, i) => {
+            const d = new Date();
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() - i);
+            return d;
+        }).reverse();
+
+        dailySales = await Promise.all(last7Days.map(async (date) => {
+            const nextDay = new Date(date);
+            nextDay.setDate(date.getDate() + 1);
+            const orders = await Order.find({
+                status: 'Completed',
+                createdAt: { $gte: date, $lt: nextDay }
+            });
+            return {
+                date: date.toLocaleDateString('en-US', { weekday: 'short' }),
+                sales: orders.reduce((acc, order) => acc + order.totalPrice, 0)
+            };
+        }));
+    }
 
     res.json({
         totalOrders,
         activeOrders,
         totalSales,
-        newCustomers
+        newCustomers,
+        dailySales
     });
 });
 

@@ -28,7 +28,7 @@ const Login = () => {
         setError(null);
         setIsLoading(true);
         try {
-            await login(email, password);
+            await login(email.trim(), password.trim());
             navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed');
@@ -59,9 +59,9 @@ const Login = () => {
                 <div className="absolute top-0 -right-40 w-[500px] h-[500px] bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
                 <div className="absolute bottom-40 left-20 w-[500px] h-[500px] bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
                 {/* Dot pattern overlay */}
-                <div 
+                <div
                     className="absolute inset-0 opacity-20 w-full h-full"
-                    style={{ 
+                    style={{
                         backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)',
                         backgroundSize: '40px 40px'
                     }}
@@ -69,14 +69,14 @@ const Login = () => {
             </div>
 
             {/* Back to Home Link */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
                 className="absolute top-8 left-8"
             >
-                <Link 
-                    to="/" 
+                <Link
+                    to="/"
                     className="flex items-center space-x-2 text-gray-400 hover:text-white transition group"
                 >
                     <ArrowRight className="w-5 h-5 rotate-180 group-hover:-translate-x-1 transition" />
@@ -85,7 +85,7 @@ const Login = () => {
             </motion.div>
 
             {/* Logo */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
@@ -105,20 +105,20 @@ const Login = () => {
             </motion.div>
 
             {/* Main Content */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
                 className="w-full max-w-md"
             >
                 {/* Header */}
-                <motion.div 
+                <motion.div
                     variants={fadeInUp}
                     initial="initial"
                     animate="animate"
                     className="text-center mb-8"
                 >
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5 }}
@@ -126,7 +126,7 @@ const Login = () => {
                     >
                         <Lock className="w-8 h-8 text-white" />
                     </motion.div>
-                    
+
                     <h2 className="text-3xl font-bold text-white mb-2">
                         Welcome Back
                     </h2>
@@ -136,7 +136,7 @@ const Login = () => {
                 </motion.div>
 
                 {/* Login Card */}
-                <motion.div 
+                <motion.div
                     variants={staggerContainer}
                     initial="initial"
                     animate="animate"
@@ -144,7 +144,7 @@ const Login = () => {
                 >
                     {/* Error Message */}
                     {error && (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6"
@@ -205,8 +205,8 @@ const Login = () => {
 
                         {/* Forgot Password Link */}
                         <motion.div variants={fadeInUp} className="flex justify-end">
-                            <Link 
-                                to="/forgot-password" 
+                            <Link
+                                to="/forgot-password"
                                 className="text-sm text-gray-400 hover:text-indigo-400 transition"
                             >
                                 Forgot password?
@@ -242,7 +242,7 @@ const Login = () => {
                         </motion.div>
 
                         {/* Demo Credentials */}
-                        <motion.div 
+                        <motion.div
                             variants={fadeInUp}
                             className="relative"
                         >
@@ -254,7 +254,7 @@ const Login = () => {
                             </div>
                         </motion.div>
 
-                        <motion.div 
+                        <motion.div
                             variants={fadeInUp}
                             className="bg-gray-800/30 rounded-xl p-4 border border-gray-700"
                         >
@@ -272,7 +272,7 @@ const Login = () => {
                 </motion.div>
 
                 {/* Sign Up Link */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.6 }}
@@ -280,8 +280,8 @@ const Login = () => {
                 >
                     <p className="text-gray-400">
                         Don't have an account?{' '}
-                        <Link 
-                            to="/register" 
+                        <Link
+                            to="/register"
                             className="text-indigo-400 hover:text-indigo-300 font-medium transition inline-flex items-center space-x-1 group"
                         >
                             <span>Sign up now</span>
@@ -291,7 +291,7 @@ const Login = () => {
                 </motion.div>
 
                 {/* Feature Badges */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 }}

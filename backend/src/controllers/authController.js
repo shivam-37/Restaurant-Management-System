@@ -12,7 +12,9 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-    const { name, email, password, role } = req.body;
+    let { name, email, password, role } = req.body;
+
+    if (email) email = email.toLowerCase().trim();
 
     if (!name || !email || !password) {
         res.status(400);
@@ -49,27 +51,36 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Authenticate a user
-// @route   POST /api/auth/login
-// @access  Public
 const loginUser = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    console.log('Login attempt:', { email });
+
+    if (email) email = email.toLowerCase().trim();
 
     // Check for user email
     const user = await User.findOne({ email });
 
-    if (user && (await user.matchPassword(password))) {
-        res.json({
-            _id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            token: generateToken(user._id),
-        });
+    if (user) {
+        console.log('User found in DB');
+        const isMatch = await user.matchPassword(password);
+        console.log('Password match:', isMatch);
+
+        if (isMatch) {
+            res.json({
+                _id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                token: generateToken(user._id),
+            });
+            return;
+        }
     } else {
-        res.status(400);
-        throw new Error('Invalid credentials');
+        console.log('User NOT found in DB');
     }
+
+    res.status(400);
+    throw new Error('Invalid credentials');
 });
 
 // @desc    Get user data
