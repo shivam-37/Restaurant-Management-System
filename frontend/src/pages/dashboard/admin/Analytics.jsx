@@ -30,6 +30,7 @@ const Analytics = () => {
     };
 
     if (loading) return <div className="animate-pulse h-64 bg-gray-900 rounded-2xl"></div>;
+    if (!data) return <div className="text-gray-400 p-8 text-center">No analytics data available</div>;
 
     const maxSales = Math.max(...(data.dailySales?.map(d => d.sales) || [1]), 1);
 

@@ -34,6 +34,12 @@ const orderSchema = mongoose.Schema({
     specialInstructions: {
         type: String,
         default: ''
+    },
+    review: {
+        rating: { type: Number, min: 1, max: 5 },
+        comment: { type: String },
+        sentiment: { type: String, enum: ['Positive', 'Neutral', 'Negative'] },
+        reviewedAt: { type: Date }
     }
 }, {
     timestamps: true

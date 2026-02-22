@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getMenu, createMenuItem, updateMenuItem, deleteMenuItem, generateDescription, createOrder, generateOrderInstructions } from '../../services/api';
-import { SparklesIcon as SparklesOutline, ShoppingCartIcon } from '@heroicons/react/24/outline';
+import { getMenu, createMenuItem, updateMenuItem, deleteMenuItem, generateDescription, createOrder, generateOrderInstructions, getRecommendations } from '../../services/api';
+import { SparklesIcon as SparklesOutline, ShoppingCartIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import {
     PlusIcon,
     PencilIcon,
@@ -36,10 +36,27 @@ const Menu = () => {
         image: 'https://via.placeholder.com/150',
         stock: 0
     });
+    const [recommendations, setRecommendations] = useState([]);
+    const [isAiLoading, setIsAiLoading] = useState(false);
 
     useEffect(() => {
         fetchMenu();
-    }, []);
+        if (user?.role === 'user') {
+            fetchAIRecommendations();
+        }
+    }, [user?.role]);
+
+    const fetchAIRecommendations = async () => {
+        setIsAiLoading(true);
+        try {
+            const { data } = await getRecommendations();
+            setRecommendations(data);
+        } catch (error) {
+            console.error("Failed to fetch recommendations", error);
+        } finally {
+            setIsAiLoading(false);
+        }
+    };
 
     const fetchMenu = async () => {
         setIsLoading(true);
@@ -173,7 +190,7 @@ const Menu = () => {
                     price: item.price
                 })),
                 totalPrice: cart.reduce((acc, item) => acc + (item.price * item.quantity), 0),
-                tableNumber: 1, // Default for now
+                tableNumber: parseInt(localStorage.getItem('tableNumber')) || 1,
                 specialInstructions: cartInstructions
             };
             await createOrder(orderData);
@@ -266,6 +283,37 @@ const Menu = () => {
                 </div>
             ) : (
                 <>
+                    {/* AI Recommendations Section */}
+                    {user?.role === 'user' && recommendations.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-2xl p-6 mb-8"
+                        >
+                            <div className="flex items-center gap-2 mb-4">
+                                <SparklesIcon className="w-5 h-5 text-indigo-400" />
+                                <h2 className="text-lg font-bold text-white uppercase tracking-wider">AI Recommended for You</h2>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {recommendations.map((item) => (
+                                    <div key={item._id} className="bg-black/40 border border-gray-800 rounded-xl p-4 flex gap-4 group">
+                                        <img src={item.image} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="font-bold text-white truncate text-sm">{item.name}</h4>
+                                            <p className="text-xs text-gray-400 truncate mb-2">{item.category}</p>
+                                            <button
+                                                onClick={() => addToCart(item)}
+                                                className="text-[10px] font-bold text-indigo-400 hover:text-white uppercase transition-colors"
+                                            >
+                                                Add to cart
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+
                     {/* Menu Items Grid */}
                     {menuItems.length === 0 ? (
                         <motion.div

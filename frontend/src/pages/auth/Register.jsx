@@ -37,6 +37,9 @@ const Register = () => {
         if (password !== confirmPassword) {
             setError('Passwords do not match');
             setIsLoading(false);
+        } else if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+            setError('Please enter a valid email address');
+            setIsLoading(false);
         } else {
             try {
                 await register(name.trim(), email.trim(), password.trim(), role);
@@ -315,12 +318,12 @@ const Register = () => {
                                         <div
                                             key={level}
                                             className={`flex-1 rounded-full transition-all duration-300 ${password.length >= level * 3
-                                                    ? password.length >= 12
-                                                        ? 'bg-green-500'
-                                                        : password.length >= 8
-                                                            ? 'bg-yellow-500'
-                                                            : 'bg-red-500'
-                                                    : 'bg-gray-700'
+                                                ? password.length >= 12
+                                                    ? 'bg-green-500'
+                                                    : password.length >= 8
+                                                        ? 'bg-yellow-500'
+                                                        : 'bg-red-500'
+                                                : 'bg-gray-700'
                                                 }`}
                                         />
                                     ))}

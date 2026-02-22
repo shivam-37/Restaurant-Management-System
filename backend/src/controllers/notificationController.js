@@ -1,6 +1,21 @@
 const asyncHandler = require('express-async-handler');
 const Notification = require('../models/Notification');
 
+// @desc    Simulate sending a notification (Email/SMS)
+// @route   POST /api/notifications/simulate
+// @access  Private
+const simulateNotification = asyncHandler(async (req, res) => {
+    const { type, message, recipient } = req.body;
+
+    console.log(`\n--- [MOCK NOTIFICATION] ---`);
+    console.log(`Type: ${type.toUpperCase()}`);
+    console.log(`To: ${recipient}`);
+    console.log(`Message: ${message}`);
+    console.log(`---------------------------\n`);
+
+    res.json({ success: true, status: 'Sent via Mock Provider' });
+});
+
 // @desc    Get user notifications
 // @route   GET /api/notifications
 // @access  Private
@@ -23,12 +38,12 @@ const markAsRead = asyncHandler(async (req, res) => {
             throw new Error('Not authorized');
         }
         notification.isRead = true;
-        const updatedNotification = await notification.save();
-        res.json(updatedNotification);
+        await notification.save();
+        res.json(notification);
     } else {
         res.status(404);
         throw new Error('Notification not found');
     }
 });
 
-module.exports = { getNotifications, markAsRead };
+module.exports = { simulateNotification, getNotifications, markAsRead };

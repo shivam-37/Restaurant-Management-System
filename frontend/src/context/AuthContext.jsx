@@ -1,9 +1,15 @@
 import { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import {
+    getMe,
+    login as apiLogin,
+    register as apiRegister,
+    forgotPassword as apiForgotPassword,
+    resetPassword as apiResetPassword
+} from '../services/api';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -12,21 +18,15 @@ export const AuthProvider = ({ children }) => {
             try {
                 const token = localStorage.getItem('token');
                 if (token) {
-                    // Ideally verify token with backend here
-                    // For now, decode or trust if valid format
-                    // setUser({ token }); 
-                    // Better: Fetch user data
-                    const config = {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                    const { data } = await axios.get(`${window.location.protocol}//${window.location.hostname}:5000/api/auth/me`, config);
+                    const { data } = await getMe();
                     setUser(data);
                 }
             } catch (error) {
                 console.error("Auth check failed", error);
-                localStorage.removeItem('token');
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('token');
+                    setUser(null);
+                }
             } finally {
                 setLoading(false);
             }
@@ -35,14 +35,14 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        const { data } = await axios.post(`${window.location.protocol}//${window.location.hostname}:5000/api/auth/login`, { email, password });
+        const { data } = await apiLogin({ email, password });
         localStorage.setItem('token', data.token);
         setUser(data);
         return data;
     };
 
     const register = async (name, email, password, role) => {
-        const { data } = await axios.post(`${window.location.protocol}//${window.location.hostname}:5000/api/auth/register`, { name, email, password, role });
+        const { data } = await apiRegister({ name, email, password, role });
         localStorage.setItem('token', data.token);
         setUser(data);
         return data;
@@ -53,11 +53,22 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const forgotPassword = async (email) => {
+        const { data } = await apiForgotPassword(email);
+        return data;
+    };
+
+    const resetPassword = async (token, password) => {
+        const { data } = await apiResetPassword({ token, password });
+        return data;
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, forgotPassword, resetPassword, loading }}>
             {children}
         </AuthContext.Provider>
     );
 };
 
+export { AuthProvider };
 export default AuthContext;

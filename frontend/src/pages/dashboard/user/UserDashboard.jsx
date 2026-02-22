@@ -74,6 +74,14 @@ const UserDashboard = ({ user, logout }) => {
             color: 'from-purple-500 to-pink-500',
             bgColor: 'bg-gradient-to-br from-purple-500/20 to-pink-500/20',
             textColor: 'text-purple-400'
+        },
+        {
+            label: 'RestoPoints',
+            value: analytics.loyaltyPoints || 0,
+            icon: SparklesIcon,
+            color: 'from-amber-500 to-orange-500',
+            bgColor: 'bg-gradient-to-br from-amber-500/20 to-orange-500/20',
+            textColor: 'text-amber-400'
         }
     ];
 

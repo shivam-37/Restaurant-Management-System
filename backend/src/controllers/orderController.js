@@ -62,13 +62,26 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (order) {
-        // Only admin/staff can update status
         if (req.user.role !== 'admin' && req.user.role !== 'staff') {
             res.status(401);
             throw new Error('Not authorized to update order status');
         }
+
+        const oldStatus = order.status;
         order.status = req.body.status || order.status;
         const updatedOrder = await order.save();
+
+        // Award loyalty points if order is marked as Completed
+        if (updatedOrder.status === 'Completed' && oldStatus !== 'Completed') {
+            const user = await User.findById(updatedOrder.user);
+            if (user) {
+                const pointsEarned = Math.floor(updatedOrder.totalPrice * 10);
+                user.loyaltyPoints += pointsEarned;
+                await user.save();
+                console.log(`Awarded ${pointsEarned} loyalty points to User ${user.email}`);
+            }
+        }
+
         res.json(updatedOrder);
     } else {
         res.status(404);
@@ -133,18 +146,73 @@ const getAnalytics = asyncHandler(async (req, res) => {
         }));
     }
 
+    const user = await User.findById(req.user._id);
+
     res.json({
         totalOrders,
         activeOrders,
         totalSales,
         newCustomers,
-        dailySales
+        dailySales,
+        loyaltyPoints: user ? user.loyaltyPoints : 0
     });
+});
+
+const addOrderReview = asyncHandler(async (req, res) => {
+    const { rating, comment } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+        res.status(404);
+        throw new Error('Order not found');
+    }
+
+    if (order.user.toString() !== req.user._id.toString()) {
+        res.status(401);
+        throw new Error('Not authorized to review this order');
+    }
+
+    if (order.status !== 'Completed') {
+        res.status(400);
+        throw new Error('Can only review completed orders');
+    }
+
+    // AI Sentiment Analysis
+    let sentiment = 'Neutral';
+    if (comment) {
+        try {
+            const { GoogleGenAI } = require("@google/genai");
+            const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+            const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" }); // Use stable flash for fast sentiment
+
+            const prompt = `Analyze the sentiment of this restaurant review. Respond with exactly one word: Positive, Neutral, or Negative. Review: "${comment}"`;
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text().trim();
+
+            if (['Positive', 'Neutral', 'Negative'].includes(text)) {
+                sentiment = text;
+            }
+        } catch (error) {
+            console.error('Sentiment analysis failed:', error.message);
+        }
+    }
+
+    order.review = {
+        rating,
+        comment,
+        sentiment,
+        reviewedAt: Date.now()
+    };
+
+    await order.save();
+    res.json(order);
 });
 
 module.exports = {
     createOrder,
     getOrders,
     updateOrderStatus,
-    getAnalytics
+    getAnalytics,
+    addOrderReview
 };

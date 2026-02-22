@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAnalytics } from '../../../services/api';
+import { getAnalytics, predictInventory } from '../../../services/api';
 import Menu from '../Menu';
 import Orders from '../Orders';
 import Settings from '../Settings';
 import Customers from './Customers';
 import Analytics from './Analytics';
+import KitchenDisplay from './KitchenDisplay';
+import TableMap from './TableMap';
 import NotificationTray from '../NotificationTray';
 import {
     HomeIcon,
@@ -21,9 +23,15 @@ import {
     CurrencyDollarIcon,
     ClockIcon,
     UserGroupIcon,
-    SparklesIcon
+    SparklesIcon,
+    FireIcon,
+    ExclamationTriangleIcon,
+    ArrowPathIcon,
+    MapIcon,
+    CheckCircleIcon
 } from '@heroicons/react/24/outline';
 
+// Main administration console
 const AdminDashboard = ({ user, logout }) => {
     const [activeTab, setActiveTab] = useState('Overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -34,10 +42,25 @@ const AdminDashboard = ({ user, logout }) => {
         totalSales: 0,
         newCustomers: 0
     });
+    const [predictions, setPredictions] = useState([]);
+    const [isPredicting, setIsPredicting] = useState(false);
 
     useEffect(() => {
         fetchAnalytics();
+        fetchAIPredictions();
     }, []);
+
+    const fetchAIPredictions = async () => {
+        setIsPredicting(true);
+        try {
+            const { data } = await predictInventory();
+            setPredictions(data);
+        } catch (error) {
+            console.error("AI Prediction failed");
+        } finally {
+            setIsPredicting(false);
+        }
+    };
 
     const fetchAnalytics = async () => {
         try {
@@ -51,6 +74,8 @@ const AdminDashboard = ({ user, logout }) => {
     const navItems = [
         { name: 'Overview', icon: HomeIcon, color: 'from-blue-500 to-cyan-500' },
         { name: 'Menu', icon: ClipboardDocumentListIcon, color: 'from-purple-500 to-pink-500' },
+        { name: 'Kitchen', icon: FireIcon, color: 'from-orange-500 to-red-500' },
+        { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-indigo-500' },
         { name: 'Orders', icon: ShoppingBagIcon, color: 'from-green-500 to-emerald-500' },
         { name: 'Customers', icon: UsersIcon, color: 'from-orange-500 to-red-500' },
         { name: 'Analytics', icon: ChartBarIcon, color: 'from-indigo-500 to-purple-500' },
@@ -237,10 +262,67 @@ const AdminDashboard = ({ user, logout }) => {
                         </motion.div>
                     )}
 
+                    {activeTab === 'Overview' && (
+                        <motion.div variants={fadeInUp} initial="initial" animate="animate" className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-3xl p-8 mb-8 backdrop-blur-xl">
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                                        <SparklesIcon className="w-6 h-6 text-white" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-bold text-white">Gemini AI Stock Predictions</h2>
+                                        <p className="text-sm text-indigo-300">Intelligent inventory forecasting</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={fetchAIPredictions}
+                                    disabled={isPredicting}
+                                    className="p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition group"
+                                >
+                                    <ArrowPathIcon className={`w-5 h-5 text-indigo-400 group-hover:rotate-180 transition-transform duration-500 ${isPredicting ? 'animate-spin' : ''}`} />
+                                </button>
+                            </div>
+
+                            {isPredicting ? (
+                                <div className="space-y-4">
+                                    {[1, 2].map(i => (
+                                        <div key={i} className="h-20 bg-white/5 rounded-2xl animate-pulse"></div>
+                                    ))}
+                                </div>
+                            ) : predictions.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {predictions.map((p, idx) => (
+                                        <div key={idx} className="bg-black/40 border border-white/5 p-5 rounded-2xl group hover:border-indigo-500/30 transition-colors">
+                                            <div className="flex items-start justify-between mb-3">
+                                                <h4 className="font-bold text-white">{p.name}</h4>
+                                                <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${p.risk === 'High' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400'
+                                                    }`}>
+                                                    {p.risk} Risk
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-gray-400 mb-4 line-clamp-2 leading-relaxed">{p.reason}</p>
+                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-400">
+                                                <ExclamationTriangleIcon className="w-3 h-3" />
+                                                {p.recommendation}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-12 bg-black/20 rounded-2xl border border-white/5 border-dashed">
+                                    <CheckCircleIcon className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+                                    <p className="text-gray-500 font-medium">Inventory looks stable. No critical items flagged.</p>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+
                     <AnimatePresence mode="wait">
                         <motion.div key={activeTab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
                             {activeTab === 'Menu' && <Menu />}
                             {activeTab === 'Orders' && <Orders />}
+                            {activeTab === 'Kitchen' && <KitchenDisplay />}
+                            {activeTab === 'Table Map' && <TableMap />}
                             {activeTab === 'Settings' && <Settings />}
                             {activeTab === 'Customers' && <Customers />}
                             {activeTab === 'Analytics' && <Analytics />}

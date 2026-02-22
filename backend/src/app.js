@@ -25,11 +25,21 @@ app.use(mongoSanitize());
 // Rate Limiting
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
-    max: 100
+    max: 500 // Increased for development
 });
 app.use(limiter);
 
-app.use(cors());
+const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5174', 'http://127.0.0.1:5174'];
+app.use(cors({
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -37,13 +47,14 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the Restaurant Management System API' });
 });
 
+app.use('/api/ai', require('./routes/aiRoutes'));
+app.use('/api/restaurant', require('./routes/restaurantRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/menu', require('./routes/menuRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/reservations', require('./routes/reservationRoutes'));
-app.use('/api/ai', require('./routes/aiRoutes'));
-app.use('/api/notifications', require('./routes/notificationRoutes'));
 
 app.use(errorHandler);
 

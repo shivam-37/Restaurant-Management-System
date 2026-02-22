@@ -51,36 +51,85 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Authenticate a user
+// @route   POST /api/auth/login
+// @access  Public
 const loginUser = asyncHandler(async (req, res) => {
     let { email, password } = req.body;
-    console.log('Login attempt:', { email });
 
     if (email) email = email.toLowerCase().trim();
 
     // Check for user email
     const user = await User.findOne({ email });
 
-    if (user) {
-        console.log('User found in DB');
-        const isMatch = await user.matchPassword(password);
-        console.log('Password match:', isMatch);
-
-        if (isMatch) {
-            res.json({
-                _id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                token: generateToken(user._id),
-            });
-            return;
-        }
+    if (user && (await user.matchPassword(password))) {
+        res.json({
+            _id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            token: generateToken(user._id),
+        });
     } else {
-        console.log('User NOT found in DB');
+        res.status(400);
+        throw new Error('Invalid credentials');
+    }
+});
+
+// @desc    Forgot password
+// @route   POST /api/auth/forgot-password
+// @access  Public
+const forgotPassword = asyncHandler(async (req, res) => {
+    let { email } = req.body;
+    if (email) email = email.toLowerCase().trim();
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found with this email');
     }
 
-    res.status(400);
-    throw new Error('Invalid credentials');
+    // In a real app, we would generate a unique token and send an email
+    // For this simulation, we'll return a "simulated link" with a JWT reset token
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: '1h',
+    });
+
+    res.json({
+        message: 'Password reset instructions sent to email (Simulated)',
+        resetLink: `http://localhost:5173/reset-password?token=${resetToken}`
+    });
+});
+
+// @desc    Reset password
+// @route   POST /api/auth/reset-password
+// @access  Public
+const resetPassword = asyncHandler(async (req, res) => {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+        res.status(400);
+        throw new Error('Please provide token and new password');
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+
+        user.password = password;
+        await user.save();
+
+        res.json({ message: 'Password reset successful' });
+    } catch (error) {
+        res.status(400);
+        throw new Error('Invalid or expired reset token');
+    }
 });
 
 // @desc    Get user data
@@ -94,4 +143,6 @@ module.exports = {
     registerUser,
     loginUser,
     getMe,
+    forgotPassword,
+    resetPassword,
 };
