@@ -5,7 +5,12 @@ const Menu = require('../models/Menu');
 // @route   GET /api/menu
 // @access  Public
 const getMenuItems = asyncHandler(async (req, res) => {
-    const menuItems = await Menu.find({});
+    const { restaurantId } = req.query;
+    let query = {};
+    if (restaurantId) {
+        query.restaurant = restaurantId;
+    }
+    const menuItems = await Menu.find(query);
     res.json(menuItems);
 });
 
@@ -13,11 +18,11 @@ const getMenuItems = asyncHandler(async (req, res) => {
 // @route   POST /api/menu
 // @access  Private/Admin
 const createMenuItem = asyncHandler(async (req, res) => {
-    const { name, description, price, category, image, stock } = req.body;
+    const { name, description, price, category, image, stock, restaurantId } = req.body;
 
-    if (!name || !description || !price || !category) {
+    if (!name || !description || !price || !category || !restaurantId) {
         res.status(400);
-        throw new Error('Please add all fields');
+        throw new Error('Please add all fields including restaurantId');
     }
 
     const menuItem = await Menu.create({
@@ -26,7 +31,8 @@ const createMenuItem = asyncHandler(async (req, res) => {
         price,
         category,
         image,
-        stock: stock || 0
+        stock: stock || 0,
+        restaurant: restaurantId
     });
 
     res.status(201).json(menuItem);

@@ -12,6 +12,18 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [selectedRestaurant, setSelectedRestaurant] = useState(() => {
+        const saved = localStorage.getItem('selectedRestaurant');
+        return saved ? JSON.parse(saved) : null;
+    });
+
+    useEffect(() => {
+        if (selectedRestaurant) {
+            localStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant));
+        } else {
+            localStorage.removeItem('selectedRestaurant');
+        }
+    }, [selectedRestaurant]);
 
     useEffect(() => {
         const checkUserLoggedIn = async () => {
@@ -20,6 +32,10 @@ const AuthProvider = ({ children }) => {
                 if (token) {
                     const { data } = await getMe();
                     setUser(data);
+                    // If admin/staff, auto-set their restaurant if linked
+                    if (data.restaurant && !selectedRestaurant) {
+                        setSelectedRestaurant(data.restaurant);
+                    }
                 }
             } catch (error) {
                 console.error("Auth check failed", error);
@@ -38,6 +54,9 @@ const AuthProvider = ({ children }) => {
         const { data } = await apiLogin({ email, password });
         localStorage.setItem('token', data.token);
         setUser(data);
+        if (data.restaurant) {
+            setSelectedRestaurant(data.restaurant);
+        }
         return data;
     };
 
@@ -50,7 +69,9 @@ const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('selectedRestaurant');
         setUser(null);
+        setSelectedRestaurant(null);
     };
 
     const forgotPassword = async (email) => {
@@ -64,7 +85,17 @@ const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, forgotPassword, resetPassword, loading }}>
+        <AuthContext.Provider value={{
+            user,
+            login,
+            register,
+            logout,
+            forgotPassword,
+            resetPassword,
+            loading,
+            selectedRestaurant,
+            setSelectedRestaurant
+        }}>
             {children}
         </AuthContext.Provider>
     );

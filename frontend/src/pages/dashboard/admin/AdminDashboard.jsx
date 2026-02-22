@@ -31,8 +31,12 @@ import {
     CheckCircleIcon
 } from '@heroicons/react/24/outline';
 
+import AuthContext from '../../../context/AuthContext';
+import { useContext } from 'react';
+
 // Main administration console
-const AdminDashboard = ({ user, logout }) => {
+const AdminDashboard = () => {
+    const { user, logout, selectedRestaurant } = useContext(AuthContext);
     const [activeTab, setActiveTab] = useState('Overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -48,12 +52,12 @@ const AdminDashboard = ({ user, logout }) => {
     useEffect(() => {
         fetchAnalytics();
         fetchAIPredictions();
-    }, []);
+    }, [selectedRestaurant?._id]);
 
     const fetchAIPredictions = async () => {
         setIsPredicting(true);
         try {
-            const { data } = await predictInventory();
+            const { data } = await predictInventory(selectedRestaurant?._id);
             setPredictions(data);
         } catch (error) {
             console.error("AI Prediction failed");
@@ -64,7 +68,7 @@ const AdminDashboard = ({ user, logout }) => {
 
     const fetchAnalytics = async () => {
         try {
-            const { data } = await getAnalytics();
+            const { data } = await getAnalytics(selectedRestaurant?._id);
             setAnalytics(data);
         } catch (error) {
             console.error("Failed to fetch analytics");
@@ -228,7 +232,7 @@ const AdminDashboard = ({ user, logout }) => {
                     <div className="flex items-center justify-between px-8 py-4">
                         <div>
                             <motion.h1 key={activeTab} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-bold text-white">{activeTab}</motion.h1>
-                            <p className="text-sm text-gray-400 mt-1">Admin Control Center</p>
+                            <p className="text-sm text-gray-400 mt-1">{selectedRestaurant?.name || 'Admin Control Center'}</p>
                         </div>
                         <div className="flex items-center space-x-4">
                             <div className="relative">

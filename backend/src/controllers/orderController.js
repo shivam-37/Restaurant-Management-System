@@ -7,7 +7,12 @@ const User = require('../models/User');
 // @route   POST /api/orders
 // @access  Private
 const createOrder = asyncHandler(async (req, res) => {
-    const { items, totalPrice, tableNumber, specialInstructions } = req.body;
+    const { items, totalPrice, tableNumber, specialInstructions, restaurantId } = req.body;
+
+    if (!restaurantId) {
+        res.status(400);
+        throw new Error('Restaurant ID is required');
+    }
 
     if (items && items.length === 0) {
         res.status(400);
@@ -30,6 +35,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
         const order = new Order({
             user: req.user._id,
+            restaurant: restaurantId,
             items,
             totalPrice,
             tableNumber,
@@ -46,13 +52,18 @@ const createOrder = asyncHandler(async (req, res) => {
 // @access  Private
 const getOrders = asyncHandler(async (req, res) => {
     let query = {};
+    const { restaurantId } = req.query;
+
+    if (restaurantId) {
+        query.restaurant = restaurantId;
+    }
 
     // If user is not admin or staff, only get their own orders
     if (req.user.role !== 'admin' && req.user.role !== 'staff') {
         query.user = req.user._id;
     }
 
-    const orders = await Order.find(query).populate('user', 'id name');
+    const orders = await Order.find(query).populate('user', 'id name').populate('restaurant', 'name');
     res.json(orders);
 });
 
@@ -95,29 +106,36 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 // @access  Private
 const getAnalytics = asyncHandler(async (req, res) => {
     let totalOrders, activeOrders, totalSales, newCustomers;
+    const { restaurantId } = req.query;
+    let query = {};
+
+    if (restaurantId) {
+        query.restaurant = restaurantId;
+    }
 
     if (req.user.role === 'admin' || req.user.role === 'staff') {
         // Global stats for admin/staff
-        totalOrders = await Order.countDocuments();
-        activeOrders = await Order.countDocuments({ status: { $ne: 'Completed' } });
+        totalOrders = await Order.countDocuments(query);
+        activeOrders = await Order.countDocuments({ ...query, status: { $ne: 'Completed' } });
 
-        const orders = await Order.find({ status: 'Completed' });
+        const orders = await Order.find({ ...query, status: 'Completed' });
         totalSales = orders.reduce((acc, order) => acc + order.totalPrice, 0);
 
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
 
-        const todaysOrders = await Order.find({ createdAt: { $gte: todayStart } });
+        const todaysOrders = await Order.find({ ...query, createdAt: { $gte: todayStart } });
         newCustomers = new Set(todaysOrders.map(o => o.user.toString())).size;
     } else {
         // Personalized stats for regular users
-        totalOrders = await Order.countDocuments({ user: req.user._id });
+        totalOrders = await Order.countDocuments({ user: req.user._id, ...query });
         activeOrders = await Order.countDocuments({
             user: req.user._id,
+            ...query,
             status: { $nin: ['Completed', 'Cancelled'] }
         });
 
-        const userOrders = await Order.find({ user: req.user._id, status: 'Completed' });
+        const userOrders = await Order.find({ user: req.user._id, ...query, status: 'Completed' });
         totalSales = userOrders.reduce((acc, order) => acc + order.totalPrice, 0);
 
         newCustomers = 0; // Not applicable for regular users
@@ -137,6 +155,7 @@ const getAnalytics = asyncHandler(async (req, res) => {
             const nextDay = new Date(date);
             nextDay.setDate(date.getDate() + 1);
             const orders = await Order.find({
+                ...query,
                 status: 'Completed',
                 createdAt: { $gte: date, $lt: nextDay }
             });

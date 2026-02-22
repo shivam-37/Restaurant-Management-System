@@ -5,15 +5,16 @@ const Reservation = require('../models/Reservation');
 // @route   POST /api/reservations
 // @access  Private
 const createReservation = asyncHandler(async (req, res) => {
-    const { name, phone, date, time, partySize } = req.body;
+    const { name, phone, date, time, partySize, restaurantId } = req.body;
 
-    if (!name || !phone || !date || !time || !partySize) {
+    if (!name || !phone || !date || !time || !partySize || !restaurantId) {
         res.status(400);
-        throw new Error('Please add all fields');
+        throw new Error('Please add all fields including restaurantId');
     }
 
     const reservation = await Reservation.create({
         user: req.user._id,
+        restaurant: restaurantId,
         name,
         phone,
         date,
@@ -28,7 +29,12 @@ const createReservation = asyncHandler(async (req, res) => {
 // @route   GET /api/reservations/my
 // @access  Private
 const getMyReservations = asyncHandler(async (req, res) => {
-    const reservations = await Reservation.find({ user: req.user._id });
+    const { restaurantId } = req.query;
+    let query = { user: req.user._id };
+    if (restaurantId) {
+        query.restaurant = restaurantId;
+    }
+    const reservations = await Reservation.find(query).populate('restaurant', 'name');
     res.json(reservations);
 });
 
@@ -36,7 +42,12 @@ const getMyReservations = asyncHandler(async (req, res) => {
 // @route   GET /api/reservations
 // @access  Private (Staff/Admin)
 const getReservations = asyncHandler(async (req, res) => {
-    const reservations = await Reservation.find({});
+    const { restaurantId } = req.query;
+    let query = {};
+    if (restaurantId) {
+        query.restaurant = restaurantId;
+    }
+    const reservations = await Reservation.find(query).populate('user', 'name').populate('restaurant', 'name');
     res.json(reservations);
 });
 

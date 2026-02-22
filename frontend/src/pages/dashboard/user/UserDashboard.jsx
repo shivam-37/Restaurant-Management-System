@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAnalytics } from '../../../services/api';
 import Menu from '../Menu';
 import Orders from '../Orders';
 import Settings from '../Settings';
 import NotificationTray from '../NotificationTray';
+import AuthContext from '../../../context/AuthContext';
 import {
     HomeIcon,
     Cog6ToothIcon,
@@ -20,6 +21,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const UserDashboard = ({ user, logout }) => {
+    const { selectedRestaurant } = useContext(AuthContext);
     const [activeTab, setActiveTab] = useState('Overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -31,11 +33,11 @@ const UserDashboard = ({ user, logout }) => {
 
     useEffect(() => {
         fetchAnalytics();
-    }, []);
+    }, [selectedRestaurant?._id]);
 
     const fetchAnalytics = async () => {
         try {
-            const { data } = await getAnalytics();
+            const { data } = await getAnalytics(selectedRestaurant?._id);
             setAnalytics(data);
         } catch (error) {
             console.error("Failed to fetch user analytics");
@@ -139,7 +141,7 @@ const UserDashboard = ({ user, logout }) => {
                 <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-gray-800/50 px-8 py-4 flex justify-between items-center">
                     <div>
                         <h1 className="text-2xl font-bold text-white">{activeTab}</h1>
-                        <p className="text-sm text-gray-400">Welcome back, {user?.name}</p>
+                        <p className="text-sm text-gray-400">Welcome back, {user?.name} {selectedRestaurant ? `at ${selectedRestaurant.name}` : ''}</p>
                     </div>
                     <NotificationTray />
                 </header>

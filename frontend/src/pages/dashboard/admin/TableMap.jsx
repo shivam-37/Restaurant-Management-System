@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
-import { getRestaurant, updateTableStatus } from '../../../services/api';
+import { useState, useEffect, useContext } from 'react';
+import { getRestaurantDetails, updateTableStatus } from '../../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserGroupIcon, MapPinIcon, CheckCircleIcon, XCircleIcon, ClockIcon, FireIcon } from '@heroicons/react/24/outline';
+import AuthContext from '../../../context/AuthContext';
 
 // Interactive floor plan component
 const TableMap = () => {
+    const { selectedRestaurant } = useContext(AuthContext);
     const [restaurant, setRestaurant] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedTable, setSelectedTable] = useState(null);
@@ -13,11 +15,12 @@ const TableMap = () => {
         fetchTableData();
         const interval = setInterval(fetchTableData, 10000);
         return () => clearInterval(interval);
-    }, []);
+    }, [selectedRestaurant?._id]);
 
     const fetchTableData = async () => {
+        if (!selectedRestaurant) return;
         try {
-            const { data } = await getRestaurant();
+            const { data } = await getRestaurantDetails(selectedRestaurant._id);
             setRestaurant(data);
         } catch (error) {
             console.error("Failed to fetch table data");
@@ -28,7 +31,7 @@ const TableMap = () => {
 
     const handleStatusChange = async (number, newStatus) => {
         try {
-            await updateTableStatus(number, newStatus);
+            await updateTableStatus(selectedRestaurant._id, number, newStatus);
             fetchTableData();
             setSelectedTable(null);
         } catch (error) {

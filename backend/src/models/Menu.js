@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const menuSchema = mongoose.Schema({
+    restaurant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Restaurant',
+        required: true
+    },
     name: {
         type: String,
         required: [true, 'Please add a name']

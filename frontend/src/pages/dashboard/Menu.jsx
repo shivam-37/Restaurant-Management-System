@@ -18,7 +18,7 @@ import AuthContext from '../../context/AuthContext';
 import { useContext } from 'react';
 
 const Menu = () => {
-    const { user } = useContext(AuthContext);
+    const { user, selectedRestaurant } = useContext(AuthContext);
     const [menuItems, setMenuItems] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
@@ -44,12 +44,12 @@ const Menu = () => {
         if (user?.role === 'user') {
             fetchAIRecommendations();
         }
-    }, [user?.role]);
+    }, [user?.role, selectedRestaurant?._id]);
 
     const fetchAIRecommendations = async () => {
         setIsAiLoading(true);
         try {
-            const { data } = await getRecommendations();
+            const { data } = await getRecommendations(selectedRestaurant?._id);
             setRecommendations(data);
         } catch (error) {
             console.error("Failed to fetch recommendations", error);
@@ -61,7 +61,7 @@ const Menu = () => {
     const fetchMenu = async () => {
         setIsLoading(true);
         try {
-            const { data } = await getMenu();
+            const { data } = await getMenu(selectedRestaurant?._id);
             setMenuItems(data);
         } catch (error) {
             console.error("Failed to fetch menu", error);
@@ -102,7 +102,7 @@ const Menu = () => {
             if (currentItem) {
                 await updateMenuItem(currentItem._id, formData);
             } else {
-                await createMenuItem(formData);
+                await createMenuItem({ ...formData, restaurantId: selectedRestaurant?._id });
             }
             await fetchMenu();
             setIsModalOpen(false);
@@ -180,6 +180,10 @@ const Menu = () => {
 
     const handlePlaceOrder = async () => {
         if (cart.length === 0) return;
+        if (!selectedRestaurant) {
+            alert('Please select a restaurant first');
+            return;
+        }
         setIsLoading(true);
         try {
             const orderData = {
@@ -191,7 +195,8 @@ const Menu = () => {
                 })),
                 totalPrice: cart.reduce((acc, item) => acc + (item.price * item.quantity), 0),
                 tableNumber: parseInt(localStorage.getItem('tableNumber')) || 1,
-                specialInstructions: cartInstructions
+                specialInstructions: cartInstructions,
+                restaurantId: selectedRestaurant._id
             };
             await createOrder(orderData);
             alert('Order placed successfully!');

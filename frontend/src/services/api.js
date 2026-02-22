@@ -18,22 +18,22 @@ api.interceptors.request.use(
     }
 );
 
-export const getMenu = () => api.get('/menu');
+export const getMenu = (restaurantId) => api.get(`/menu${restaurantId ? `?restaurantId=${restaurantId}` : ''}`);
 export const createMenuItem = (item) => api.post('/menu', item);
 export const updateMenuItem = (id, item) => api.put(`/menu/${id}`, item);
 export const deleteMenuItem = (id) => api.delete(`/menu/${id}`);
 
-export const getOrders = () => api.get('/orders');
+export const getOrders = (restaurantId) => api.get(`/orders${restaurantId ? `?restaurantId=${restaurantId}` : ''}`);
 export const createOrder = (order) => api.post('/orders', order);
 export const updateOrderStatus = (id, status) => api.put(`/orders/${id}`, { status });
 export const addOrderReview = (id, reviewData) => api.put(`/orders/${id}/review`, reviewData);
-export const getAnalytics = () => api.get('/orders/analytics');
+export const getAnalytics = (restaurantId) => api.get(`/orders/analytics${restaurantId ? `?restaurantId=${restaurantId}` : ''}`);
 
 export const updateProfile = (userData) => api.put('/users/profile', userData);
 
 // Reservation APIs
-export const getReservations = () => api.get('/reservations');
-export const getMyReservations = () => api.get('/reservations/my');
+export const getReservations = (restaurantId) => api.get(`/reservations${restaurantId ? `?restaurantId=${restaurantId}` : ''}`);
+export const getMyReservations = (restaurantId) => api.get(`/reservations/my${restaurantId ? `?restaurantId=${restaurantId}` : ''}`);
 export const createReservation = (data) => api.post('/reservations', data);
 export const updateReservationStatus = (id, status) => api.put(`/reservations/${id}`, { status });
 
@@ -48,8 +48,9 @@ export const getNotifications = () => api.get('/notifications');
 export const markNotificationRead = (id) => api.put(`/notifications/${id}/read`);
 
 // Restaurant APIs
-export const getRestaurant = () => api.get('/restaurant');
-export const updateTableStatus = (number, status) => api.put(`/restaurant/table/${number}`, { status });
+export const getRestaurants = () => api.get('/restaurant');
+export const getRestaurantDetails = (id) => api.get(`/restaurant/${id}`);
+export const updateTableStatus = (id, number, status) => api.put(`/restaurant/${id}/table/${number}`, { status });
 
 export const getUsers = () => api.get('/users');
 export const deleteUser = (id) => api.delete(`/users/${id}`);

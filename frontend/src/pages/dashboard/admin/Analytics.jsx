@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { getAnalytics } from '../../../services/api';
+import AuthContext from '../../../context/AuthContext';
 import {
     ChartBarIcon,
     ArrowUpIcon,
@@ -11,16 +12,17 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Analytics = () => {
+    const { selectedRestaurant } = useContext(AuthContext);
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchAnalytics();
-    }, []);
+    }, [selectedRestaurant?._id]);
 
     const fetchAnalytics = async () => {
         try {
-            const res = await getAnalytics();
+            const res = await getAnalytics(selectedRestaurant?._id);
             setData(res.data);
         } catch (error) {
             console.error("Failed to fetch analytics", error);

@@ -4,7 +4,7 @@ import AuthContext from '../../context/AuthContext';
 import { PlusIcon, CalendarIcon, UserGroupIcon, ClockIcon } from '@heroicons/react/24/outline';
 
 const Reservations = () => {
-    const { user } = useContext(AuthContext);
+    const { user, selectedRestaurant } = useContext(AuthContext);
     const [reservations, setReservations] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({
@@ -17,14 +17,14 @@ const Reservations = () => {
 
     useEffect(() => {
         fetchReservations();
-    }, []);
+    }, [selectedRestaurant?._id, user?.role]);
 
     const fetchReservations = async () => {
         try {
             // If admin, get all. If user, get my.
             const { data } = user.role === 'admin'
-                ? await getReservations()
-                : await getMyReservations();
+                ? await getReservations(selectedRestaurant?._id)
+                : await getMyReservations(selectedRestaurant?._id);
             setReservations(data);
         } catch (error) {
             console.error("Failed to fetch reservations", error);
@@ -33,8 +33,12 @@ const Reservations = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!selectedRestaurant) {
+            alert('Please select a restaurant first');
+            return;
+        }
         try {
-            await createReservation(formData);
+            await createReservation({ ...formData, restaurantId: selectedRestaurant._id });
             fetchReservations();
             setIsModalOpen(false);
             setFormData({ ...formData, date: '', time: '' });
@@ -91,10 +95,10 @@ const Reservations = () => {
                             </div>
 
                             <div className="flex items-center gap-4">
-                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${res.status === 'Confirmed' ? 'bg-green-100 text-green-700' :
+                                <span className={`px - 3 py - 1 rounded - full text - xs font - semibold ${res.status === 'Confirmed' ? 'bg-green-100 text-green-700' :
                                         res.status === 'Cancelled' ? 'bg-red-100 text-red-700' :
                                             'bg-yellow-100 text-yellow-700'
-                                    }`}>
+                                    } `}>
                                     {res.status}
                                 </span>
 

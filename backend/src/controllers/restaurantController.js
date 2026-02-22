@@ -1,38 +1,36 @@
 const asyncHandler = require('express-async-handler');
 const Restaurant = require('../models/Restaurant');
 
-// @desc    Get restaurant details and tables
+// @desc    Get all restaurants
 // @route   GET /api/restaurant
-// @access  Private
-const getRestaurantDetails = asyncHandler(async (req, res) => {
-    let restaurant = await Restaurant.findOne();
+// @access  Public
+const getRestaurants = asyncHandler(async (req, res) => {
+    const restaurants = await Restaurant.find({});
+    res.json(restaurants);
+});
 
-    // Seed initial data if none exists
+// @desc    Get restaurant details and tables
+// @route   GET /api/restaurant/:id
+// @access  Public
+const getRestaurantDetails = asyncHandler(async (req, res) => {
+    const restaurant = await Restaurant.findById(req.params.id);
+
     if (!restaurant) {
-        restaurant = await Restaurant.create({
-            name: "The Gilded Fork",
-            tables: [
-                { number: 1, capacity: 2, x: 10, y: 10, status: 'Available' },
-                { number: 2, capacity: 4, x: 10, y: 40, status: 'Available' },
-                { number: 3, capacity: 4, x: 40, y: 10, status: 'Occupied' },
-                { number: 4, capacity: 6, x: 40, y: 40, status: 'Reserved' },
-                { number: 5, capacity: 2, x: 70, y: 10, status: 'Cleaning' },
-                { number: 6, capacity: 4, x: 70, y: 40, status: 'Available' }
-            ]
-        });
+        res.status(404);
+        throw new Error('Restaurant not found');
     }
 
     res.json(restaurant);
 });
 
 // @desc    Update a table status
-// @route   PUT /api/restaurant/table/:number
+// @route   PUT /api/restaurant/:id/table/:number
 // @access  Private/Admin
 const updateTableStatus = asyncHandler(async (req, res) => {
     const { status } = req.body;
-    const { number } = req.params;
+    const { id, number } = req.params;
 
-    const restaurant = await Restaurant.findOne();
+    const restaurant = await Restaurant.findById(id);
     if (!restaurant) {
         res.status(404);
         throw new Error('Restaurant not found');
@@ -50,4 +48,4 @@ const updateTableStatus = asyncHandler(async (req, res) => {
     res.json(restaurant);
 });
 
-module.exports = { getRestaurantDetails, updateTableStatus };
+module.exports = { getRestaurants, getRestaurantDetails, updateTableStatus };

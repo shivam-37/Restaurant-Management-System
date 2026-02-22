@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const reservationSchema = mongoose.Schema({
+    restaurant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Restaurant',
+        required: true
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,

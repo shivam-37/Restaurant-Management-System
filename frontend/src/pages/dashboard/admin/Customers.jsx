@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { motion } from 'framer-motion';
 import { getUsers, deleteUser } from '../../../services/api';
+import AuthContext from '../../../context/AuthContext';
 import {
     UsersIcon,
     TrashIcon,
@@ -10,16 +11,17 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Customers = () => {
+    const { selectedRestaurant } = useContext(AuthContext);
     const [customers, setCustomers] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchCustomers();
-    }, []);
+    }, [selectedRestaurant?._id]);
 
     const fetchCustomers = async () => {
         try {
-            const { data } = await getUsers();
+            const { data } = await getUsers(selectedRestaurant?._id);
             setCustomers(data);
         } catch (error) {
             console.error("Failed to fetch customers", error);

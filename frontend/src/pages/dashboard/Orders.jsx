@@ -63,7 +63,7 @@ const ReviewForm = ({ orderId, onReviewSubmitted }) => {
 };
 
 const Orders = () => {
-    const { user } = useContext(AuthContext);
+    const { user, selectedRestaurant } = useContext(AuthContext);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -71,11 +71,11 @@ const Orders = () => {
         fetchOrders();
         const interval = setInterval(fetchOrders, 10000);
         return () => clearInterval(interval);
-    }, []);
+    }, [selectedRestaurant?._id]);
 
     const fetchOrders = async () => {
         try {
-            const { data } = await getOrders();
+            const { data } = await getOrders(selectedRestaurant?._id);
             const statusPriority = { Pending: 0, Preparing: 1, Ready: 2, Completed: 3, Cancelled: 4 };
             const sortedOrders = data.sort((a, b) => {
                 if (statusPriority[a.status] !== statusPriority[b.status]) {

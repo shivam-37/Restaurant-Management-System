@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  ArrowRight, 
-  Play, 
-  Star, 
-  Users, 
-  TrendingUp, 
-  Clock, 
-  Shield, 
+import {
+  ArrowRight,
+  Play,
+  Star,
+  Users,
+  TrendingUp,
+  Clock,
+  Shield,
   Smartphone,
   ChevronRight,
   CheckCircle,
@@ -18,6 +18,7 @@ import {
   X
 } from 'lucide-react';
 import { useState } from 'react';
+import RestaurantList from '../../components/RestaurantList';
 
 const LandingPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -43,7 +44,7 @@ const LandingPage = () => {
       <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-5 -z-10" />
 
       {/* Navigation */}
-      <motion.nav 
+      <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
@@ -52,7 +53,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.05 }}
               className="flex items-center space-x-2"
             >
@@ -78,8 +79,8 @@ const LandingPage = () => {
                 Sign In
               </Link>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Link 
-                  to="/register" 
+                <Link
+                  to="/register"
                   className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-xl hover:shadow-indigo-600/20 transition-all duration-300 flex items-center space-x-2 group"
                 >
                   <span>Get Started</span>
@@ -89,7 +90,7 @@ const LandingPage = () => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button 
+            <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 rounded-lg hover:bg-gray-800 transition text-gray-300"
             >
@@ -100,7 +101,7 @@ const LandingPage = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -129,14 +130,14 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 md:pt-20 md:pb-32">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Left Content */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               className="space-y-8"
             >
               {/* Badge */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -164,18 +165,18 @@ const LandingPage = () => {
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link 
-                    to="/register" 
+                  <Link
+                    to="/register"
                     className="group relative px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-semibold text-lg shadow-2xl shadow-indigo-600/20 hover:shadow-indigo-600/30 transition-all duration-300 inline-flex items-center space-x-2"
                   >
                     <span>Start Free Trial</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
                   </Link>
                 </motion.div>
-                
+
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link 
-                    to="/demo" 
+                  <Link
+                    to="/demo"
                     className="px-8 py-4 bg-gray-900 text-gray-300 rounded-2xl font-semibold text-lg border border-gray-800 hover:border-indigo-600/50 hover:bg-gray-800 transition-all duration-300 inline-flex items-center space-x-2 group"
                   >
                     <Play className="w-5 h-5 text-indigo-400 group-hover:scale-110 transition" />
@@ -217,7 +218,7 @@ const LandingPage = () => {
                   className="w-full h-[500px] object-cover opacity-90"
                 />
                 {/* Floating Stats Card */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8 }}
@@ -239,10 +240,29 @@ const LandingPage = () => {
         </div>
       </section>
 
+      {/* Restaurant Selection Section */}
+      <section id="restaurants" className="py-20 bg-black relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            {...fadeInUp}
+            className="text-center max-w-3xl mx-auto mb-16"
+          >
+            <span className="text-indigo-400 font-semibold text-sm uppercase tracking-wider">Explore</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mt-4 mb-6">
+              Browse <span className="text-indigo-400">Our Restaurants</span>
+            </h2>
+            <p className="text-xl text-gray-400">
+              Pick your favorite spot and start ordering right away
+            </p>
+          </motion.div>
+          <RestaurantList />
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="relative py-20 md:py-32 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
+          <motion.div
             {...fadeInUp}
             className="text-center max-w-3xl mx-auto mb-16"
           >
@@ -255,7 +275,7 @@ const LandingPage = () => {
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             variants={staggerContainer}
             initial="initial"
             whileInView="whileInView"
@@ -332,7 +352,7 @@ const LandingPage = () => {
       <section className="relative py-20 bg-gradient-to-br from-gray-900 to-black">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <motion.div 
+          <motion.div
             variants={staggerContainer}
             initial="initial"
             whileInView="whileInView"
@@ -372,7 +392,7 @@ const LandingPage = () => {
             <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5" />
             <div className="absolute top-0 -left-20 w-40 h-40 bg-indigo-600/20 rounded-full blur-3xl" />
             <div className="absolute bottom-0 -right-20 w-60 h-60 bg-purple-600/20 rounded-full blur-3xl" />
-            
+
             <div className="relative">
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                 Ready to transform your restaurant?
@@ -382,8 +402,8 @@ const LandingPage = () => {
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link 
-                    to="/register" 
+                  <Link
+                    to="/register"
                     className="group px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 inline-flex items-center space-x-2"
                   >
                     <span>Start Free Trial</span>
@@ -391,8 +411,8 @@ const LandingPage = () => {
                   </Link>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link 
-                    to="/contact" 
+                  <Link
+                    to="/contact"
                     className="px-8 py-4 bg-transparent text-white rounded-2xl font-semibold text-lg border-2 border-gray-800 hover:border-indigo-600/50 hover:bg-gray-900 transition-all duration-300"
                   >
                     Contact Sales
@@ -424,7 +444,7 @@ const LandingPage = () => {
                 Revolutionizing restaurant management with AI-powered solutions.
               </p>
             </div>
-            
+
             {[
               { title: "Product", links: ["Features", "Pricing", "Demo", "Integrations"] },
               { title: "Company", links: ["About", "Blog", "Careers", "Press"] },
@@ -444,7 +464,7 @@ const LandingPage = () => {
               </div>
             ))}
           </div>
-          
+
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
             <p>&copy; 2024 RestoManager. All rights reserved.</p>
           </div>

@@ -1,17 +1,29 @@
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
+import { getRestaurantDetails } from '../services/api';
 
 const TableRedirect = () => {
-    const { id } = useParams();
+    const { restaurantId, tableNumber } = useParams();
     const navigate = useNavigate();
+    const { setSelectedRestaurant } = useContext(AuthContext);
 
     useEffect(() => {
-        if (id) {
-            localStorage.setItem('tableNumber', id);
-            console.log(`Table ${id} assigned via QR code`);
-        }
-        navigate('/dashboard'); // Redirect to dashboard where Menu is located
-    }, [id, navigate]);
+        const setupTable = async () => {
+            if (restaurantId && tableNumber) {
+                localStorage.setItem('tableNumber', tableNumber);
+                try {
+                    const { data } = await getRestaurantDetails(restaurantId);
+                    setSelectedRestaurant(data);
+                    console.log(`Table ${tableNumber} at ${data.name} assigned via QR code`);
+                } catch (error) {
+                    console.error("Failed to fetch restaurant details during redirect", error);
+                }
+            }
+            navigate('/dashboard');
+        };
+        setupTable();
+    }, [restaurantId, tableNumber, navigate, setSelectedRestaurant]);
 
     return (
         <div className="flex items-center justify-center h-screen bg-black text-white">

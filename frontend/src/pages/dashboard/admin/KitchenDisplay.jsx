@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { getOrders, updateOrderStatus } from '../../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClockIcon, CheckCircleIcon, FireIcon, BeakerIcon } from '@heroicons/react/24/outline';
+import AuthContext from '../../../context/AuthContext';
 
 const KitchenDisplay = () => {
+    const { selectedRestaurant } = useContext(AuthContext);
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -11,11 +13,11 @@ const KitchenDisplay = () => {
         fetchKitchenOrders();
         const interval = setInterval(fetchKitchenOrders, 5000); // Fast polling for kitchen
         return () => clearInterval(interval);
-    }, []);
+    }, [selectedRestaurant?._id]);
 
     const fetchKitchenOrders = async () => {
         try {
-            const { data } = await getOrders();
+            const { data } = await getOrders(selectedRestaurant?._id);
             // Only show Preparing and Ready orders for KDS
             const kitchenOrders = data.filter(order =>
                 order.status === 'Pending' || order.status === 'Preparing' || order.status === 'Ready'
@@ -80,14 +82,14 @@ const KitchenDisplay = () => {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, x: 100 }}
                             className={`flex flex-col rounded-3xl border-2 transition-all duration-500 ${order.status === 'Pending' ? 'border-orange-500/50 bg-orange-500/5' :
-                                    order.status === 'Preparing' ? 'border-blue-500/50 bg-blue-500/5' :
-                                        'border-green-500/50 bg-green-500/5'
+                                order.status === 'Preparing' ? 'border-blue-500/50 bg-blue-500/5' :
+                                    'border-green-500/50 bg-green-500/5'
                                 }`}
                         >
                             {/* Ticket Header */}
                             <div className={`p-4 rounded-t-[22px] flex justify-between items-center ${order.status === 'Pending' ? 'bg-orange-500/20' :
-                                    order.status === 'Preparing' ? 'bg-blue-500/20' :
-                                        'bg-green-500/20'
+                                order.status === 'Preparing' ? 'bg-blue-500/20' :
+                                    'bg-green-500/20'
                                 }`}>
                                 <h2 className="text-xl font-black">TABLE {order.tableNumber}</h2>
                                 <div className="flex items-center gap-2 text-sm font-bold opacity-80">
@@ -122,8 +124,8 @@ const KitchenDisplay = () => {
                                 <button
                                     onClick={() => handleStatusMove(order._id, order.status)}
                                     className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${order.status === 'Pending' ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/25' :
-                                            order.status === 'Preparing' ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg shadow-blue-500/25' :
-                                                'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/25'
+                                        order.status === 'Preparing' ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg shadow-blue-500/25' :
+                                            'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/25'
                                         }`}
                                 >
                                     {order.status === 'Pending' ? 'Start Fire' :

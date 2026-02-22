@@ -26,6 +26,10 @@ const userSchema = mongoose.Schema({
         enum: ['user', 'admin', 'staff'],
         default: 'user'
     },
+    restaurant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Restaurant'
+    },
     loyaltyPoints: {
         type: Number,
         default: 0
