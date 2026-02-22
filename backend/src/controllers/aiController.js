@@ -3,7 +3,8 @@ const asyncHandler = require('express-async-handler');
 
 // The client gets the API key from the environment variable `GEMINI_API_KEY`.
 const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY
+    apiKey: process.env.GEMINI_API_KEY,
+    apiVersion: 'v1'
 });
 
 // @desc    Generate menu item description
@@ -19,10 +20,11 @@ const generateDescription = asyncHandler(async (req, res) => {
 
     try {
         const result = await ai.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "models/gemini-2.5-flash",
             contents: `You are a gourmet food critic and menu writer. Write a short, appetizing description (max 2 sentences) for the following menu item. Item: ${name}, Category: ${category || 'Main Course'}`
         });
-        const text = result.response.text().trim();
+
+        const text = result.candidates[0].content.parts[0].text.trim();
 
         res.json({ description: text });
     } catch (error) {
@@ -45,10 +47,10 @@ const generateOrderInstructions = asyncHandler(async (req, res) => {
 
     try {
         const result = await ai.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "models/gemini-2.5-flash",
             contents: `You are a helpful restaurant assistant. Convert the user's rough notes into polite, clear special instructions for the kitchen. Notes: ${prompt}`
         });
-        const text = result.response.text().trim();
+        const text = result.candidates[0].content.parts[0].text.trim();
 
         res.json({ instructions: text });
     } catch (error) {
@@ -92,10 +94,10 @@ const getRecommendations = asyncHandler(async (req, res) => {
 
     try {
         const result = await ai.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "models/gemini-2.5-flash",
             contents: prompt
         });
-        const text = result.response.text().trim();
+        const text = result.candidates[0].content.parts[0].text.trim();
         // Extract JSON array from response
         const jsonMatch = text.match(/\[.*\]/s);
         const recommendationsNames = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
@@ -152,10 +154,10 @@ const predictInventory = asyncHandler(async (req, res) => {
 
     try {
         const result = await ai.models.generateContent({
-            model: "gemini-1.5-flash",
+            model: "models/gemini-2.5-flash",
             contents: prompt
         });
-        const text = result.response.text().trim();
+        const text = result.candidates[0].content.parts[0].text.trim();
         const jsonMatch = text.match(/\[.*\]/s);
         const prediction = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
 
