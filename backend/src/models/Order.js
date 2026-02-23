@@ -34,7 +34,22 @@ const orderSchema = mongoose.Schema({
     },
     tableNumber: {
         type: Number,
-        required: true
+        required: false,
+        default: 0
+    },
+    orderType: {
+        type: String,
+        enum: ['Dine-In', 'Home Delivery'],
+        default: 'Dine-In'
+    },
+    paymentMethod: {
+        type: String,
+        enum: ['Cash', 'Card', 'UPI'],
+        default: 'Cash'
+    },
+    deliveryAddress: {
+        type: String,
+        default: ''
     },
     specialInstructions: {
         type: String,
@@ -49,5 +64,10 @@ const orderSchema = mongoose.Schema({
 }, {
     timestamps: true
 });
+
+orderSchema.index({ restaurant: 1, createdAt: -1 });
+orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ status: 1 });
+orderSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Order', orderSchema);

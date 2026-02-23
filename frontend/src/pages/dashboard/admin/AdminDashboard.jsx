@@ -93,7 +93,7 @@ const AdminDashboard = () => {
     const stats = [
         {
             label: 'Total Sales',
-            value: `$${(analytics.totalSales || 0).toLocaleString()}`,
+            value: `₹${(analytics.totalSales || 0).toLocaleString()}`,
             change: '+12.5%',
             icon: CurrencyDollarIcon,
             color: 'from-green-500 to-emerald-500',
@@ -418,7 +418,7 @@ const AdminDashboard = () => {
                                                                     </span>
                                                                 </td>
                                                                 <td className="px-8 py-5 text-right">
-                                                                    <span className="text-sm font-bold text-green-400">${(stat.totalSales || 0).toLocaleString()}</span>
+                                                                    <span className="text-sm font-bold text-green-400">₹{(stat.totalSales || 0).toLocaleString()}</span>
                                                                 </td>
                                                                 <td className="px-8 py-5">
                                                                     <button

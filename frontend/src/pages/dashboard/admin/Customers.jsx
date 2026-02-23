@@ -5,7 +5,7 @@ import AuthContext from '../../../context/AuthContext';
 import {
     UsersIcon,
     TrashIcon,
-    CurrencyDollarIcon,
+    BanknotesIcon,
     ShoppingBagIcon,
     EnvelopeIcon
 } from '@heroicons/react/24/outline';
@@ -89,8 +89,8 @@ const Customers = () => {
                                 <div className="text-center md:text-left">
                                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Total Spent</p>
                                     <div className="flex items-center justify-center md:justify-start text-white font-semibold">
-                                        <CurrencyDollarIcon className="w-4 h-4 mr-1 text-green-400" />
-                                        ${customer.totalSpent || '0.00'}
+                                        <BanknotesIcon className="w-4 h-4 mr-1 text-green-400" />
+                                        ₹{(customer.totalSpent || 0).toLocaleString('en-IN')}
                                     </div>
                                 </div>
                                 <div className="hidden md:flex items-center justify-end">

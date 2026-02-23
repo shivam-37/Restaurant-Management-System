@@ -17,27 +17,19 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import RestaurantList from '../../components/RestaurantList';
-import { getRestaurants } from '../../services/api';
+import AuthContext from '../../context/AuthContext';
 
 const LandingPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [restaurants, setRestaurants] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Use the shared context restaurants list so any cover image update
+  // from Settings is immediately reflected here without a page reload
+  const { restaurants, refreshRestaurants } = useContext(AuthContext);
+  const isLoading = restaurants.length === 0;
 
   useEffect(() => {
-    const fetchRestaurants = async () => {
-      try {
-        const { data } = await getRestaurants();
-        setRestaurants(data);
-      } catch (error) {
-        console.error("Failed to fetch restaurants", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchRestaurants();
+    refreshRestaurants();
   }, []);
 
   const fadeInUp = {

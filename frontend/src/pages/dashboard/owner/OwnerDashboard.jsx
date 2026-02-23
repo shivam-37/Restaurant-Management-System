@@ -8,6 +8,7 @@ import KitchenDisplay from '../admin/KitchenDisplay'; // Reusing components
 import TableMap from '../admin/TableMap';
 import CreateRestaurant from '../../../components/owner/CreateRestaurant';
 import Reservations from '../Reservations';
+import Analytics from '../admin/Analytics';
 import NotificationTray from '../NotificationTray';
 import AuthContext from '../../../context/AuthContext';
 import {
@@ -116,7 +117,8 @@ const OwnerDashboard = () => {
     const navItems = [
         { name: 'Overview', icon: HomeIcon, color: 'from-blue-500 to-cyan-500' },
         { name: 'Menu', icon: ClipboardDocumentListIcon, color: 'from-purple-500 to-pink-500' },
-        { name: 'Staff', icon: UserGroupIcon, color: 'from-green-500 to-teal-500' },
+        { name: 'Orders', icon: ShoppingBagIcon, color: 'from-orange-600 to-red-600' },
+        { name: 'Kitchen', icon: UserGroupIcon, color: 'from-green-500 to-teal-500' },
         { name: 'Reservations', icon: CalendarIcon, color: 'from-yellow-500 to-amber-500' },
         { name: 'Performance', icon: ChartPieIcon, color: 'from-cyan-500 to-blue-500' },
         { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-indigo-500' },
@@ -127,7 +129,7 @@ const OwnerDashboard = () => {
     const stats = [
         {
             label: 'Total Sales',
-            value: `$${(analytics.totalSales || 0).toLocaleString()}`,
+            value: `₹${(analytics.totalSales || 0).toLocaleString()}`,
             icon: CurrencyDollarIcon,
             color: 'from-green-500 to-emerald-500',
             bgColor: 'bg-green-500/20',
@@ -268,7 +270,7 @@ const OwnerDashboard = () => {
                             {activeTab === 'Menu' && <Menu />}
                             {activeTab === 'Orders' && <Orders />}
                             {activeTab === 'Reservations' && <Reservations />}
-                            {activeTab === 'Staff' && <KitchenDisplay />}
+                            {activeTab === 'Kitchen' && <KitchenDisplay />}
                             {activeTab === 'Table Map' && <TableMap />}
                             {activeTab === 'Analytics' && <Analytics />}
                             {activeTab === 'Settings' && <Settings />}

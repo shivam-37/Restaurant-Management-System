@@ -25,8 +25,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const UserDashboard = ({ user, logout }) => {
-    const { selectedRestaurant, setSelectedRestaurant } = useContext(AuthContext);
-    const [restaurants, setRestaurants] = useState([]);
+    const { selectedRestaurant, setSelectedRestaurant, restaurants, refreshRestaurants } = useContext(AuthContext);
     const [loadingRestaurants, setLoadingRestaurants] = useState(false);
     const [activeTab, setActiveTab] = useState('Overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -40,22 +39,11 @@ const UserDashboard = ({ user, logout }) => {
     useEffect(() => {
         if (selectedRestaurant) {
             fetchAnalytics();
-        } else {
-            fetchRestaurants();
+        } else if (restaurants.length === 0) {
+            setLoadingRestaurants(true);
+            refreshRestaurants().finally(() => setLoadingRestaurants(false));
         }
     }, [selectedRestaurant?._id]);
-
-    const fetchRestaurants = async () => {
-        setLoadingRestaurants(true);
-        try {
-            const { data } = await getRestaurants();
-            setRestaurants(data);
-        } catch (error) {
-            console.error("Failed to fetch restaurants");
-        } finally {
-            setLoadingRestaurants(false);
-        }
-    };
 
     const fetchAnalytics = async () => {
         try {
@@ -205,28 +193,44 @@ const UserDashboard = ({ user, logout }) => {
                                                 <motion.div
                                                     key={res._id}
                                                     whileHover={{ y: -8 }}
-                                                    className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 border border-gray-800 hover:border-indigo-500/50 transition-all cursor-pointer overflow-hidden"
+                                                    className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl border border-gray-800 hover:border-indigo-500/50 transition-all cursor-pointer overflow-hidden"
                                                     onClick={() => {
                                                         setSelectedRestaurant(res);
                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                                     }}
                                                 >
-                                                    <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <ArrowRightIcon className="w-6 h-6 text-indigo-400" />
+                                                    {/* Cover image or gradient placeholder */}
+                                                    <div className="h-40 overflow-hidden relative">
+                                                        {res.image ? (
+                                                            <img
+                                                                src={res.image}
+                                                                alt={res.name}
+                                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                                onError={e => e.target.style.display = 'none'}
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full bg-gradient-to-br from-indigo-600/30 to-purple-600/30 flex items-center justify-center">
+                                                                <span className="text-5xl font-black text-white/10 uppercase">{res.name.charAt(0)}</span>
+                                                            </div>
+                                                        )}
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
                                                     </div>
-                                                    <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 shadow-lg shadow-indigo-600/20">
-                                                        {res.name.charAt(0)}
-                                                    </div>
-                                                    <h3 className="text-xl font-bold text-white mb-2">{res.name}</h3>
-                                                    <p className="text-sm text-gray-400 mb-6 line-clamp-2">{res.description || "Premium dining experience awaits you."}</p>
-                                                    <div className="flex items-center gap-4 text-xs text-indigo-400 font-bold uppercase tracking-widest">
-                                                        <div className="flex items-center gap-1">
-                                                            <MapPinIcon className="w-4 h-4" />
-                                                            {res.cuisine}
+
+                                                    <div className="p-6">
+                                                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <ArrowRightIcon className="w-5 h-5 text-indigo-400" />
                                                         </div>
-                                                        <div className="flex items-center gap-1">
-                                                            <CalendarIcon className="w-4 h-4" />
-                                                            Book Table
+                                                        <h3 className="text-xl font-bold text-white mb-1">{res.name}</h3>
+                                                        <p className="text-sm text-gray-400 mb-4 line-clamp-2">{res.description || "Premium dining experience awaits you."}</p>
+                                                        <div className="flex items-center gap-4 text-xs text-indigo-400 font-bold uppercase tracking-widest">
+                                                            <div className="flex items-center gap-1">
+                                                                <MapPinIcon className="w-4 h-4" />
+                                                                {res.cuisine}
+                                                            </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <CalendarIcon className="w-4 h-4" />
+                                                                Book Table
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </motion.div>

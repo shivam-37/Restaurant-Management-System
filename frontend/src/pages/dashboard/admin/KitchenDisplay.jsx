@@ -31,16 +31,23 @@ const KitchenDisplay = () => {
         }
     };
 
+    const [updating, setUpdating] = useState(null); // track which order is being updated
+
     const handleStatusMove = async (id, currentStatus) => {
+        if (updating === id) return; // prevent double-click
         let nextStatus = 'Preparing';
         if (currentStatus === 'Preparing') nextStatus = 'Ready';
         if (currentStatus === 'Ready') nextStatus = 'Completed';
 
+        setUpdating(id);
         try {
             await updateOrderStatus(id, nextStatus);
             fetchKitchenOrders();
         } catch (error) {
-            alert('Status update failed');
+            const message = error?.response?.data?.message || error.message || 'Status update failed';
+            alert(`Error: ${message}`);
+        } finally {
+            setUpdating(null);
         }
     };
 
@@ -123,13 +130,15 @@ const KitchenDisplay = () => {
                             <div className="p-4 bg-white/5 rounded-b-[22px] border-t border-white/5">
                                 <button
                                     onClick={() => handleStatusMove(order._id, order.status)}
-                                    className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${order.status === 'Pending' ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/25' :
+                                    disabled={updating === order._id}
+                                    className={`w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all disabled:opacity-60 disabled:cursor-not-allowed ${order.status === 'Pending' ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/25' :
                                         order.status === 'Preparing' ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg shadow-blue-500/25' :
                                             'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/25'
                                         }`}
                                 >
-                                    {order.status === 'Pending' ? 'Start Fire' :
-                                        order.status === 'Preparing' ? 'Mark Ready' : 'Serve / Clear'}
+                                    {updating === order._id ? '⏳ Updating...' :
+                                        order.status === 'Pending' ? 'Start Fire' :
+                                            order.status === 'Preparing' ? 'Mark Ready' : 'Serve / Clear'}
                                 </button>
                             </div>
                         </motion.div>

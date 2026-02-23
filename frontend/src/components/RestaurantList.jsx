@@ -6,35 +6,24 @@ import AuthContext from '../context/AuthContext';
 import { getRestaurants } from '../services/api';
 
 const RestaurantList = ({ restaurants: propsRestaurants, loading: propsLoading }) => {
-    const [restaurants, setRestaurants] = useState(propsRestaurants || []);
-    const [loading, setLoading] = useState(propsLoading !== undefined ? propsLoading : true);
-    const { setSelectedRestaurant } = useContext(AuthContext);
+    const { restaurants: ctxRestaurants, refreshRestaurants, setSelectedRestaurant } = useContext(AuthContext);
     const navigate = useNavigate();
+
+    // On mount load restaurants if not already cached
+    useEffect(() => {
+        if (propsRestaurants === undefined && ctxRestaurants.length === 0) {
+            refreshRestaurants();
+        }
+    }, []);
+
+    // Prefer context list; fall back to props
+    const restaurants = propsRestaurants !== undefined ? propsRestaurants : ctxRestaurants;
+    const loading = propsRestaurants !== undefined ? (propsLoading ?? false) : ctxRestaurants.length === 0;
 
     const handleSelect = (restaurant) => {
         setSelectedRestaurant(restaurant);
         navigate('/dashboard');
     };
-
-    useEffect(() => {
-        // Only fetch if props were not provided
-        if (propsRestaurants === undefined) {
-            const fetchRestaurants = async () => {
-                try {
-                    const { data } = await getRestaurants();
-                    setRestaurants(data);
-                } catch (error) {
-                    console.error("Failed to fetch restaurants", error);
-                } finally {
-                    setLoading(false);
-                }
-            };
-            fetchRestaurants();
-        } else {
-            setRestaurants(propsRestaurants);
-            setLoading(propsLoading);
-        }
-    }, [propsRestaurants, propsLoading]);
 
     if (loading) {
         return (

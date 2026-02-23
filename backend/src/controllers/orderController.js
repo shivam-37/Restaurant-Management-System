@@ -7,7 +7,7 @@ const User = require('../models/User');
 // @route   POST /api/orders
 // @access  Private
 const createOrder = asyncHandler(async (req, res) => {
-    const { items, totalPrice, tableNumber, specialInstructions, restaurantId } = req.body;
+    const { items, totalPrice, tableNumber, specialInstructions, restaurantId, orderType, paymentMethod, deliveryAddress } = req.body;
 
     if (!restaurantId) {
         console.error('Order Creation Failed: Missing Restaurant ID');
@@ -39,8 +39,11 @@ const createOrder = asyncHandler(async (req, res) => {
             restaurant: restaurantId,
             items,
             totalPrice,
-            tableNumber,
-            specialInstructions
+            tableNumber: tableNumber || 0,
+            specialInstructions,
+            orderType: orderType || 'Dine-In',
+            paymentMethod: paymentMethod || 'Cash',
+            deliveryAddress: deliveryAddress || ''
         });
 
         const createdOrder = await order.save();
@@ -60,8 +63,8 @@ const getOrders = asyncHandler(async (req, res) => {
         query.restaurant = restaurantId;
     }
 
-    // If user is not admin or staff, only get their own orders
-    if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+    // If user is not management (admin or owner), only get their own orders
+    if (req.user.role !== 'admin' && req.user.role !== 'owner') {
         query.user = req.user._id;
     }
 
@@ -76,7 +79,7 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (order) {
-        if (req.user.role !== 'admin' && req.user.role !== 'staff') {
+        if (req.user.role !== 'admin' && req.user.role !== 'owner') {
             res.status(401);
             throw new Error('Not authorized to update order status');
         }
@@ -88,25 +91,38 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
         let updatedOrder;
         try {
             updatedOrder = await order.save();
-            console.log('Order Updated Successfully');
+            console.log('Order Status Updated Successfully');
+
+            // Handle loyalty points gracefully (don't fail the status update if this fails)
+            try {
+                if (updatedOrder.status === 'Completed' && oldStatus !== 'Completed') {
+                    const user = await User.findById(updatedOrder.user);
+                    if (user) {
+                        const pointsEarned = Math.floor(updatedOrder.totalPrice * 10);
+                        user.loyaltyPoints = (user.loyaltyPoints || 0) + pointsEarned;
+                        await user.save();
+                        console.log(`Awarded ${pointsEarned} loyalty points to User ${user.email}`);
+                    }
+                } else if (oldStatus === 'Completed' && updatedOrder.status !== 'Completed') {
+                    const user = await User.findById(updatedOrder.user);
+                    if (user) {
+                        const pointsLost = Math.floor(updatedOrder.totalPrice * 10);
+                        user.loyaltyPoints = Math.max(0, (user.loyaltyPoints || 0) - pointsLost);
+                        await user.save();
+                        console.log(`Deducted ${pointsLost} loyalty points from User ${user.email}`);
+                    }
+                }
+            } catch (pointsError) {
+                console.error('Loyalty points update failed:', pointsError.message);
+                // We don't throw here so the status update response still goes through
+            }
+
+            res.json(updatedOrder);
         } catch (error) {
-            console.error('Order Update Failed (Save Error):', error.message);
+            console.error('Order Update Failed:', error.message);
             res.status(400);
             throw new Error(`Order update failed: ${error.message}`);
         }
-
-        // Award loyalty points if order is marked as Completed
-        if (updatedOrder.status === 'Completed' && oldStatus !== 'Completed') {
-            const user = await User.findById(updatedOrder.user);
-            if (user) {
-                const pointsEarned = Math.floor(updatedOrder.totalPrice * 10);
-                user.loyaltyPoints += pointsEarned;
-                await user.save();
-                console.log(`Awarded ${pointsEarned} loyalty points to User ${user.email}`);
-            }
-        }
-
-        res.json(updatedOrder);
     } else {
         res.status(404);
         throw new Error('Order not found');
@@ -117,89 +133,137 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/analytics
 // @access  Private
 const getAnalytics = asyncHandler(async (req, res) => {
-    let totalOrders, activeOrders, totalSales, newCustomers;
     const { restaurantId } = req.query;
-    let query = {};
+    const isManagement = req.user.role === 'admin' || req.user.role === 'owner';
 
+    // Base match for queries
+    let baseMatch = {};
     if (restaurantId) {
-        query.restaurant = restaurantId;
+        baseMatch.restaurant = new (require('mongoose').Types.ObjectId)(restaurantId);
     }
 
-    if (req.user.role === 'admin' || req.user.role === 'staff') {
-        // Global stats for admin/staff
-        totalOrders = await Order.countDocuments(query);
-        activeOrders = await Order.countDocuments({ ...query, status: { $ne: 'Completed' } });
+    // Authorization filter
+    let userFilter = {};
+    if (!isManagement) {
+        userFilter.user = req.user._id;
+    }
 
-        const orders = await Order.find({ ...query, status: 'Completed' });
-        totalSales = orders.reduce((acc, order) => acc + order.totalPrice, 0);
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
 
-        const todayStart = new Date();
-        todayStart.setHours(0, 0, 0, 0);
-
-        const todaysOrders = await Order.find({ ...query, createdAt: { $gte: todayStart } });
-        newCustomers = new Set(todaysOrders.map(o => o.user.toString())).size;
-    } else {
-        // Personalized stats for regular users
-        totalOrders = await Order.countDocuments({ user: req.user._id, ...query });
-        activeOrders = await Order.countDocuments({
-            user: req.user._id,
-            ...query,
+    // Run basic counts and sales in parallel
+    const [totalOrders, activeOrders, totalSalesResult, newCustomersResult] = await Promise.all([
+        Order.countDocuments({ ...baseMatch, ...userFilter }),
+        Order.countDocuments({
+            ...baseMatch,
+            ...userFilter,
             status: { $nin: ['Completed', 'Cancelled'] }
-        });
+        }),
+        Order.aggregate([
+            { $match: { ...baseMatch, ...userFilter, status: 'Completed' } },
+            { $group: { _id: null, total: { $sum: '$totalPrice' } } }
+        ]),
+        // New customers today: distinctly count users who placed their first completed order today? 
+        // Or just users with completed orders today? Let's stick to unique users with orders today for now as per current logic but only "Completed"
+        Order.aggregate([
+            {
+                $match: {
+                    ...baseMatch,
+                    createdAt: { $gte: todayStart },
+                    status: { $ne: 'Cancelled' }
+                }
+            },
+            { $group: { _id: '$user' } },
+            { $count: 'count' }
+        ])
+    ]);
 
-        const userOrders = await Order.find({ user: req.user._id, ...query, status: 'Completed' });
-        totalSales = userOrders.reduce((acc, order) => acc + order.totalPrice, 0);
+    const totalSales = totalSalesResult[0]?.total || 0;
+    const newCustomers = newCustomersResult[0]?.count || 0;
 
-        newCustomers = 0; // Not applicable for regular users
-    }
-
-    // Get per-restaurant stats for Admin (if no restaurantId is specified)
-    let restaurantStats = [];
-    if (!restaurantId && (req.user.role === 'admin' || req.user.role === 'staff')) {
-        const Restaurant = require('../models/Restaurant');
-        const restaurants = await Restaurant.find({});
-
-        restaurantStats = await Promise.all(restaurants.map(async (r) => {
-            const rOrders = await Order.find({ restaurant: r._id });
-            const rTotalSales = rOrders
-                .filter(o => o.status === 'Completed')
-                .reduce((acc, o) => acc + o.totalPrice, 0);
-
-            return {
-                id: r._id,
-                name: r.name,
-                totalOrders: rOrders.length,
-                activeOrders: rOrders.filter(o => o.status !== 'Completed' && o.status !== 'Cancelled').length,
-                totalSales: rTotalSales,
-                cuisine: r.cuisine,
-                tableCount: r.tables?.length || 0
-            };
-        }));
-    }
-
-    // Get daily sales for the last 7 days (Admin only)
+    // Daily Sales (Last 7 Days) - Management Only
     let dailySales = [];
-    if (req.user.role === 'admin' || req.user.role === 'staff') {
-        const last7Days = [...Array(7)].map((_, i) => {
-            const d = new Date();
-            d.setHours(0, 0, 0, 0);
-            d.setDate(d.getDate() - i);
-            return d;
-        }).reverse();
+    if (isManagement) {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+        sevenDaysAgo.setHours(0, 0, 0, 0);
 
-        dailySales = await Promise.all(last7Days.map(async (date) => {
-            const nextDay = new Date(date);
-            nextDay.setDate(date.getDate() + 1);
-            const orders = await Order.find({
-                ...query,
-                status: 'Completed',
-                createdAt: { $gte: date, $lt: nextDay }
-            });
+        dailySales = await Order.aggregate([
+            {
+                $match: {
+                    ...baseMatch,
+                    status: 'Completed',
+                    createdAt: { $gte: sevenDaysAgo }
+                }
+            },
+            {
+                $group: {
+                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                    sales: { $sum: "$totalPrice" }
+                }
+            },
+            { $sort: { "_id": 1 } }
+        ]);
+
+        // Fill in missing days with 0 sales
+        const days = [];
+        for (let i = 0; i < 7; i++) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            days.push(d.toISOString().split('T')[0]);
+        }
+
+        dailySales = days.reverse().map(dateStr => {
+            const match = dailySales.find(d => d._id === dateStr);
+            const dateObj = new Date(dateStr);
             return {
-                date: date.toLocaleDateString('en-US', { weekday: 'short' }),
-                sales: orders.reduce((acc, order) => acc + order.totalPrice, 0)
+                date: dateObj.toLocaleDateString('en-US', { weekday: 'short' }),
+                sales: match ? match.sales : 0
             };
-        }));
+        });
+    }
+
+    // Per-Restaurant Stats - Platform View Only
+    let restaurantStats = [];
+    if (!restaurantId && isManagement) {
+        restaurantStats = await Order.aggregate([
+            {
+                $group: {
+                    _id: "$restaurant",
+                    totalOrders: { $sum: 1 },
+                    activeOrders: {
+                        $sum: {
+                            $cond: [{ $not: [{ $in: ["$status", ["Completed", "Cancelled"]] }] }, 1, 0]
+                        }
+                    },
+                    totalSales: {
+                        $sum: {
+                            $cond: [{ $eq: ["$status", "Completed"] }, "$totalPrice", 0]
+                        }
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: "restaurants",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "restaurantInfo"
+                }
+            },
+            { $unwind: "$restaurantInfo" },
+            {
+                $project: {
+                    id: "$_id",
+                    name: "$restaurantInfo.name",
+                    totalOrders: 1,
+                    activeOrders: 1,
+                    totalSales: 1,
+                    cuisine: "$restaurantInfo.cuisine",
+                    tableCount: { $size: { $ifNull: ["$restaurantInfo.tables", []] } }
+                }
+            }
+        ]);
     }
 
     const user = await User.findById(req.user._id);
@@ -234,28 +298,24 @@ const addOrderReview = asyncHandler(async (req, res) => {
         throw new Error('Can only review completed orders');
     }
 
-    // AI Sentiment Analysis
+    // AI Sentiment Analysis (non-blocking - defaults to Neutral if rate-limited)
     let sentiment = 'Neutral';
     if (comment) {
         try {
             const { GoogleGenAI } = require("@google/genai");
-            const ai = new GoogleGenAI({
-                apiKey: process.env.GEMINI_API_KEY,
-                apiVersion: 'v1beta'
-            });
-
+            const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY, apiVersion: 'v1beta' });
             const prompt = `Analyze the sentiment of this restaurant review. Respond with exactly one word: Positive, Neutral, or Negative. Review: "${comment}"`;
             const result = await ai.models.generateContent({
-                model: "models/gemini-3-flash-preview",
+                model: "models/gemini-2.0-flash",
                 contents: prompt
             });
             const text = result.candidates[0].content.parts[0].text.trim();
-
             if (['Positive', 'Neutral', 'Negative'].includes(text)) {
                 sentiment = text;
             }
         } catch (error) {
-            console.error('Sentiment analysis failed:', error.message);
+            // Rate limit or API error - silently default to Neutral
+            console.warn('[AI] Sentiment analysis skipped:', error.message);
         }
     }
 

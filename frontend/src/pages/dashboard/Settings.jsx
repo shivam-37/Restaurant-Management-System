@@ -1,7 +1,12 @@
 import { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
-import { updateProfile, updateRestaurant } from '../../services/api';
+import {
+    updateProfile,
+    updateRestaurant,
+    deleteAccount,
+    updateNotificationPrefs
+} from '../../services/api';
 import {
     UserIcon,
     EnvelopeIcon,
@@ -13,83 +18,469 @@ import {
     EyeSlashIcon,
     ShieldCheckIcon,
     BellIcon,
-    PaintBrushIcon,
-    CameraIcon,
-    HomeIcon
+    HomeIcon,
+    TrashIcon,
+    ExclamationTriangleIcon,
+    CameraIcon
 } from '@heroicons/react/24/outline';
 
-const Settings = () => {
-    const { user, selectedRestaurant, setSelectedRestaurant } = useContext(AuthContext);
-    const [formData, setFormData] = useState({
-        name: user?.name || '',
-        email: user?.email || '',
-        password: '',
-        confirmPassword: ''
-    });
+// ─── Toast ─────────────────────────────────────────────────────────────────────
+const Toast = ({ message, onClose }) => (
+    <AnimatePresence>
+        {message && (
+            <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className={`flex items-center gap-3 px-5 py-3 rounded-xl border text-sm mb-6 ${message.type === 'success'
+                    ? 'bg-green-500/10 border-green-500/30 text-green-400'
+                    : 'bg-red-500/10 border-red-500/30 text-red-400'
+                    }`}
+            >
+                {message.type === 'success'
+                    ? <CheckCircleIcon className="w-5 h-5 flex-shrink-0" />
+                    : <XCircleIcon className="w-5 h-5 flex-shrink-0" />}
+                <span>{message.text}</span>
+                <button onClick={onClose} className="ml-auto opacity-60 hover:opacity-100">✕</button>
+            </motion.div>
+        )}
+    </AnimatePresence>
+);
 
-    const [restaurantData, setRestaurantData] = useState({
+// ─── Input Field ───────────────────────────────────────────────────────────────
+const InputField = ({ label, icon: Icon, type = 'text', name, value, onChange, placeholder }) => (
+    <div>
+        <label className="block text-sm font-medium text-gray-300 mb-2">{label}</label>
+        <div className="relative flex items-center">
+            {Icon && <Icon className="absolute left-4 w-5 h-5 text-gray-500 pointer-events-none" />}
+            <input
+                type={type}
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                className={`w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 ${Icon ? 'pl-12' : 'pl-4'} pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition`}
+            />
+        </div>
+    </div>
+);
+
+// ─── Password Field ────────────────────────────────────────────────────────────
+const PasswordField = ({ label, icon: Icon, name, value, onChange, placeholder }) => {
+    const [show, setShow] = useState(false);
+    return (
+        <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">{label}</label>
+            <div className="relative flex items-center">
+                {Icon && <Icon className="absolute left-4 w-5 h-5 text-gray-500 pointer-events-none" />}
+                <input
+                    type={show ? 'text' : 'password'}
+                    name={name}
+                    value={value}
+                    onChange={onChange}
+                    placeholder={placeholder}
+                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 pl-12 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                />
+                <button type="button" onClick={() => setShow(s => !s)} className="absolute right-4 text-gray-400 hover:text-white transition">
+                    {show ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                </button>
+            </div>
+        </div>
+    );
+};
+
+// ─── Save Button ───────────────────────────────────────────────────────────────
+const SaveButton = ({ isLoading, label = 'Save Changes' }) => (
+    <motion.button
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        type="submit"
+        disabled={isLoading}
+        className="px-8 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-indigo-600/20 transition-all disabled:opacity-50 flex items-center gap-2"
+    >
+        {isLoading ? (
+            <>
+                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Saving...
+            </>
+        ) : (
+            <><CheckCircleIcon className="w-4 h-4" />{label}</>
+        )}
+    </motion.button>
+);
+
+// ─── Profile Tab ───────────────────────────────────────────────────────────────
+const ProfileTab = ({ user, setUser, showMessage }) => {
+    const [form, setForm] = useState({ name: user?.name || '', email: user?.email || '' });
+    const [pwForm, setPwForm] = useState({ password: '', confirmPassword: '' });
+    const [avatar, setAvatar] = useState(user?.avatar || '');
+    const [avatarInput, setAvatarInput] = useState('');
+    const [showAvatarModal, setShowAvatarModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [pwLoading, setPwLoading] = useState(false);
+
+    const handleProfile = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const { data } = await updateProfile({ name: form.name, email: form.email, avatar });
+            // Update context so header/navbar reflects the change immediately
+            setUser(prev => ({ ...prev, name: data.name, email: data.email, avatar: data.avatar || '' }));
+            showMessage('success', 'Profile updated successfully');
+        } catch (err) {
+            showMessage('error', err?.response?.data?.message || 'Failed to update profile');
+        } finally { setLoading(false); }
+    };
+
+    const handlePassword = async (e) => {
+        e.preventDefault();
+        if (pwForm.password !== pwForm.confirmPassword) return showMessage('error', 'Passwords do not match');
+        if (pwForm.password.length < 6) return showMessage('error', 'Password must be at least 6 characters');
+        setPwLoading(true);
+        try {
+            await updateProfile({ password: pwForm.password });
+            showMessage('success', 'Password changed successfully');
+            setPwForm({ password: '', confirmPassword: '' });
+        } catch (err) {
+            showMessage('error', err?.response?.data?.message || 'Failed to change password');
+        } finally { setPwLoading(false); }
+    };
+
+    const strengthMap = ['Too short', 'Weak', 'Medium', 'Strong'];
+    const strength = pwForm.password.length >= 12 ? 'Strong' : pwForm.password.length >= 8 ? 'Medium' : pwForm.password.length >= 4 ? 'Weak' : 'Too short';
+    const strengthColor = { Strong: 'bg-green-500', Medium: 'bg-yellow-500', Weak: 'bg-red-500', 'Too short': 'bg-gray-700' }[strength];
+
+    return (
+        <div className="p-6 space-y-8">
+            {/* Avatar */}
+            <div className="flex items-center gap-5 pb-6 border-b border-gray-800">
+                <div className="relative">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg overflow-hidden">
+                        {avatar
+                            ? <img src={avatar} alt="avatar" className="w-full h-full object-cover" onError={() => setAvatar('')} />
+                            : (form.name || user?.name || 'U').charAt(0).toUpperCase()
+                        }
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => { setAvatarInput(avatar); setShowAvatarModal(true); }}
+                        className="absolute -bottom-2 -right-2 p-1.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg border border-indigo-500 transition shadow"
+                        title="Change profile photo"
+                    >
+                        <CameraIcon className="w-4 h-4 text-white" />
+                    </button>
+                </div>
+                <div>
+                    <h3 className="text-white font-semibold">{user?.name}</h3>
+                    <p className="text-sm text-gray-400 mt-0.5 capitalize">{user?.role}</p>
+                    <button
+                        type="button"
+                        onClick={() => { setAvatarInput(avatar); setShowAvatarModal(true); }}
+                        className="text-xs text-indigo-400 hover:text-indigo-300 mt-1.5 transition"
+                    >
+                        Change photo
+                    </button>
+                </div>
+            </div>
+
+            {/* Avatar URL Modal */}
+            <AnimatePresence>
+                {showAvatarModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                        onClick={() => setShowAvatarModal(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            className="bg-gray-900 border border-gray-700 rounded-2xl p-6 max-w-sm w-full shadow-2xl"
+                        >
+                            <h3 className="text-white font-bold text-lg mb-1">Profile Photo</h3>
+                            <p className="text-sm text-gray-400 mb-4">Paste any public image URL to use as your photo.</p>
+                            {avatarInput && (
+                                <div className="mb-4 rounded-xl overflow-hidden h-28 border border-gray-700 bg-gray-800">
+                                    <img src={avatarInput} alt="preview" className="w-full h-full object-cover" onError={e => e.target.style.display = 'none'} />
+                                </div>
+                            )}
+                            <input
+                                autoFocus
+                                type="text"
+                                value={avatarInput}
+                                onChange={e => setAvatarInput(e.target.value)}
+                                placeholder="https://example.com/photo.jpg"
+                                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 mb-4 text-sm"
+                            />
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setShowAvatarModal(false)}
+                                    className="flex-1 py-2.5 bg-gray-800 text-gray-300 rounded-xl hover:bg-gray-700 transition text-sm"
+                                >
+                                    Cancel
+                                </button>
+                                {avatar && (
+                                    <button
+                                        onClick={() => { setAvatar(''); setAvatarInput(''); setShowAvatarModal(false); }}
+                                        className="px-4 py-2.5 text-red-400 hover:text-red-300 transition text-sm"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => { setAvatar(avatarInput.trim()); setShowAvatarModal(false); }}
+                                    className="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition text-sm font-medium"
+                                >
+                                    Apply
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Profile Info Form */}
+            <form onSubmit={handleProfile} className="space-y-5">
+                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Account Info</h4>
+                <InputField label="Full Name" icon={UserIcon} name="name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Your name" />
+                <InputField label="Email Address" icon={EnvelopeIcon} type="email" name="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="Your email" />
+                <div className="flex justify-end">
+                    <SaveButton isLoading={loading} label="Update Profile" />
+                </div>
+            </form>
+
+            {/* Change Password */}
+            <form onSubmit={handlePassword} className="space-y-5 pt-6 border-t border-gray-800">
+                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                    <LockClosedIcon className="w-3.5 h-3.5" /> Change Password
+                </h4>
+                <PasswordField label="New Password" icon={KeyIcon} name="password" value={pwForm.password} onChange={e => setPwForm({ ...pwForm, password: e.target.value })} placeholder="Min. 6 characters" />
+                <PasswordField label="Confirm Password" icon={LockClosedIcon} name="confirmPassword" value={pwForm.confirmPassword} onChange={e => setPwForm({ ...pwForm, confirmPassword: e.target.value })} placeholder="Confirm new password" />
+                {pwForm.password.length > 0 && (
+                    <div className="space-y-1.5">
+                        <div className="flex gap-1 h-1.5">
+                            {strengthMap.map((lvl, i) => (
+                                <div key={lvl} className={`flex-1 rounded-full transition-all ${strengthMap.indexOf(strength) >= i ? strengthColor : 'bg-gray-700'}`} />
+                            ))}
+                        </div>
+                        <p className="text-xs text-gray-400">Strength: <span className="text-white font-medium">{strength}</span></p>
+                    </div>
+                )}
+                <div className="flex justify-end">
+                    <SaveButton isLoading={pwLoading} label="Change Password" />
+                </div>
+            </form>
+        </div>
+    );
+};
+
+// ─── Restaurant Tab ────────────────────────────────────────────────────────────
+const RestaurantTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) => {
+    const [form, setForm] = useState({
         name: selectedRestaurant?.name || '',
         description: selectedRestaurant?.description || '',
         address: selectedRestaurant?.address || '',
         cuisine: selectedRestaurant?.cuisine || '',
         image: selectedRestaurant?.image || ''
     });
-
-    const [message, setMessage] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [activeTab, setActiveTab] = useState('profile');
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleRestaurantChange = (e) => {
-        setRestaurantData({ ...restaurantData, [e.target.name]: e.target.value });
-    };
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage(null);
-        setIsLoading(true);
-
-        if (formData.password && formData.password !== formData.confirmPassword) {
-            setMessage({ type: 'error', text: 'Passwords do not match' });
-            setIsLoading(false);
-            return;
-        }
-
+        if (!selectedRestaurant?._id) return showMessage('error', 'No restaurant selected');
+        setLoading(true);
         try {
-            await updateProfile({
-                name: formData.name,
-                email: formData.email,
-                password: formData.password
-            });
-            setMessage({ type: 'success', text: 'Profile updated successfully' });
-            setFormData({ ...formData, password: '', confirmPassword: '' });
-            setTimeout(() => setMessage(null), 3000);
-        } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to update profile' });
-        } finally {
-            setIsLoading(false);
-        }
+            const { data } = await updateRestaurant(selectedRestaurant._id, form);
+            // Update both selectedRestaurant context AND the global restaurants list
+            // so RestaurantList and RestaurantManagement reflect the new image immediately
+            updateRestaurantInList(data);
+            showMessage('success', 'Restaurant info updated — image now reflected everywhere');
+        } catch {
+            showMessage('error', 'Failed to update restaurant info');
+        } finally { setLoading(false); }
     };
 
-    const handleRestaurantSubmit = async (e) => {
-        e.preventDefault();
-        setMessage(null);
-        setIsLoading(true);
+    return (
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+            <div className="flex items-center gap-4 pb-6 border-b border-gray-800">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-pink-600 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+                    {form.image
+                        ? <img src={form.image} alt="" className="w-full h-full object-cover" onError={e => e.target.style.display = 'none'} />
+                        : (form.name || 'R').charAt(0)
+                    }
+                </div>
+                <div>
+                    <h3 className="text-white font-semibold">Restaurant Profile</h3>
+                    <p className="text-sm text-gray-400">Update your restaurant's public info</p>
+                </div>
+            </div>
 
+            <InputField label="Restaurant Name" icon={HomeIcon} name="name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Restaurant name" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <InputField label="Cuisine Type" name="cuisine" value={form.cuisine} onChange={e => setForm({ ...form, cuisine: e.target.value })} placeholder="e.g. Indian, Italian" />
+                <InputField label="Address" name="address" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder="Full address" />
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+                <textarea
+                    rows={3}
+                    value={form.description}
+                    onChange={e => setForm({ ...form, description: e.target.value })}
+                    placeholder="Describe your restaurant..."
+                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition resize-none"
+                />
+            </div>
+
+            <InputField label="Cover Image URL" name="image" value={form.image} onChange={e => setForm({ ...form, image: e.target.value })} placeholder="https://example.com/image.jpg" />
+
+            {form.image && (
+                <div className="rounded-xl overflow-hidden h-36 border border-gray-700">
+                    <img src={form.image} alt="preview" className="w-full h-full object-cover" onError={e => e.target.style.display = 'none'} />
+                </div>
+            )}
+
+            <div className="flex justify-end pt-2">
+                <SaveButton isLoading={loading} label="Save Restaurant Info" />
+            </div>
+        </form>
+    );
+};
+
+// ─── Security Tab ──────────────────────────────────────────────────────────────
+const SecurityTab = () => (
+    <div className="p-6 space-y-8">
+        <div>
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <ShieldCheckIcon className="w-4 h-4" /> Active Sessions
+            </h4>
+            <div className="flex items-center justify-between bg-gray-800/40 border border-gray-700 rounded-xl p-4">
+                <div className="flex items-center gap-3">
+                    <span className="text-2xl">💻</span>
+                    <div>
+                        <p className="text-sm font-medium text-white">Current Browser</p>
+                        <p className="text-xs text-gray-400">Active now</p>
+                    </div>
+                </div>
+                <span className="text-xs px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full">Active</span>
+            </div>
+        </div>
+
+        <div className="pt-2 border-t border-gray-800">
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Security Checklist</h4>
+            <div className="space-y-3">
+                {[
+                    { label: 'Strong Password', done: true, hint: 'Your password meets strength requirements' },
+                    { label: 'Email Verified', done: true, hint: 'Your account email is verified' },
+                    { label: 'Two-Factor Authentication', done: false, hint: 'Add extra security with 2FA — coming soon' },
+                ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-4 p-4 bg-gray-800/30 rounded-xl border border-gray-800">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${item.done ? 'bg-green-500/20' : 'bg-gray-700/50'}`}>
+                            {item.done
+                                ? <CheckCircleIcon className="w-5 h-5 text-green-400" />
+                                : <XCircleIcon className="w-5 h-5 text-gray-500" />}
+                        </div>
+                        <div>
+                            <p className={`text-sm font-medium ${item.done ? 'text-white' : 'text-gray-400'}`}>{item.label}</p>
+                            <p className="text-xs text-gray-500">{item.hint}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
+// ─── Notifications Tab ─────────────────────────────────────────────────────────
+const NotificationsTab = ({ user, showMessage }) => {
+    const defaults = { orderUpdates: true, newReservations: true, promotions: false, weeklyReport: true };
+    const [prefs, setPrefs] = useState({ ...defaults, ...(user?.notificationPrefs || {}) });
+    const [loading, setLoading] = useState(false);
+
+    const toggle = key => setPrefs(p => ({ ...p, [key]: !p[key] }));
+
+    const handleSave = async () => {
+        setLoading(true);
         try {
-            const { data } = await updateRestaurant(selectedRestaurant._id, restaurantData);
-            setSelectedRestaurant(data);
-            setMessage({ type: 'success', text: 'Restaurant updated successfully' });
-            setTimeout(() => setMessage(null), 3000);
-        } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to update restaurant' });
-        } finally {
-            setIsLoading(false);
+            await updateNotificationPrefs(prefs);
+            showMessage('success', 'Notification preferences saved');
+        } catch {
+            showMessage('error', 'Failed to save preferences');
+        } finally { setLoading(false); }
+    };
+
+    const options = [
+        { key: 'orderUpdates', label: 'Order Updates', desc: 'When orders are placed or their status changes' },
+        { key: 'newReservations', label: 'New Reservations', desc: 'When customers book or cancel table reservations' },
+        { key: 'promotions', label: 'Promotions & Offers', desc: 'Platform news, deals and marketing updates' },
+        { key: 'weeklyReport', label: 'Weekly Summary', desc: 'A weekly digest of your restaurant performance' },
+    ];
+
+    return (
+        <div className="p-6 space-y-4">
+            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+                <BellIcon className="w-4 h-4" /> Notification Preferences
+            </h4>
+            {options.map(({ key, label, desc }) => (
+                <div
+                    key={key}
+                    onClick={() => toggle(key)}
+                    className="flex items-center justify-between p-5 bg-gray-800/30 border border-gray-800 hover:border-gray-700 rounded-2xl cursor-pointer transition"
+                >
+                    <div>
+                        <p className="text-sm font-semibold text-white">{label}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+                    </div>
+                    <div className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ml-4 ${prefs[key] ? 'bg-indigo-600' : 'bg-gray-700'}`}>
+                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${prefs[key] ? 'translate-x-7' : 'translate-x-1'}`} />
+                    </div>
+                </div>
+            ))}
+            <div className="flex justify-end pt-2">
+                <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleSave}
+                    disabled={loading}
+                    type="button"
+                    className="px-8 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                    {loading ? 'Saving...' : <><CheckCircleIcon className="w-4 h-4" /> Save Preferences</>}
+                </motion.button>
+            </div>
+        </div>
+    );
+};
+
+// ─── Main Component ────────────────────────────────────────────────────────────
+const Settings = () => {
+    const { user, setUser, selectedRestaurant, updateRestaurantInList, logout } = useContext(AuthContext);
+    const [activeTab, setActiveTab] = useState('profile');
+    const [message, setMessage] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteConfirm, setDeleteConfirm] = useState('');
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
+    const showMessage = (type, text) => {
+        setMessage({ type, text });
+        setTimeout(() => setMessage(null), 4000);
+    };
+
+    const handleDeleteAccount = async () => {
+        if (deleteConfirm !== 'DELETE') return;
+        setDeleteLoading(true);
+        try {
+            await deleteAccount();
+            logout();
+        } catch {
+            showMessage('error', 'Failed to delete account');
+            setDeleteLoading(false);
         }
     };
 
@@ -100,432 +491,121 @@ const Settings = () => {
         { id: 'notifications', name: 'Notifications', icon: BellIcon },
     ];
 
-    const fadeInUp = {
-        initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.4 }
-    };
-
     return (
-        <div className="p-6 max-w-4xl mx-auto space-y-6">
-            {/* Header */}
-            <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="mb-8"
-            >
-                <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
-                <p className="text-gray-400">Manage your account settings and preferences</p>
-            </motion.div>
+        <div className="max-w-4xl mx-auto space-y-6">
+            <div>
+                <h1 className="text-3xl font-bold text-white">Settings</h1>
+                <p className="text-gray-400 mt-1">Manage your account and preferences</p>
+            </div>
 
-            {/* Settings Tabs */}
-            <motion.div
-                variants={fadeInUp}
-                initial="initial"
-                animate="animate"
-                className="flex space-x-1 bg-gradient-to-br from-gray-900 to-gray-800 p-1 rounded-xl border border-gray-800 w-fit"
-            >
-                {tabs.map((tab) => {
+            <Toast message={message} onClose={() => setMessage(null)} />
+
+            {/* Tabs */}
+            <div className="flex flex-wrap gap-1 bg-gray-900/60 p-1 rounded-xl border border-gray-800 w-fit">
+                {tabs.map(tab => {
                     const Icon = tab.icon;
                     return (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${activeTab === tab.id
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab.id
                                 ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
                                 : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                 }`}
                         >
-                            <Icon className="w-5 h-5" />
-                            <span>{tab.name}</span>
+                            <Icon className="w-4 h-4" />
+                            {tab.name}
                         </button>
                     );
                 })}
-            </motion.div>
+            </div>
 
-            {/* Main Settings Card */}
+            {/* Tab Panel */}
             <motion.div
-                variants={fadeInUp}
-                initial="initial"
-                animate="animate"
+                key={activeTab}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
                 className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-800 shadow-2xl overflow-hidden"
             >
-                {/* Message Alert */}
-                <AnimatePresence>
-                    {message && (
-                        <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className={`mx-6 mt-6 p-4 rounded-xl flex items-center space-x-3 ${message.type === 'success'
-                                ? 'bg-green-500/10 border border-green-500/20 text-green-400'
-                                : 'bg-red-500/10 border border-red-500/20 text-red-400'
-                                }`}
-                        >
-                            {message.type === 'success' ? (
-                                <CheckCircleIcon className="w-5 h-5 flex-shrink-0" />
-                            ) : (
-                                <XCircleIcon className="w-5 h-5 flex-shrink-0" />
-                            )}
-                            <p className="text-sm">{message.text}</p>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
-                {/* Profile Settings Form */}
-                {activeTab === 'profile' && (
-                    <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                        {/* Profile Picture */}
-                        <div className="flex items-center space-x-4 pb-6 border-b border-gray-800">
-                            <div className="relative">
-                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                                    {formData.name?.charAt(0) || user?.name?.charAt(0) || 'U'}
-                                </div>
-                                <button
-                                    type="button"
-                                    className="absolute -bottom-2 -right-2 p-1.5 bg-gray-800 rounded-lg border border-gray-700 hover:border-indigo-500 transition"
-                                >
-                                    <CameraIcon className="w-4 h-4 text-gray-400" />
-                                </button>
-                            </div>
-                            <div>
-                                <h3 className="text-white font-medium">Profile Picture</h3>
-                                <p className="text-sm text-gray-400">Upload a new avatar</p>
-                            </div>
-                        </div>
-
-                        {/* Form Fields */}
-                        <div className="space-y-5">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">
-                                    Full Name
-                                </label>
-                                <div className="relative group">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur-lg opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                                    <div className="relative">
-                                        <UserIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-indigo-400 transition" />
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                                            placeholder="Enter your full name"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">
-                                    Email Address
-                                </label>
-                                <div className="relative group">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur-lg opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                                    <div className="relative">
-                                        <EnvelopeIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-indigo-400 transition" />
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                                            placeholder="Enter your email"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Change Password Section */}
-                        <div className="pt-6 border-t border-gray-800">
-                            <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                                <LockClosedIcon className="w-5 h-5 mr-2 text-indigo-400" />
-                                Change Password
-                            </h3>
-
-                            <div className="space-y-5">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                                        New Password
-                                    </label>
-                                    <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur-lg opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                                        <div className="relative">
-                                            <KeyIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-indigo-400 transition" />
-                                            <input
-                                                type={showPassword ? "text" : "password"}
-                                                name="password"
-                                                placeholder="Leave blank to keep current"
-                                                value={formData.password}
-                                                onChange={handleChange}
-                                                className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 pl-12 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition"
-                                            >
-                                                {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                                        Confirm New Password
-                                    </label>
-                                    <div className="relative group">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur-lg opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                                        <div className="relative">
-                                            <LockClosedIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-indigo-400 transition" />
-                                            <input
-                                                type={showConfirmPassword ? "text" : "password"}
-                                                name="confirmPassword"
-                                                placeholder="Confirm new password"
-                                                value={formData.confirmPassword}
-                                                onChange={handleChange}
-                                                className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 pl-12 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition"
-                                            >
-                                                {showConfirmPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Password Strength Indicator */}
-                                {formData.password && (
-                                    <div className="space-y-2">
-                                        <div className="flex space-x-1 h-1">
-                                            {[1, 2, 3, 4].map((level) => (
-                                                <div
-                                                    key={level}
-                                                    className={`flex-1 rounded-full transition-all duration-300 ${formData.password.length >= level * 3
-                                                        ? formData.password.length >= 12
-                                                            ? 'bg-green-500'
-                                                            : formData.password.length >= 8
-                                                                ? 'bg-yellow-500'
-                                                                : 'bg-red-500'
-                                                        : 'bg-gray-700'
-                                                        }`}
-                                                />
-                                            ))}
-                                        </div>
-                                        <p className="text-xs text-gray-400">
-                                            Password strength: {
-                                                formData.password.length >= 12 ? 'Strong' :
-                                                    formData.password.length >= 8 ? 'Medium' :
-                                                        formData.password.length >= 4 ? 'Weak' : 'Too short'
-                                            }
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Form Actions */}
-                        <div className="pt-6 border-t border-gray-800 flex justify-end space-x-3">
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                type="button"
-                                className="px-6 py-2.5 text-gray-400 hover:text-white bg-gray-800/50 hover:bg-gray-800 rounded-xl transition"
-                                onClick={() => {
-                                    setFormData({
-                                        name: user?.name || '',
-                                        email: user?.email || '',
-                                        password: '',
-                                        confirmPassword: ''
-                                    });
-                                }}
-                            >
-                                Reset
-                            </motion.button>
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                type="submit"
-                                disabled={isLoading}
-                                className="px-8 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-indigo-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        <span>Saving...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span>Save Changes</span>
-                                        <CheckCircleIcon className="w-5 h-5" />
-                                    </>
-                                )}
-                            </motion.button>
-                        </div>
-                    </form>
-                )}
-
-                {/* Restaurant Settings Form */}
+                {activeTab === 'profile' && <ProfileTab user={user} setUser={setUser} showMessage={showMessage} />}
+                {activeTab === 'security' && <SecurityTab />}
                 {activeTab === 'restaurant' && (
-                    <form onSubmit={handleRestaurantSubmit} className="p-6 space-y-6">
-                        <div className="flex items-center space-x-4 pb-6 border-b border-gray-800">
-                            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
-                                {restaurantData.name?.charAt(0) || 'R'}
-                            </div>
-                            <div>
-                                <h3 className="text-white font-medium">Restaurant Profile</h3>
-                                <p className="text-sm text-gray-400">Update your restaurant information</p>
-                            </div>
-                        </div>
-
-                        <div className="space-y-5">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Restaurant Name</label>
-                                <div className="relative group">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur-lg opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                                    <div className="relative">
-                                        <HomeIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-indigo-400 transition" />
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            value={restaurantData.name}
-                                            onChange={handleRestaurantChange}
-                                            className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Cuisine Type</label>
-                                <input
-                                    type="text"
-                                    name="cuisine"
-                                    value={restaurantData.cuisine}
-                                    onChange={handleRestaurantChange}
-                                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
-                                    placeholder="e.g. Italian, Sushi"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
-                                <textarea
-                                    name="description"
-                                    rows="4"
-                                    value={restaurantData.description}
-                                    onChange={handleRestaurantChange}
-                                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
-                                    placeholder="Enter restaurant description"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Address</label>
-                                    <input
-                                        type="text"
-                                        name="address"
-                                        value={restaurantData.address}
-                                        onChange={handleRestaurantChange}
-                                        className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
-                                        placeholder="Enter restaurant address"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">Image URL</label>
-                                    <input
-                                        type="text"
-                                        name="image"
-                                        value={restaurantData.image}
-                                        onChange={handleRestaurantChange}
-                                        className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
-                                        placeholder="Enter image URL"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="pt-6 border-t border-gray-800 flex justify-end">
-                            <motion.button
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                type="submit"
-                                disabled={isLoading}
-                                className="px-8 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all flex items-center space-x-2"
-                            >
-                                {isLoading ? <span>Saving...</span> : <span>Save Restaurant Info</span>}
-                            </motion.button>
-                        </div>
-                    </form>
+                    <RestaurantTab
+                        selectedRestaurant={selectedRestaurant}
+                        updateRestaurantInList={updateRestaurantInList}
+                        showMessage={showMessage}
+                    />
                 )}
-
-                {/* Security Tab */}
-                {activeTab === 'security' && (
-                    <div className="p-6">
-                        <div className="text-center py-12">
-                            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center">
-                                <ShieldCheckIcon className="w-10 h-10 text-indigo-400" />
-                            </div>
-                            <h3 className="text-xl font-semibold text-white mb-2">Security Settings</h3>
-                            <p className="text-gray-400">Two-factor authentication and security preferences coming soon</p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Notifications Tab */}
-                {activeTab === 'notifications' && (
-                    <div className="p-6">
-                        <div className="text-center py-12">
-                            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl flex items-center justify-center">
-                                <BellIcon className="w-10 h-10 text-purple-400" />
-                            </div>
-                            <h3 className="text-xl font-semibold text-white mb-2">Notification Preferences</h3>
-                            <p className="text-gray-400">Email and push notification settings coming soon</p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Preferences Tab */}
-                {activeTab === 'preferences' && (
-                    <div className="p-6">
-                        <div className="text-center py-12">
-                            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl flex items-center justify-center">
-                                <PaintBrushIcon className="w-10 h-10 text-green-400" />
-                            </div>
-                            <h3 className="text-xl font-semibold text-white mb-2">App Preferences</h3>
-                            <p className="text-gray-400">Theme and display settings coming soon</p>
-                        </div>
-                    </div>
-                )}
+                {activeTab === 'notifications' && <NotificationsTab user={user} showMessage={showMessage} />}
             </motion.div>
 
             {/* Danger Zone */}
-            <motion.div
-                variants={fadeInUp}
-                initial="initial"
-                animate="animate"
-                className="bg-gradient-to-br from-red-500/10 to-red-600/10 rounded-2xl border border-red-500/20 p-6"
-            >
-                <h3 className="text-lg font-semibold text-red-400 mb-2">Danger Zone</h3>
-                <p className="text-sm text-gray-400 mb-4">Permanently delete your account and all associated data</p>
+            <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold text-red-400 mb-1 flex items-center gap-2">
+                    <ExclamationTriangleIcon className="w-5 h-5" /> Danger Zone
+                </h3>
+                <p className="text-sm text-gray-400 mb-4">Permanently delete your account and all associated data. This cannot be undone.</p>
                 <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="px-6 py-2.5 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition"
+                    onClick={() => setShowDeleteModal(true)}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-red-500/10 text-red-400 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition text-sm font-medium"
                 >
-                    Delete Account
+                    <TrashIcon className="w-4 h-4" /> Delete My Account
                 </motion.button>
-            </motion.div>
+            </div>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {showDeleteModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+                        onClick={() => { setShowDeleteModal(false); setDeleteConfirm(''); }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            onClick={e => e.stopPropagation()}
+                            className="bg-gray-900 border border-red-500/30 rounded-2xl p-8 max-w-md w-full shadow-2xl"
+                        >
+                            <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <ExclamationTriangleIcon className="w-8 h-8 text-red-400" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white text-center mb-2">Delete Account</h3>
+                            <p className="text-gray-400 text-sm text-center mb-6">
+                                This will permanently delete your account. Type <span className="font-bold text-red-400">DELETE</span> to confirm.
+                            </p>
+                            <input
+                                type="text"
+                                value={deleteConfirm}
+                                onChange={e => setDeleteConfirm(e.target.value)}
+                                placeholder="Type DELETE to confirm"
+                                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 mb-4"
+                            />
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => { setShowDeleteModal(false); setDeleteConfirm(''); }}
+                                    className="flex-1 py-3 bg-gray-800 text-gray-300 rounded-xl hover:bg-gray-700 transition"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDeleteAccount}
+                                    disabled={deleteConfirm !== 'DELETE' || deleteLoading}
+                                    className="flex-1 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    {deleteLoading ? 'Deleting...' : 'Delete Forever'}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

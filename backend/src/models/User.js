@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-console.log('User Model Loaded with roles:', ['user', 'admin', 'staff', 'owner']);
+console.log('User Model Loaded with roles:', ['user', 'admin', 'owner']);
 
 const userSchema = mongoose.Schema({
     name: {
@@ -26,8 +26,8 @@ const userSchema = mongoose.Schema({
     role: {
         type: String,
         enum: {
-            values: ['user', 'admin', 'staff', 'owner'],
-            message: '{VALUE} is not a valid role (current version includes owner)'
+            values: ['user', 'admin', 'owner'],
+            message: '{VALUE} is not a valid role'
         },
         default: 'user'
     },
@@ -35,17 +35,27 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Restaurant'
     },
+    avatar: {
+        type: String,
+        default: ''
+    },
     loyaltyPoints: {
         type: Number,
         default: 0
+    },
+    notificationPrefs: {
+        orderUpdates: { type: Boolean, default: true },
+        newReservations: { type: Boolean, default: true },
+        promotions: { type: Boolean, default: false },
+        weeklyReport: { type: Boolean, default: true }
     }
 }, {
     timestamps: true
 });
 
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
     if (!this.isModified('password')) {
-        return next();
+        return;
     }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);

@@ -27,6 +27,10 @@ const Menu = () => {
     const [cart, setCart] = useState([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [cartInstructions, setCartInstructions] = useState('');
+    const [orderType, setOrderType] = useState('Dine-In');
+    const [paymentMethod, setPaymentMethod] = useState('Cash');
+    const [tableNumber, setTableNumber] = useState('');
+    const [deliveryAddress, setDeliveryAddress] = useState('');
     const [isAiGeneratingInstructions, setIsAiGeneratingInstructions] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -191,6 +195,14 @@ const Menu = () => {
             alert('Please select a restaurant first');
             return;
         }
+        if (orderType === 'Home Delivery' && !deliveryAddress.trim()) {
+            alert('Please enter a delivery address');
+            return;
+        }
+        if (orderType === 'Dine-In' && !tableNumber) {
+            alert('Please enter your table number');
+            return;
+        }
         setIsLoading(true);
         try {
             const orderData = {
@@ -201,9 +213,12 @@ const Menu = () => {
                     price: item.price
                 })),
                 totalPrice: cart.reduce((acc, item) => acc + (item.price * item.quantity), 0),
-                tableNumber: parseInt(localStorage.getItem('tableNumber')) || 1,
+                tableNumber: orderType === 'Dine-In' ? (parseInt(tableNumber) || 1) : 0,
                 specialInstructions: cartInstructions,
-                restaurantId: selectedRestaurant._id
+                restaurantId: selectedRestaurant._id,
+                orderType,
+                paymentMethod,
+                deliveryAddress: orderType === 'Home Delivery' ? deliveryAddress : ''
             };
             await createOrder(orderData);
             alert('Order placed successfully!');
@@ -249,18 +264,18 @@ const Menu = () => {
             >
                 <div>
                     <h1 className="text-2xl font-bold text-white">
-                        {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner')
+                        {(user?.role === 'admin' || user?.role === 'owner')
                             ? `Menu Management ${selectedRestaurant ? `• ${selectedRestaurant.name}` : ''}`
                             : selectedRestaurant ? `${selectedRestaurant.name} Menu` : 'Our Menu'}
                     </h1>
                     <p className="text-gray-400 text-sm mt-1">
-                        {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner')
+                        {(user?.role === 'admin' || user?.role === 'owner')
                             ? `Manage items for ${selectedRestaurant?.name || 'your restaurant'}`
                             : `Discover the flavors of ${selectedRestaurant?.name || 'our kitchen'}`}
                     </p>
                 </div>
 
-                {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner') ? (
+                {(user?.role === 'admin' || user?.role === 'owner') ? (
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -350,17 +365,27 @@ const Menu = () => {
                             <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center">
                                 <PhotoIcon className="w-10 h-10 text-indigo-400" />
                             </div>
-                            <h3 className="text-xl font-semibold text-white mb-2">No Menu Items Yet</h3>
-                            <p className="text-gray-400 mb-6">Get started by adding your first menu item</p>
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => handleOpenModal()}
-                                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium"
-                            >
-                                <PlusIcon className="h-5 w-5 mr-2" />
-                                Add Your First Item
-                            </motion.button>
+                            <h3 className="text-xl font-semibold text-white mb-2">
+                                {(user?.role === 'admin' || user?.role === 'owner')
+                                    ? 'No Menu Items Yet'
+                                    : 'Menu Coming Soon'}
+                            </h3>
+                            <p className="text-gray-400 mb-6">
+                                {(user?.role === 'admin' || user?.role === 'owner')
+                                    ? 'Get started by adding your first menu item'
+                                    : 'This restaurant hasn\'t added any items to their menu yet.'}
+                            </p>
+                            {(user?.role === 'admin' || user?.role === 'owner') && (
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => handleOpenModal()}
+                                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium"
+                                >
+                                    <PlusIcon className="h-5 w-5 mr-2" />
+                                    Add Your First Item
+                                </motion.button>
+                            )}
                         </motion.div>
                     ) : (
                         <motion.div
@@ -416,8 +441,7 @@ const Menu = () => {
                                                         {item.name}
                                                     </h3>
                                                     <div className="flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-1 rounded-full">
-                                                        <CurrencyDollarIcon className="w-4 h-4 text-white mr-1" />
-                                                        <span className="text-white font-bold">{item.price}</span>
+                                                        <span className="text-white font-bold text-sm">₹{item.price}</span>
                                                     </div>
                                                 </div>
 
@@ -426,7 +450,7 @@ const Menu = () => {
                                                 </p>
 
                                                 {/* Action Buttons */}
-                                                {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner') ? (
+                                                {(user?.role === 'admin' || user?.role === 'owner') ? (
                                                     <div className="flex justify-end gap-2 pt-2 border-t border-gray-800">
                                                         <motion.button
                                                             whileHover={{ scale: 1.1 }}
@@ -689,7 +713,7 @@ const Menu = () => {
                                         <div key={item._id} className="flex justify-between items-center bg-gray-800/30 p-4 rounded-xl border border-gray-800">
                                             <div>
                                                 <h4 className="font-bold text-white">{item.name}</h4>
-                                                <p className="text-indigo-400 text-sm">{item.quantity}x ${item.price}</p>
+                                                <p className="text-indigo-400 text-sm">{item.quantity}x ₹{item.price}</p>
                                             </div>
                                             <button onClick={() => removeFromCart(item._id)} className="text-gray-500 hover:text-red-400 transition">
                                                 <TrashIcon className="w-5 h-5" />
@@ -699,10 +723,82 @@ const Menu = () => {
                                 )}
 
                                 {cart.length > 0 && (
-                                    <div className="mt-8 space-y-4">
+                                    <div className="mt-6 space-y-5">
+
+                                        {/* Order Type Toggle */}
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Order Type</label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                {['Dine-In', 'Home Delivery'].map(type => (
+                                                    <button
+                                                        key={type}
+                                                        type="button"
+                                                        onClick={() => setOrderType(type)}
+                                                        className={`py-3 rounded-xl text-sm font-bold border transition-all ${orderType === type
+                                                                ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                                                                : 'bg-gray-800/40 border-gray-700 text-gray-400 hover:border-indigo-500/50'
+                                                            }`}
+                                                    >
+                                                        {type === 'Dine-In' ? '🍽️ Dine-In' : '🛵 Home Delivery'}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Table Number (Dine-In only) */}
+                                        {orderType === 'Dine-In' && (
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Table Number</label>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition text-sm"
+                                                    placeholder="Enter your table number"
+                                                    value={tableNumber}
+                                                    onChange={e => setTableNumber(e.target.value)}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* Delivery Address (Home Delivery only) */}
+                                        {orderType === 'Home Delivery' && (
+                                            <div>
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Delivery Address</label>
+                                                <textarea
+                                                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition text-sm"
+                                                    placeholder="Enter your full delivery address..."
+                                                    rows="2"
+                                                    value={deliveryAddress}
+                                                    onChange={e => setDeliveryAddress(e.target.value)}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* Payment Method */}
+                                        <div>
+                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Payment Method</label>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                {[{ id: 'Cash', icon: '💵' }, { id: 'Card', icon: '💳' }, { id: 'UPI', icon: '📱' }].map(method => (
+                                                    <button
+                                                        key={method.id}
+                                                        type="button"
+                                                        onClick={() => setPaymentMethod(method.id)}
+                                                        className={`py-3 rounded-xl text-sm font-bold border transition-all ${paymentMethod === method.id
+                                                                ? 'bg-green-600/80 border-green-500 text-white shadow-lg shadow-green-600/20'
+                                                                : 'bg-gray-800/40 border-gray-700 text-gray-400 hover:border-green-500/50'
+                                                            }`}
+                                                    >
+                                                        <span className="block text-lg mb-0.5">{method.icon}</span>
+                                                        {method.id}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Special Instructions */}
                                         <div>
                                             <div className="flex justify-between items-center mb-2">
-                                                <label className="text-sm font-medium text-gray-400">Special Instructions</label>
+                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Special Instructions</label>
                                                 <button
                                                     onClick={handleAiGenerateInstructions}
                                                     disabled={isAiGeneratingInstructions || !cartInstructions}
@@ -715,7 +811,7 @@ const Menu = () => {
                                             <textarea
                                                 className="w-full bg-gray-800/50 border border-gray-800 rounded-xl p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition"
                                                 placeholder="e.g., spicy, no onions..."
-                                                rows="3"
+                                                rows="2"
                                                 value={cartInstructions}
                                                 onChange={(e) => setCartInstructions(e.target.value)}
                                             />
@@ -729,7 +825,7 @@ const Menu = () => {
                                     <div className="flex justify-between items-center">
                                         <span className="text-gray-400">Total Price</span>
                                         <span className="text-2xl font-bold text-white">
-                                            ${cart.reduce((acc, item) => acc + (item.price * item.quantity), 0).toFixed(2)}
+                                            ₹{cart.reduce((acc, item) => acc + (item.price * item.quantity), 0).toFixed(2)}
                                         </span>
                                     </div>
                                     <button

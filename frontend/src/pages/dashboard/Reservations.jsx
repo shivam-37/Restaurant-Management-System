@@ -34,7 +34,7 @@ const Reservations = () => {
     const fetchReservations = async () => {
         setLoading(true);
         try {
-            const { data } = (user.role === 'admin' || user.role === 'staff' || user.role === 'owner')
+            const { data } = (user.role === 'admin' || user.role === 'owner')
                 ? await getReservations(selectedRestaurant?._id)
                 : await getMyReservations(selectedRestaurant?._id);
             setReservations(data);
@@ -86,10 +86,10 @@ const Reservations = () => {
             >
                 <div>
                     <h1 className="text-3xl font-black text-white uppercase tracking-tighter">
-                        {(user.role === 'admin' || user.role === 'staff' || user.role === 'owner') ? 'Reservations Desk' : 'My Bookings'}
+                        {(user.role === 'admin' || user.role === 'owner') ? 'Reservations Desk' : 'My Bookings'}
                     </h1>
                     <p className="text-gray-400 font-medium">
-                        {(user.role === 'admin' || user.role === 'staff' || user.role === 'owner')
+                        {(user.role === 'admin' || user.role === 'owner')
                             ? `Incoming reservations for ${selectedRestaurant?.name || 'All Locations'}`
                             : `Your upcoming visits to ${selectedRestaurant?.name || 'our restaurants'}`}
                     </p>
@@ -169,7 +169,7 @@ const Reservations = () => {
                                         </div>
                                     </div>
 
-                                    {(user.role === 'admin' || user.role === 'staff' || user.role === 'owner') && res.status === 'Pending' && (
+                                    {(user.role === 'admin' || user.role === 'owner') && res.status === 'Pending' && (
                                         <div className="flex items-center gap-2 w-full md:w-auto">
                                             <button
                                                 onClick={() => handleStatusUpdate(res._id, 'Confirmed')}

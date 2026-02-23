@@ -1,11 +1,12 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useCallback } from 'react';
 import {
     getMe,
     login as apiLogin,
     register as apiRegister,
     forgotPassword as apiForgotPassword,
     resetPassword as apiResetPassword,
-    getMyRestaurant
+    getMyRestaurant,
+    getRestaurants
 } from '../services/api';
 
 const AuthContext = createContext();
@@ -13,6 +14,7 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [restaurants, setRestaurants] = useState([]);
     const [selectedRestaurant, setSelectedRestaurant] = useState(() => {
         const saved = localStorage.getItem('selectedRestaurant');
         try {
@@ -38,8 +40,8 @@ const AuthProvider = ({ children }) => {
                     const { data } = await getMe();
                     setUser(data);
 
-                    // If staff or owner, ensure they have a selected restaurant
-                    if ((data.role === 'staff' || data.role === 'owner') && !selectedRestaurant) {
+                    // If owner, ensure they have a selected restaurant
+                    if (data.role === 'owner' && !selectedRestaurant) {
                         if (data.restaurant) {
                             const restaurantObj = typeof data.restaurant === 'string'
                                 ? { _id: data.restaurant, name: 'My Restaurant' }
@@ -135,15 +137,41 @@ const AuthProvider = ({ children }) => {
         return data;
     };
 
+    // Fetch all restaurants and cache in context
+    const refreshRestaurants = useCallback(async () => {
+        try {
+            const { data } = await getRestaurants();
+            setRestaurants(data);
+        } catch (e) {
+            console.error('Failed to refresh restaurants', e);
+        }
+    }, []);
+
+    // Update a single restaurant in the cached list (e.g. after settings save)
+    const updateRestaurantInList = useCallback((updatedRestaurant) => {
+        setRestaurants(prev =>
+            prev.map(r => r._id === updatedRestaurant._id ? updatedRestaurant : r)
+        );
+        // Also keep selectedRestaurant in sync
+        setSelectedRestaurant(prev =>
+            prev?._id === updatedRestaurant._id ? updatedRestaurant : prev
+        );
+    }, []);
+
     return (
         <AuthContext.Provider value={{
             user,
+            setUser,
             login,
             register,
             logout,
             forgotPassword,
             resetPassword,
             loading,
+            restaurants,
+            setRestaurants,
+            refreshRestaurants,
+            updateRestaurantInList,
             selectedRestaurant,
             setSelectedRestaurant
         }}>

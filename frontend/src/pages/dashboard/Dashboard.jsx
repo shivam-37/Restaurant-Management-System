@@ -28,7 +28,7 @@ const Dashboard = () => {
 
     if (!user) return null;
 
-    if (user.role === 'admin' || user.role === 'staff') {
+    if (user.role === 'admin') {
         return <AdminDashboard user={user} logout={logout} />;
     }
 

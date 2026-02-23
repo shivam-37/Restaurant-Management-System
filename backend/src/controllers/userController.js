@@ -11,6 +11,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     if (user) {
         user.name = req.body.name || user.name;
         user.email = req.body.email || user.email;
+        if (req.body.avatar !== undefined) user.avatar = req.body.avatar;
 
         if (req.body.password) {
             const salt = await bcrypt.genSalt(10);
@@ -24,7 +25,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             name: updatedUser.name,
             email: updatedUser.email,
             role: updatedUser.role,
-            token: req.body.token // Keep existing token or generate new one if needed
+            avatar: updatedUser.avatar || '',
+            loyaltyPoints: updatedUser.loyaltyPoints,
+            notificationPrefs: updatedUser.notificationPrefs
         });
     } else {
         res.status(404);
@@ -68,8 +71,37 @@ const deleteUser = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Delete own account
+// @route   DELETE /api/users/me
+// @access  Private
+const deleteAccount = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+    await user.deleteOne();
+    res.json({ message: 'Account deleted successfully' });
+});
+
+// @desc    Update notification preferences
+// @route   PUT /api/users/notifications
+// @access  Private
+const updateNotifications = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+    user.notificationPrefs = { ...user.notificationPrefs?.toObject?.() || {}, ...req.body };
+    await user.save();
+    res.json({ notificationPrefs: user.notificationPrefs });
+});
+
 module.exports = {
     updateUserProfile,
     getUsers,
-    deleteUser
+    deleteUser,
+    deleteAccount,
+    updateNotifications
 };

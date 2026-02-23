@@ -126,7 +126,7 @@ const Orders = () => {
             <div className="flex justify-between items-end mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-white mb-1">
-                        {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner') ? 'Order Flow' : 'My Orders'}
+                        {(user?.role === 'admin' || user?.role === 'owner') ? 'Order Flow' : 'My Orders'}
                     </h1>
                     <p className="text-gray-400 text-sm">Real-time status tracking for all orders</p>
                 </div>
@@ -150,19 +150,37 @@ const Orders = () => {
                                 <div className="flex-1">
                                     <div className="flex items-center gap-4 mb-4">
                                         <div className="w-12 h-12 bg-indigo-600/10 rounded-xl flex items-center justify-center text-indigo-400 font-bold border border-indigo-500/20">
-                                            {order.tableNumber}
+                                            {(order.orderType === 'Home Delivery' || order.tableNumber === 0) ? '🛵' : order.tableNumber}
                                         </div>
                                         <div>
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="font-bold text-white">Table {order.tableNumber}</h3>
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <h3 className="font-bold text-white">
+                                                    {(order.orderType === 'Home Delivery' || order.tableNumber === 0) ? 'Home Delivery' : `Table ${order.tableNumber}`}
+                                                </h3>
                                                 {!selectedRestaurant && (
                                                     <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-md text-[10px] font-black uppercase tracking-wider border border-indigo-500/10">
                                                         {order.restaurant?.name || 'Local'}
                                                     </span>
                                                 )}
                                                 <StatusBadge status={order.status} />
+                                                {order.orderType && (
+                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider ${order.orderType === 'Home Delivery'
+                                                        ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                                                        : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                                        }`}>
+                                                        {order.orderType === 'Home Delivery' ? '🛵 Delivery' : '🍽️ Dine-In'}
+                                                    </span>
+                                                )}
+                                                {order.paymentMethod && (
+                                                    <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-green-500/10 text-green-400 border border-green-500/20">
+                                                        {order.paymentMethod === 'Cash' ? '💵' : order.paymentMethod === 'Card' ? '💳' : '📱'} {order.paymentMethod}
+                                                    </span>
+                                                )}
                                             </div>
-                                            <p className="text-xs text-gray-500">{(order.items || []).length} items • ${(order.totalPrice || 0).toFixed(2)}</p>
+                                            <p className="text-xs text-gray-500">{(order.items || []).length} items • ₹{(order.totalPrice || 0).toFixed(2)}</p>
+                                            {order.orderType === 'Home Delivery' && order.deliveryAddress && (
+                                                <p className="text-xs text-orange-400/70 mt-0.5">📍 {order.deliveryAddress}</p>
+                                            )}
                                             <p className="text-[10px] text-gray-500 mt-1">
                                                 Placed {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
@@ -178,7 +196,7 @@ const Orders = () => {
                                         ))}
                                         <div className="pt-2 border-t border-gray-700 flex justify-between items-center">
                                             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total</span>
-                                            <span className="text-lg font-bold text-indigo-400">${(order.totalPrice || 0).toFixed(2)}</span>
+                                            <span className="text-lg font-bold text-indigo-400">₹{(order.totalPrice || 0).toFixed(2)}</span>
                                         </div>
                                     </div>
 
@@ -213,7 +231,7 @@ const Orders = () => {
                                 </div>
 
                                 {/* Admin/Owner Actions */}
-                                {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner') && (
+                                {(user?.role === 'admin' || user?.role === 'owner') && (
                                     <div className="flex flex-col gap-2 w-full md:w-auto">
                                         {order.status === 'Pending' && (
                                             <button

@@ -57,6 +57,8 @@ export const updateTableStatus = (id, number, status) => api.put(`/restaurant/${
 
 export const getUsers = () => api.get('/users');
 export const deleteUser = (id) => api.delete(`/users/${id}`);
+export const deleteAccount = () => api.delete('/users/me');
+export const updateNotificationPrefs = (prefs) => api.put('/users/notifications', prefs);
 
 // Auth
 export const login = (credentials) => api.post('/auth/login', credentials);

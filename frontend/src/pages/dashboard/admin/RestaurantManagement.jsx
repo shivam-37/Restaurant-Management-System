@@ -13,10 +13,9 @@ import {
 } from '@heroicons/react/24/outline';
 
 const RestaurantManagement = ({ onSelect }) => {
-    const [restaurants, setRestaurants] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { restaurants: ctxRestaurants, refreshRestaurants, setSelectedRestaurant } = useContext(AuthContext);
     const [searchTerm, setSearchTerm] = useState('');
-    const { setSelectedRestaurant } = useContext(AuthContext);
+    const loading = ctxRestaurants.length === 0;
 
     const handleSelect = (restaurant) => {
         console.log(`Admin selecting restaurant: ${restaurant.name} (${restaurant._id})`);
@@ -28,21 +27,12 @@ const RestaurantManagement = ({ onSelect }) => {
     };
 
     useEffect(() => {
-        fetchRestaurants();
+        if (ctxRestaurants.length === 0) {
+            refreshRestaurants();
+        }
     }, []);
 
-    const fetchRestaurants = async () => {
-        try {
-            const { data } = await getRestaurants();
-            setRestaurants(data);
-        } catch (error) {
-            console.error("Failed to fetch restaurants");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const filteredRestaurants = restaurants.filter(r =>
+    const filteredRestaurants = ctxRestaurants.filter(r =>
         r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         r.cuisine?.toLowerCase().includes(searchTerm.toLowerCase())
     );
