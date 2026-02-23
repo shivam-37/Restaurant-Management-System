@@ -97,17 +97,24 @@ const Menu = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!selectedRestaurant?._id) {
+            alert('Please select or create a restaurant first in the dashboard/settings.');
+            return;
+        }
+
         setIsLoading(true);
         try {
             if (currentItem) {
                 await updateMenuItem(currentItem._id, formData);
             } else {
-                await createMenuItem({ ...formData, restaurantId: selectedRestaurant?._id });
+                await createMenuItem({ ...formData, restaurantId: selectedRestaurant._id });
             }
             await fetchMenu();
             setIsModalOpen(false);
         } catch (error) {
-            alert('Failed to save menu item');
+            console.error('Failed to save menu item:', error.response?.data?.message || error.message);
+            alert(`Failed to save menu item: ${error.response?.data?.message || 'Server error'}`);
         } finally {
             setIsLoading(false);
         }
@@ -320,7 +327,19 @@ const Menu = () => {
                     )}
 
                     {/* Menu Items Grid */}
-                    {menuItems.length === 0 ? (
+                    {!selectedRestaurant ? (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-800 p-12 text-center"
+                        >
+                            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center">
+                                <XMarkIcon className="w-10 h-10 text-red-400" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-white mb-2">No Restaurant Selected</h3>
+                            <p className="text-gray-400 mb-6">You must select a restaurant to manage menu items.</p>
+                        </motion.div>
+                    ) : menuItems.length === 0 ? (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}

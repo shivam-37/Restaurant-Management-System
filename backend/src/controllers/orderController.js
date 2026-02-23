@@ -10,6 +10,7 @@ const createOrder = asyncHandler(async (req, res) => {
     const { items, totalPrice, tableNumber, specialInstructions, restaurantId } = req.body;
 
     if (!restaurantId) {
+        console.error('Order Creation Failed: Missing Restaurant ID');
         res.status(400);
         throw new Error('Restaurant ID is required');
     }
@@ -43,6 +44,7 @@ const createOrder = asyncHandler(async (req, res) => {
         });
 
         const createdOrder = await order.save();
+        console.log('Order Created Successfully:', createdOrder._id);
         res.status(201).json(createdOrder);
     }
 });
@@ -81,7 +83,17 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
 
         const oldStatus = order.status;
         order.status = req.body.status || order.status;
-        const updatedOrder = await order.save();
+        console.log(`Updating Order ${order._id} status: ${oldStatus} -> ${order.status}`);
+
+        let updatedOrder;
+        try {
+            updatedOrder = await order.save();
+            console.log('Order Updated Successfully');
+        } catch (error) {
+            console.error('Order Update Failed (Save Error):', error.message);
+            res.status(400);
+            throw new Error(`Order update failed: ${error.message}`);
+        }
 
         // Award loyalty points if order is marked as Completed
         if (updatedOrder.status === 'Completed' && oldStatus !== 'Completed') {

@@ -69,8 +69,13 @@ const Menu = require('../models/Menu');
 // @route   POST /api/ai/recommendations
 // @access  Private
 const getRecommendations = asyncHandler(async (req, res) => {
-    // 1. Fetch user's order history (limited to last 20 items for context)
-    const userOrders = await Order.find({ user: req.user._id })
+    const { restaurantId } = req.body;
+
+    // 1. Fetch user's order history (limited to last 5 orders for context, filtered by restaurant)
+    const query = { user: req.user._id };
+    if (restaurantId) query.restaurant = restaurantId;
+
+    const userOrders = await Order.find(query)
         .sort({ createdAt: -1 })
         .limit(5)
         .populate('items.menuItem');
@@ -79,8 +84,11 @@ const getRecommendations = asyncHandler(async (req, res) => {
         order.items.map(item => item.name)
     ).slice(0, 15);
 
-    // 2. Fetch available menu
-    const menuItems = await Menu.find({ isAvailable: true }).select('name category description');
+    // 2. Fetch available menu for the specific restaurant
+    const menuQuery = { isAvailable: true };
+    if (restaurantId) menuQuery.restaurant = restaurantId;
+
+    const menuItems = await Menu.find(menuQuery).select('name category description');
     const menuText = menuItems.map(item => `- ${item.name} (${item.category}): ${item.description}`).join('\n');
 
     const prompt = `
@@ -104,11 +112,14 @@ const getRecommendations = asyncHandler(async (req, res) => {
         const jsonMatch = text.match(/\[.*\]/s);
         const recommendationsNames = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
 
-        // Fetch full item details for the recommended names
-        const recommendations = await Menu.find({
+        // Fetch full item details for the recommended names (scoped to restaurant)
+        const finalQuery = {
             name: { $in: recommendationsNames },
             isAvailable: true
-        }).limit(3);
+        };
+        if (restaurantId) finalQuery.restaurant = restaurantId;
+
+        const recommendations = await Menu.find(finalQuery).limit(3);
 
         res.json(recommendations);
     } catch (error) {
@@ -122,10 +133,18 @@ const getRecommendations = asyncHandler(async (req, res) => {
 // @route   POST /api/ai/predict-inventory
 // @access  Private/Admin
 const predictInventory = asyncHandler(async (req, res) => {
-    const menuItems = await Menu.find({}).select('name stock category description');
+    const { restaurantId } = req.body;
 
-    // Fetch last 100 orders to see what's selling
-    const recentOrders = await Order.find({})
+    const menuQuery = {};
+    if (restaurantId) menuQuery.restaurant = restaurantId;
+
+    const menuItems = await Menu.find(menuQuery).select('name stock category description');
+
+    // Fetch last 100 orders for this restaurant
+    const orderQuery = {};
+    if (restaurantId) orderQuery.restaurant = restaurantId;
+
+    const recentOrders = await Order.find(orderQuery)
         .sort({ createdAt: -1 })
         .limit(100);
 

@@ -17,11 +17,28 @@ import {
   Menu,
   X
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import RestaurantList from '../../components/RestaurantList';
+import { getRestaurants } from '../../services/api';
 
 const LandingPage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [restaurants, setRestaurants] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        const { data } = await getRestaurants();
+        setRestaurants(data);
+      } catch (error) {
+        console.error("Failed to fetch restaurants", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchRestaurants();
+  }, []);
 
   const fadeInUp = {
     initial: { opacity: 0, y: 30 },
@@ -198,7 +215,7 @@ const LandingPage = () => {
                       <Star key={i} className="w-4 h-4 fill-yellow-500 text-yellow-500" />
                     ))}
                   </div>
-                  <p className="text-sm text-gray-400">Join 5,000+ happy restaurant owners</p>
+                  <p className="text-sm text-gray-400">Join {restaurants.length > 0 ? `${restaurants.length}` : 'many'} happy restaurant owners</p>
                 </div>
               </div>
             </motion.div>
@@ -241,23 +258,25 @@ const LandingPage = () => {
       </section>
 
       {/* Restaurant Selection Section */}
-      <section id="restaurants" className="py-20 bg-black relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            {...fadeInUp}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <span className="text-indigo-400 font-semibold text-sm uppercase tracking-wider">Explore</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mt-4 mb-6">
-              Browse <span className="text-indigo-400">Our Restaurants</span>
-            </h2>
-            <p className="text-xl text-gray-400">
-              Pick your favorite spot and start ordering right away
-            </p>
-          </motion.div>
-          <RestaurantList />
-        </div>
-      </section>
+      {restaurants.length > 0 && (
+        <section id="restaurants" className="py-20 bg-black relative">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              {...fadeInUp}
+              className="text-center max-w-3xl mx-auto mb-16"
+            >
+              <span className="text-indigo-400 font-semibold text-sm uppercase tracking-wider">Explore</span>
+              <h2 className="text-4xl md:text-5xl font-bold text-white mt-4 mb-6">
+                Browse <span className="text-indigo-400">Our Restaurants</span>
+              </h2>
+              <p className="text-xl text-gray-400">
+                Pick your favorite spot and start ordering right away
+              </p>
+            </motion.div>
+            <RestaurantList restaurants={restaurants} loading={isLoading} />
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section id="features" className="relative py-20 md:py-32 bg-black">
@@ -361,8 +380,8 @@ const LandingPage = () => {
           >
             {[
               { value: "98%", label: "Customer Satisfaction", icon: "😊" },
-              { value: "50k+", label: "Orders Daily", icon: "📦" },
-              { value: "5k+", label: "Active Restaurants", icon: "🏪" },
+              { value: "5k+", label: "Orders Daily", icon: "📦" },
+              { value: restaurants.length > 0 ? `${restaurants.length}` : '0', label: "Active Restaurants", icon: "🏪" },
               { value: "24/7", label: "Customer Support", icon: "🎯" }
             ].map((stat, idx) => (
               <motion.div

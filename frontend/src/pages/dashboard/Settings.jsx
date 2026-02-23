@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
-import { updateProfile } from '../../services/api';
+import { updateProfile, updateRestaurant } from '../../services/api';
 import {
     UserIcon,
     EnvelopeIcon,
@@ -14,17 +14,27 @@ import {
     ShieldCheckIcon,
     BellIcon,
     PaintBrushIcon,
-    CameraIcon
+    CameraIcon,
+    HomeIcon
 } from '@heroicons/react/24/outline';
 
 const Settings = () => {
-    const { user } = useContext(AuthContext);
+    const { user, selectedRestaurant, setSelectedRestaurant } = useContext(AuthContext);
     const [formData, setFormData] = useState({
         name: user?.name || '',
         email: user?.email || '',
         password: '',
         confirmPassword: ''
     });
+
+    const [restaurantData, setRestaurantData] = useState({
+        name: selectedRestaurant?.name || '',
+        description: selectedRestaurant?.description || '',
+        address: selectedRestaurant?.address || '',
+        cuisine: selectedRestaurant?.cuisine || '',
+        image: selectedRestaurant?.image || ''
+    });
+
     const [message, setMessage] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -33,6 +43,10 @@ const Settings = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleRestaurantChange = (e) => {
+        setRestaurantData({ ...restaurantData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
@@ -54,8 +68,6 @@ const Settings = () => {
             });
             setMessage({ type: 'success', text: 'Profile updated successfully' });
             setFormData({ ...formData, password: '', confirmPassword: '' });
-            
-            // Auto-hide success message after 3 seconds
             setTimeout(() => setMessage(null), 3000);
         } catch (error) {
             setMessage({ type: 'error', text: 'Failed to update profile' });
@@ -64,11 +76,28 @@ const Settings = () => {
         }
     };
 
+    const handleRestaurantSubmit = async (e) => {
+        e.preventDefault();
+        setMessage(null);
+        setIsLoading(true);
+
+        try {
+            const { data } = await updateRestaurant(selectedRestaurant._id, restaurantData);
+            setSelectedRestaurant(data);
+            setMessage({ type: 'success', text: 'Restaurant updated successfully' });
+            setTimeout(() => setMessage(null), 3000);
+        } catch (error) {
+            setMessage({ type: 'error', text: 'Failed to update restaurant' });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const tabs = [
         { id: 'profile', name: 'Profile', icon: UserIcon },
         { id: 'security', name: 'Security', icon: ShieldCheckIcon },
+        ...(user?.role === 'owner' ? [{ id: 'restaurant', name: 'Restaurant', icon: HomeIcon }] : []),
         { id: 'notifications', name: 'Notifications', icon: BellIcon },
-        { id: 'preferences', name: 'Preferences', icon: PaintBrushIcon }
     ];
 
     const fadeInUp = {
@@ -80,7 +109,7 @@ const Settings = () => {
     return (
         <div className="p-6 max-w-4xl mx-auto space-y-6">
             {/* Header */}
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
@@ -91,7 +120,7 @@ const Settings = () => {
             </motion.div>
 
             {/* Settings Tabs */}
-            <motion.div 
+            <motion.div
                 variants={fadeInUp}
                 initial="initial"
                 animate="animate"
@@ -103,11 +132,10 @@ const Settings = () => {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${
-                                activeTab === tab.id
-                                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-                                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                            }`}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 ${activeTab === tab.id
+                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                }`}
                         >
                             <Icon className="w-5 h-5" />
                             <span>{tab.name}</span>
@@ -117,7 +145,7 @@ const Settings = () => {
             </motion.div>
 
             {/* Main Settings Card */}
-            <motion.div 
+            <motion.div
                 variants={fadeInUp}
                 initial="initial"
                 animate="animate"
@@ -130,11 +158,10 @@ const Settings = () => {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            className={`mx-6 mt-6 p-4 rounded-xl flex items-center space-x-3 ${
-                                message.type === 'success' 
-                                    ? 'bg-green-500/10 border border-green-500/20 text-green-400' 
-                                    : 'bg-red-500/10 border border-red-500/20 text-red-400'
-                            }`}
+                            className={`mx-6 mt-6 p-4 rounded-xl flex items-center space-x-3 ${message.type === 'success'
+                                ? 'bg-green-500/10 border border-green-500/20 text-green-400'
+                                : 'bg-red-500/10 border border-red-500/20 text-red-400'
+                                }`}
                         >
                             {message.type === 'success' ? (
                                 <CheckCircleIcon className="w-5 h-5 flex-shrink-0" />
@@ -217,7 +244,7 @@ const Settings = () => {
                                 <LockClosedIcon className="w-5 h-5 mr-2 text-indigo-400" />
                                 Change Password
                             </h3>
-                            
+
                             <div className="space-y-5">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -280,23 +307,22 @@ const Settings = () => {
                                             {[1, 2, 3, 4].map((level) => (
                                                 <div
                                                     key={level}
-                                                    className={`flex-1 rounded-full transition-all duration-300 ${
-                                                        formData.password.length >= level * 3
-                                                            ? formData.password.length >= 12
-                                                                ? 'bg-green-500'
-                                                                : formData.password.length >= 8
+                                                    className={`flex-1 rounded-full transition-all duration-300 ${formData.password.length >= level * 3
+                                                        ? formData.password.length >= 12
+                                                            ? 'bg-green-500'
+                                                            : formData.password.length >= 8
                                                                 ? 'bg-yellow-500'
                                                                 : 'bg-red-500'
-                                                            : 'bg-gray-700'
-                                                    }`}
+                                                        : 'bg-gray-700'
+                                                        }`}
                                                 />
                                             ))}
                                         </div>
                                         <p className="text-xs text-gray-400">
                                             Password strength: {
                                                 formData.password.length >= 12 ? 'Strong' :
-                                                formData.password.length >= 8 ? 'Medium' :
-                                                formData.password.length >= 4 ? 'Weak' : 'Too short'
+                                                    formData.password.length >= 8 ? 'Medium' :
+                                                        formData.password.length >= 4 ? 'Weak' : 'Too short'
                                             }
                                         </p>
                                     </div>
@@ -348,6 +374,101 @@ const Settings = () => {
                     </form>
                 )}
 
+                {/* Restaurant Settings Form */}
+                {activeTab === 'restaurant' && (
+                    <form onSubmit={handleRestaurantSubmit} className="p-6 space-y-6">
+                        <div className="flex items-center space-x-4 pb-6 border-b border-gray-800">
+                            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+                                {restaurantData.name?.charAt(0) || 'R'}
+                            </div>
+                            <div>
+                                <h3 className="text-white font-medium">Restaurant Profile</h3>
+                                <p className="text-sm text-gray-400">Update your restaurant information</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-5">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Restaurant Name</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur-lg opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                    <div className="relative">
+                                        <HomeIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-indigo-400 transition" />
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={restaurantData.name}
+                                            onChange={handleRestaurantChange}
+                                            className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Cuisine Type</label>
+                                <input
+                                    type="text"
+                                    name="cuisine"
+                                    value={restaurantData.cuisine}
+                                    onChange={handleRestaurantChange}
+                                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
+                                    placeholder="e.g. Italian, Sushi"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-300 mb-2">Description</label>
+                                <textarea
+                                    name="description"
+                                    rows="4"
+                                    value={restaurantData.description}
+                                    onChange={handleRestaurantChange}
+                                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
+                                    placeholder="Enter restaurant description"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">Address</label>
+                                    <input
+                                        type="text"
+                                        name="address"
+                                        value={restaurantData.address}
+                                        onChange={handleRestaurantChange}
+                                        className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
+                                        placeholder="Enter restaurant address"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-2">Image URL</label>
+                                    <input
+                                        type="text"
+                                        name="image"
+                                        value={restaurantData.image}
+                                        onChange={handleRestaurantChange}
+                                        className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
+                                        placeholder="Enter image URL"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-gray-800 flex justify-end">
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                type="submit"
+                                disabled={isLoading}
+                                className="px-8 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg transition-all flex items-center space-x-2"
+                            >
+                                {isLoading ? <span>Saving...</span> : <span>Save Restaurant Info</span>}
+                            </motion.button>
+                        </div>
+                    </form>
+                )}
+
                 {/* Security Tab */}
                 {activeTab === 'security' && (
                     <div className="p-6">
@@ -389,7 +510,7 @@ const Settings = () => {
             </motion.div>
 
             {/* Danger Zone */}
-            <motion.div 
+            <motion.div
                 variants={fadeInUp}
                 initial="initial"
                 animate="animate"

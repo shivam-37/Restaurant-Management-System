@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 
 const restaurantSchema = mongoose.Schema({
     name: { type: String, required: true },
+    description: { type: String },
+    address: { type: String },
+    cuisine: { type: String },
+    image: { type: String },
+    rating: { type: Number, default: 4.5 },
     tables: [
         {
             number: { type: Number, required: true },
@@ -11,7 +16,7 @@ const restaurantSchema = mongoose.Schema({
                 enum: ['Available', 'Occupied', 'Reserved', 'Cleaning'],
                 default: 'Available'
             },
-            x: { type: Number, default: 0 }, // For visual layout
+            x: { type: Number, default: 0 },
             y: { type: Number, default: 0 }
         }
     ]

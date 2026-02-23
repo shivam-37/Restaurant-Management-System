@@ -5,9 +5,9 @@ import { StarIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/solid';
 import AuthContext from '../context/AuthContext';
 import { getRestaurants } from '../services/api';
 
-const RestaurantList = () => {
-    const [restaurants, setRestaurants] = useState([]);
-    const [loading, setLoading] = useState(true);
+const RestaurantList = ({ restaurants: propsRestaurants, loading: propsLoading }) => {
+    const [restaurants, setRestaurants] = useState(propsRestaurants || []);
+    const [loading, setLoading] = useState(propsLoading !== undefined ? propsLoading : true);
     const { setSelectedRestaurant } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -17,18 +17,24 @@ const RestaurantList = () => {
     };
 
     useEffect(() => {
-        const fetchRestaurants = async () => {
-            try {
-                const { data } = await getRestaurants();
-                setRestaurants(data);
-            } catch (error) {
-                console.error("Failed to fetch restaurants", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchRestaurants();
-    }, []);
+        // Only fetch if props were not provided
+        if (propsRestaurants === undefined) {
+            const fetchRestaurants = async () => {
+                try {
+                    const { data } = await getRestaurants();
+                    setRestaurants(data);
+                } catch (error) {
+                    console.error("Failed to fetch restaurants", error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchRestaurants();
+        } else {
+            setRestaurants(propsRestaurants);
+            setLoading(propsLoading);
+        }
+    }, [propsRestaurants, propsLoading]);
 
     if (loading) {
         return (
@@ -50,13 +56,21 @@ const RestaurantList = () => {
                     className="group relative bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl overflow-hidden cursor-pointer hover:border-indigo-500/50"
                     onClick={() => handleSelect(restaurant)}
                 >
-                    <div className="h-48 bg-gradient-to-br from-indigo-600/20 to-purple-600/20 relative">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                            <h2 className="text-3xl font-black text-white/10 uppercase tracking-widest">{restaurant.name}</h2>
-                        </div>
+                    <div className="h-48 relative overflow-hidden">
+                        {restaurant.image ? (
+                            <img
+                                src={restaurant.image}
+                                alt={restaurant.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-indigo-600/20 to-purple-600/20 flex items-center justify-center">
+                                <h2 className="text-3xl font-black text-white/10 uppercase tracking-widest">{restaurant.name}</h2>
+                            </div>
+                        )}
                         <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 border border-white/10">
                             <StarIcon className="w-4 h-4 text-yellow-500" />
-                            <span className="text-xs font-bold text-white">4.8</span>
+                            <span className="text-xs font-bold text-white">{restaurant.rating || '4.5'}</span>
                         </div>
                     </div>
 
@@ -65,22 +79,26 @@ const RestaurantList = () => {
                             {restaurant.name}
                         </h3>
 
-                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                        <p className="text-sm text-gray-400 mb-4 line-clamp-2 h-10">
+                            {restaurant.description || 'Experience the finest dining with our curated menu.'}
+                        </p>
+
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
                             <div className="flex items-center gap-1">
                                 <ClockIcon className="w-4 h-4" />
                                 <span>20-30 min</span>
                             </div>
                             <div className="flex items-center gap-1">
                                 <MapPinIcon className="w-4 h-4" />
-                                <span>1.2 miles</span>
+                                <span className="truncate max-w-[100px]">{restaurant.address?.split(',')[0] || '1.2 miles'}</span>
                             </div>
                         </div>
 
                         <div className="mt-6 flex items-center justify-between">
-                            <div className="flex gap-2">
-                                {['Sushi', 'Japanese', 'Premium'].map(tag => (
+                            <div className="flex flex-wrap gap-2">
+                                {(restaurant.cuisine || 'Restaurant').split(',').slice(0, 2).map(tag => (
                                     <span key={tag} className="text-[10px] uppercase font-black tracking-wider px-2 py-1 bg-white/5 rounded-md text-gray-500">
-                                        {tag}
+                                        {tag.trim()}
                                     </span>
                                 ))}
                             </div>

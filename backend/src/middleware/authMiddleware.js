@@ -17,7 +17,7 @@ const protect = asyncHandler(async (req, res, next) => {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
             // Get user from the token
-            req.user = await User.findById(decoded.id).select('-password');
+            req.user = await User.findById(decoded.id).select('-password').populate('restaurant');
 
             next();
         } catch (error) {
@@ -34,11 +34,11 @@ const protect = asyncHandler(async (req, res, next) => {
 });
 
 const admin = (req, res, next) => {
-    if (req.user && req.user.role === 'admin') {
+    if (req.user && (req.user.role === 'admin' || req.user.role === 'owner')) {
         next();
     } else {
         res.status(401);
-        throw new Error('Not authorized as an admin');
+        throw new Error('Not authorized as an admin or owner');
     }
 };
 

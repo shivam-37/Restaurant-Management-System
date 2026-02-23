@@ -40,8 +40,8 @@ export const updateReservationStatus = (id, status) => api.put(`/reservations/${
 // AI APIs
 export const generateDescription = (data) => api.post('/ai/generate-description', data);
 export const generateOrderInstructions = (data) => api.post('/ai/generate-instructions', data);
-export const getRecommendations = () => api.post('/ai/recommendations');
-export const predictInventory = () => api.post('/ai/predict-inventory');
+export const getRecommendations = (restaurantId) => api.post('/ai/recommendations', { restaurantId });
+export const predictInventory = (restaurantId) => api.post('/ai/predict-inventory', { restaurantId });
 
 // Notification APIs
 export const getNotifications = () => api.get('/notifications');
@@ -50,6 +50,8 @@ export const markNotificationRead = (id) => api.put(`/notifications/${id}/read`)
 // Restaurant APIs
 export const getRestaurants = () => api.get('/restaurant');
 export const getRestaurantDetails = (id) => api.get(`/restaurant/${id}`);
+export const createRestaurant = (data) => api.post('/restaurant', data);
+export const updateRestaurant = (id, data) => api.put(`/restaurant/${id}`, data);
 export const updateTableStatus = (id, number, status) => api.put(`/restaurant/${id}/table/${number}`, { status });
 
 export const getUsers = () => api.get('/users');

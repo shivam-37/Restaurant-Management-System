@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
 
+const Restaurant = require('../models/Restaurant');
+
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: '30d',
@@ -30,19 +32,36 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // Create user
+    role = role ? role.toLowerCase() : 'user';
     const user = await User.create({
         name,
         email,
         password,
-        role: role ? role.toLowerCase() : 'user'
+        role
     });
 
     if (user) {
+        // Auto-create restaurant if admin
+        if (role === 'admin') {
+            const restaurant = await Restaurant.create({
+                name: `${name}'s Restaurant`,
+                tables: [
+                    { number: 1, capacity: 4, status: 'Available' },
+                    { number: 2, capacity: 4, status: 'Available' },
+                    { number: 3, capacity: 2, status: 'Available' },
+                    { number: 4, capacity: 6, status: 'Available' }
+                ]
+            });
+            user.restaurant = restaurant._id;
+            await user.save();
+        }
+
         res.status(201).json({
             _id: user.id,
             name: user.name,
             email: user.email,
             role: user.role,
+            restaurant: user.restaurant,
             token: generateToken(user._id),
         });
     } else {
@@ -60,7 +79,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (email) email = email.toLowerCase().trim();
 
     // Check for user email
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).populate('restaurant');
 
     if (user && (await user.matchPassword(password))) {
         res.json({
@@ -68,6 +87,7 @@ const loginUser = asyncHandler(async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            restaurant: user.restaurant,
             token: generateToken(user._id),
         });
     } else {

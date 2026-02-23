@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getRestaurants, getRestaurantDetails, updateTableStatus } = require('../controllers/restaurantController');
+const { getRestaurants, getRestaurantDetails, updateTableStatus, createRestaurant } = require('../controllers/restaurantController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 // Public routes
@@ -15,6 +15,8 @@ router.get('/:id', (req, res, next) => {
 }, getRestaurantDetails);
 
 // Protected routes
+router.post('/', protect, admin, createRestaurant);
+router.put('/:id', protect, admin, updateRestaurant);
 router.put('/:id/table/:number', protect, admin, updateTableStatus);
 
 module.exports = router;

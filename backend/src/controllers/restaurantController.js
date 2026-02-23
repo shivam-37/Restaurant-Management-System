@@ -48,4 +48,49 @@ const updateTableStatus = asyncHandler(async (req, res) => {
     res.json(restaurant);
 });
 
-module.exports = { getRestaurants, getRestaurantDetails, updateTableStatus };
+// @desc    Create a new restaurant
+// @route   POST /api/restaurant
+// @access  Private/Admin
+const createRestaurant = asyncHandler(async (req, res) => {
+    const { name, description, address, cuisine, image, tables } = req.body;
+
+    if (!name) {
+        res.status(400);
+        throw new Error('Please add a restaurant name');
+    }
+
+    const restaurant = await Restaurant.create({
+        name,
+        description,
+        address,
+        cuisine,
+        image,
+        tables: tables || [
+            { number: 1, capacity: 4, status: 'Available' },
+            { number: 2, capacity: 4, status: 'Available' },
+            { number: 3, capacity: 2, status: 'Available' },
+            { number: 4, capacity: 6, status: 'Available' }
+        ]
+    });
+
+    res.status(201).json(restaurant);
+});
+
+const updateRestaurant = asyncHandler(async (req, res) => {
+    const restaurant = await Restaurant.findById(req.params.id);
+
+    if (!restaurant) {
+        res.status(404);
+        throw new Error('Restaurant not found');
+    }
+
+    const updatedRestaurant = await Restaurant.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true }
+    );
+
+    res.json(updatedRestaurant);
+});
+
+module.exports = { getRestaurants, getRestaurantDetails, updateTableStatus, createRestaurant, updateRestaurant };

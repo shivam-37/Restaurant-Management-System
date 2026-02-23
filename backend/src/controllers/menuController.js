@@ -6,11 +6,13 @@ const Menu = require('../models/Menu');
 // @access  Public
 const getMenuItems = asyncHandler(async (req, res) => {
     const { restaurantId } = req.query;
-    let query = {};
-    if (restaurantId) {
-        query.restaurant = restaurantId;
+
+    if (!restaurantId) {
+        res.json([]);
+        return;
     }
-    const menuItems = await Menu.find(query);
+
+    const menuItems = await Menu.find({ restaurant: restaurantId });
     res.json(menuItems);
 });
 
@@ -20,7 +22,10 @@ const getMenuItems = asyncHandler(async (req, res) => {
 const createMenuItem = asyncHandler(async (req, res) => {
     const { name, description, price, category, image, stock, restaurantId } = req.body;
 
-    if (!name || !description || !price || !category || !restaurantId) {
+    console.log('Creating menu item with data:', { name, price, category, restaurantId });
+
+    if (!name || !description || price === undefined || price === null || !category || !restaurantId) {
+        console.error('Validation failed: Missing fields', { name, description, price, category, restaurantId });
         res.status(400);
         throw new Error('Please add all fields including restaurantId');
     }

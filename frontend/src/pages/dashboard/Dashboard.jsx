@@ -2,6 +2,7 @@ import { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../../context/AuthContext';
 import AdminDashboard from './admin/AdminDashboard';
+import OwnerDashboard from './owner/OwnerDashboard';
 import UserDashboard from './user/UserDashboard';
 
 const Dashboard = () => {
@@ -29,6 +30,10 @@ const Dashboard = () => {
 
     if (user.role === 'admin' || user.role === 'staff') {
         return <AdminDashboard user={user} logout={logout} />;
+    }
+
+    if (user.role === 'owner') {
+        return <OwnerDashboard user={user} logout={logout} />;
     }
 
     return <UserDashboard user={user} logout={logout} />;

@@ -34,7 +34,10 @@ const AuthProvider = ({ children }) => {
                     setUser(data);
                     // If admin/staff, auto-set their restaurant if linked
                     if (data.restaurant && !selectedRestaurant) {
-                        setSelectedRestaurant(data.restaurant);
+                        const restaurantObj = typeof data.restaurant === 'string'
+                            ? { _id: data.restaurant, name: 'My Restaurant' }
+                            : data.restaurant;
+                        setSelectedRestaurant(restaurantObj);
                     }
                 }
             } catch (error) {
@@ -55,7 +58,10 @@ const AuthProvider = ({ children }) => {
         localStorage.setItem('token', data.token);
         setUser(data);
         if (data.restaurant) {
-            setSelectedRestaurant(data.restaurant);
+            const restaurantObj = typeof data.restaurant === 'string'
+                ? { _id: data.restaurant, name: 'My Restaurant' }
+                : data.restaurant;
+            setSelectedRestaurant(restaurantObj);
         }
         return data;
     };
@@ -64,6 +70,12 @@ const AuthProvider = ({ children }) => {
         const { data } = await apiRegister({ name, email, password, role });
         localStorage.setItem('token', data.token);
         setUser(data);
+        if (data.restaurant) {
+            const restaurantObj = typeof data.restaurant === 'string'
+                ? { _id: data.restaurant, name: 'My Restaurant' }
+                : data.restaurant;
+            setSelectedRestaurant(restaurantObj);
+        }
         return data;
     };
 
