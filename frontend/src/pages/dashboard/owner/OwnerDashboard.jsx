@@ -28,8 +28,24 @@ import {
 
 const OwnerDashboard = () => {
     const { user, logout, selectedRestaurant } = useContext(AuthContext);
+    console.log("OwnerDashboard Render - User:", user?.name, "Role:", user?.role, "Selected Restaurant:", selectedRestaurant?.name || 'NONE');
+
     const [activeTab, setActiveTab] = useState('Overview');
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const [showOnboarding, setShowOnboarding] = useState(false);
+
+    useEffect(() => {
+        // If no restaurant, wait 3 seconds for fallback fetch before showing onboarding
+        if (!selectedRestaurant) {
+            const timer = setTimeout(() => {
+                setShowOnboarding(true);
+            }, 3000);
+            return () => clearTimeout(timer);
+        } else {
+            setShowOnboarding(false);
+        }
+    }, [selectedRestaurant]);
+
     const [analytics, setAnalytics] = useState({
         totalOrders: 0,
         activeOrders: 0,
@@ -67,8 +83,28 @@ const OwnerDashboard = () => {
         }
     };
 
-    // If owner has no restaurant, show onboarding
+    // If owner has no restaurant, show onboarding after a brief sync attempt
     if (!selectedRestaurant) {
+        if (!showOnboarding) {
+            return (
+                <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="max-w-md w-full"
+                    >
+                        <div className="relative mb-8">
+                            <div className="w-24 h-24 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin mx-auto"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="w-12 h-12 bg-indigo-600 rounded-2xl animate-pulse rotate-45"></div>
+                            </div>
+                        </div>
+                        <h2 className="text-2xl font-bold text-white mb-2">Syncing your Dashboard...</h2>
+                        <p className="text-gray-400 mb-8">Please wait while we prepare your restaurant data.</p>
+                    </motion.div>
+                </div>
+            );
+        }
         return <CreateRestaurant />;
     }
 

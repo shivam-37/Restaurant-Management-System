@@ -4,7 +4,8 @@ import {
     login as apiLogin,
     register as apiRegister,
     forgotPassword as apiForgotPassword,
-    resetPassword as apiResetPassword
+    resetPassword as apiResetPassword,
+    getMyRestaurant
 } from '../services/api';
 
 const AuthContext = createContext();
@@ -14,7 +15,11 @@ const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [selectedRestaurant, setSelectedRestaurant] = useState(() => {
         const saved = localStorage.getItem('selectedRestaurant');
-        return saved ? JSON.parse(saved) : null;
+        try {
+            return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+            return null;
+        }
     });
 
     useEffect(() => {
@@ -32,12 +37,23 @@ const AuthProvider = ({ children }) => {
                 if (token) {
                     const { data } = await getMe();
                     setUser(data);
-                    // If staff, auto-set their linked restaurant. Admins start with platform view.
-                    if (data.restaurant && data.role === 'staff' && !selectedRestaurant) {
-                        const restaurantObj = typeof data.restaurant === 'string'
-                            ? { _id: data.restaurant, name: 'My Restaurant' }
-                            : data.restaurant;
-                        setSelectedRestaurant(restaurantObj);
+
+                    // If staff or owner, ensure they have a selected restaurant
+                    if ((data.role === 'staff' || data.role === 'owner') && !selectedRestaurant) {
+                        if (data.restaurant) {
+                            const restaurantObj = typeof data.restaurant === 'string'
+                                ? { _id: data.restaurant, name: 'My Restaurant' }
+                                : data.restaurant;
+                            setSelectedRestaurant(restaurantObj);
+                        } else if (data.role === 'owner') {
+                            // Fallback for owners: try to fetch by owner ID from server
+                            try {
+                                const { data: myRest } = await getMyRestaurant();
+                                if (myRest) setSelectedRestaurant(myRest);
+                            } catch (err) {
+                                console.log("No restaurant found for this owner yet");
+                            }
+                        }
                     }
                 }
             } catch (error) {
@@ -45,6 +61,7 @@ const AuthProvider = ({ children }) => {
                 if (error.response && error.response.status === 401) {
                     localStorage.removeItem('token');
                     setUser(null);
+                    setSelectedRestaurant(null);
                 }
             } finally {
                 setLoading(false);
@@ -56,26 +73,48 @@ const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         const { data } = await apiLogin({ email, password });
         localStorage.setItem('token', data.token);
-        setUser(data);
-        if (data.restaurant && data.role !== 'admin') {
-            const restaurantObj = typeof data.restaurant === 'string'
-                ? { _id: data.restaurant, name: data.restaurantName || 'My Restaurant' }
-                : data.restaurant;
-            setSelectedRestaurant(restaurantObj);
+
+        let restaurantToSet = null;
+
+        // Auto-select restaurant for non-admins
+        if (data.role !== 'admin') {
+            if (data.restaurant) {
+                restaurantToSet = typeof data.restaurant === 'string'
+                    ? { _id: data.restaurant, name: data.restaurantName || 'My Restaurant' }
+                    : data.restaurant;
+            } else if (data.role === 'owner') {
+                try {
+                    const { data: myRest } = await getMyRestaurant();
+                    if (myRest) restaurantToSet = myRest;
+                } catch (err) {
+                    console.log("Owner login: No restaurant found to auto-select");
+                }
+            }
         }
+
+        if (restaurantToSet) setSelectedRestaurant(restaurantToSet);
+        setUser(data);
         return data;
     };
 
     const register = async (name, email, password, role) => {
         const { data } = await apiRegister({ name, email, password, role });
         localStorage.setItem('token', data.token);
-        setUser(data);
-        if (data.restaurant && data.role !== 'admin') {
-            const restaurantObj = typeof data.restaurant === 'string'
-                ? { _id: data.restaurant, name: data.restaurantName || 'My Restaurant' }
-                : data.restaurant;
-            setSelectedRestaurant(restaurantObj);
+
+        let restaurantToSet = null;
+
+        // Auto-select if role is owner (might have been created in backend?)
+        if (data.role === 'owner') {
+            try {
+                const { data: myRest } = await getMyRestaurant();
+                if (myRest) restaurantToSet = myRest;
+            } catch (err) {
+                // Expected for new owners
+            }
         }
+
+        if (restaurantToSet) setSelectedRestaurant(restaurantToSet);
+        setUser(data);
         return data;
     };
 

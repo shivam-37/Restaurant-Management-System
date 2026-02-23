@@ -23,6 +23,30 @@ const getRestaurantDetails = asyncHandler(async (req, res) => {
     res.json(restaurant);
 });
 
+// @desc    Get current user's restaurant
+// @route   GET /api/restaurant/my
+// @access  Private
+const getMyRestaurant = asyncHandler(async (req, res) => {
+    // 1. Try to find by the linked ID on user
+    if (req.user.restaurant) {
+        const restaurant = await Restaurant.findById(req.user.restaurant);
+        if (restaurant) return res.json(restaurant);
+    }
+
+    // 2. Fallback: Find by owner field (for owners)
+    const restaurant = await Restaurant.findOne({ owner: req.user._id });
+    if (!restaurant) {
+        res.status(404);
+        throw new Error('Restaurant not found for this owner');
+    }
+
+    // Also link it back to user for future speed
+    const User = require('../models/User');
+    await User.findByIdAndUpdate(req.user._id, { restaurant: restaurant._id });
+
+    res.json(restaurant);
+});
+
 // @desc    Update a table status
 // @route   PUT /api/restaurant/:id/table/:number
 // @access  Private/Admin
@@ -65,6 +89,7 @@ const createRestaurant = asyncHandler(async (req, res) => {
         address,
         cuisine,
         image,
+        owner: req.user._id,
         tables: tables || [
             { number: 1, capacity: 4, status: 'Available' },
             { number: 2, capacity: 4, status: 'Available' },
@@ -72,6 +97,10 @@ const createRestaurant = asyncHandler(async (req, res) => {
             { number: 4, capacity: 6, status: 'Available' }
         ]
     });
+
+    // Link restaurant to the user
+    const User = require('../models/User');
+    await User.findByIdAndUpdate(req.user._id, { restaurant: restaurant._id });
 
     res.status(201).json(restaurant);
 });
@@ -93,4 +122,4 @@ const updateRestaurant = asyncHandler(async (req, res) => {
     res.json(updatedRestaurant);
 });
 
-module.exports = { getRestaurants, getRestaurantDetails, updateTableStatus, createRestaurant, updateRestaurant };
+module.exports = { getRestaurants, getRestaurantDetails, getMyRestaurant, updateTableStatus, createRestaurant, updateRestaurant };

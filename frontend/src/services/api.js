@@ -50,6 +50,7 @@ export const markNotificationRead = (id) => api.put(`/notifications/${id}/read`)
 // Restaurant APIs
 export const getRestaurants = () => api.get('/restaurant');
 export const getRestaurantDetails = (id) => api.get(`/restaurant/${id}`);
+export const getMyRestaurant = () => api.get('/restaurant/my');
 export const createRestaurant = (data) => api.post('/restaurant', data);
 export const updateRestaurant = (id, data) => api.put(`/restaurant/${id}`, data);
 export const updateTableStatus = (id, number, status) => api.put(`/restaurant/${id}/table/${number}`, { status });

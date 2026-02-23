@@ -6,6 +6,10 @@ const restaurantSchema = mongoose.Schema({
     address: { type: String },
     cuisine: { type: String },
     image: { type: String },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
     rating: { type: Number, default: 4.5 },
     tables: [
         {
