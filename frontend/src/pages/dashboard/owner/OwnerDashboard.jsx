@@ -7,6 +7,8 @@ import Settings from '../Settings';
 import KitchenDisplay from '../admin/KitchenDisplay'; // Reusing components
 import TableMap from '../admin/TableMap';
 import CreateRestaurant from '../../../components/owner/CreateRestaurant';
+import Reservations from '../Reservations';
+import NotificationTray from '../NotificationTray';
 import AuthContext from '../../../context/AuthContext';
 import {
     HomeIcon,
@@ -23,7 +25,10 @@ import {
     ExclamationTriangleIcon,
     CurrencyDollarIcon,
     ClockIcon,
-    UserGroupIcon
+    UserGroupIcon,
+    ChartBarIcon,
+    CalendarIcon,
+    ChartPieIcon
 } from '@heroicons/react/24/outline';
 
 const OwnerDashboard = () => {
@@ -111,16 +116,18 @@ const OwnerDashboard = () => {
     const navItems = [
         { name: 'Overview', icon: HomeIcon, color: 'from-blue-500 to-cyan-500' },
         { name: 'Menu', icon: ClipboardDocumentListIcon, color: 'from-purple-500 to-pink-500' },
-        { name: 'Orders', icon: ShoppingBagIcon, color: 'from-green-500 to-emerald-500' },
-        { name: 'Kitchen', icon: FireIcon, color: 'from-orange-500 to-red-500' },
+        { name: 'Staff', icon: UserGroupIcon, color: 'from-green-500 to-teal-500' },
+        { name: 'Reservations', icon: CalendarIcon, color: 'from-yellow-500 to-amber-500' },
+        { name: 'Performance', icon: ChartPieIcon, color: 'from-cyan-500 to-blue-500' },
         { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-indigo-500' },
+        { name: 'Analytics', icon: ChartBarIcon, color: 'from-indigo-500 to-purple-500' },
         { name: 'Settings', icon: Cog6ToothIcon, color: 'from-gray-500 to-gray-600' },
     ];
 
     const stats = [
         {
             label: 'Total Sales',
-            value: `$${analytics.totalSales}`,
+            value: `$${(analytics.totalSales || 0).toLocaleString()}`,
             icon: CurrencyDollarIcon,
             color: 'from-green-500 to-emerald-500',
             bgColor: 'bg-green-500/20',
@@ -260,8 +267,10 @@ const OwnerDashboard = () => {
                         <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                             {activeTab === 'Menu' && <Menu />}
                             {activeTab === 'Orders' && <Orders />}
-                            {activeTab === 'Kitchen' && <KitchenDisplay />}
+                            {activeTab === 'Reservations' && <Reservations />}
+                            {activeTab === 'Staff' && <KitchenDisplay />}
                             {activeTab === 'Table Map' && <TableMap />}
+                            {activeTab === 'Analytics' && <Analytics />}
                             {activeTab === 'Settings' && <Settings />}
                         </motion.div>
                     </AnimatePresence>

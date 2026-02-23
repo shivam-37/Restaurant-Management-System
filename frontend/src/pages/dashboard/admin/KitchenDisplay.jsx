@@ -100,7 +100,7 @@ const KitchenDisplay = () => {
 
                             {/* Ticket Items */}
                             <div className="p-5 flex-1 space-y-3">
-                                {order.items.map((item, idx) => (
+                                {(order.items || []).map((item, idx) => (
                                     <div key={idx} className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
                                         <div className="flex items-center gap-3">
                                             <span className="w-8 h-8 flex items-center justify-center bg-white/10 rounded-lg font-black text-lg">

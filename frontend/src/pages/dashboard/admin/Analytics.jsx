@@ -51,7 +51,7 @@ const Analytics = () => {
                 <div className="flex justify-between items-end mb-8">
                     <div>
                         <p className="text-gray-400 text-sm mb-1">Weekly Revenue</p>
-                        <h3 className="text-3xl font-bold text-white">${data.totalSales.toLocaleString()}</h3>
+                        <h3 className="text-3xl font-bold text-white">${(data.totalSales || 0).toLocaleString()}</h3>
                     </div>
                 </div>
 
@@ -90,7 +90,7 @@ const Analytics = () => {
                     <div>
                         <p className="text-gray-400 text-sm mb-1">Avg. Order Value</p>
                         <h4 className="text-2xl font-bold text-white">
-                            ${(data.totalSales / (data.totalOrders || 1)).toFixed(2)}
+                            ${((data.totalSales || 0) / (data.totalOrders || 1)).toFixed(2)}
                         </h4>
                     </div>
                     <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">

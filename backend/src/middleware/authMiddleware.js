@@ -34,11 +34,11 @@ const protect = asyncHandler(async (req, res, next) => {
 });
 
 const admin = (req, res, next) => {
-    if (req.user && (req.user.role === 'admin' || req.user.role === 'owner')) {
+    if (req.user && (req.user.role === 'admin' || req.user.role === 'owner' || req.user.role === 'staff')) {
         next();
     } else {
         res.status(401);
-        throw new Error('Not authorized as an admin or owner');
+        throw new Error('Not authorized as an admin, owner or staff');
     }
 };
 

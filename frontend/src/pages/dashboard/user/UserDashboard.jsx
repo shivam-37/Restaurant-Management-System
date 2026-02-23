@@ -1,9 +1,10 @@
 import { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getAnalytics } from '../../../services/api';
+import { getAnalytics, getRestaurants } from '../../../services/api';
 import Menu from '../Menu';
 import Orders from '../Orders';
 import Settings from '../Settings';
+import Reservations from '../Reservations';
 import NotificationTray from '../NotificationTray';
 import AuthContext from '../../../context/AuthContext';
 import {
@@ -17,11 +18,16 @@ import {
     CurrencyDollarIcon,
     ClockIcon,
     SparklesIcon,
-    CalendarIcon
+    CalendarIcon,
+    MapPinIcon,
+    ArrowRightIcon,
+    ArrowPathIcon
 } from '@heroicons/react/24/outline';
 
 const UserDashboard = ({ user, logout }) => {
-    const { selectedRestaurant } = useContext(AuthContext);
+    const { selectedRestaurant, setSelectedRestaurant } = useContext(AuthContext);
+    const [restaurants, setRestaurants] = useState([]);
+    const [loadingRestaurants, setLoadingRestaurants] = useState(false);
     const [activeTab, setActiveTab] = useState('Overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -32,8 +38,24 @@ const UserDashboard = ({ user, logout }) => {
     });
 
     useEffect(() => {
-        fetchAnalytics();
+        if (selectedRestaurant) {
+            fetchAnalytics();
+        } else {
+            fetchRestaurants();
+        }
     }, [selectedRestaurant?._id]);
+
+    const fetchRestaurants = async () => {
+        setLoadingRestaurants(true);
+        try {
+            const { data } = await getRestaurants();
+            setRestaurants(data);
+        } catch (error) {
+            console.error("Failed to fetch restaurants");
+        } finally {
+            setLoadingRestaurants(false);
+        }
+    };
 
     const fetchAnalytics = async () => {
         try {
@@ -143,20 +165,87 @@ const UserDashboard = ({ user, logout }) => {
                         <h1 className="text-2xl font-bold text-white">{activeTab}</h1>
                         <p className="text-sm text-gray-400">Welcome back, {user?.name} {selectedRestaurant ? `at ${selectedRestaurant.name}` : ''}</p>
                     </div>
-                    <NotificationTray />
+                    <div className="flex items-center gap-4">
+                        {selectedRestaurant && (
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => setSelectedRestaurant(null)}
+                                className="hidden md:flex items-center px-4 py-2 bg-white/5 hover:bg-white/10 border border-gray-800 rounded-xl text-[10px] font-black text-gray-400 uppercase tracking-widest transition"
+                            >
+                                <ArrowPathIcon className="w-4 h-4 mr-2" />
+                                Switch Restaurant
+                            </motion.button>
+                        )}
+                        <NotificationTray />
+                    </div>
                 </header>
 
                 <div className="p-8">
                     {activeTab === 'Overview' && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            {stats.map((stat, idx) => (
-                                <div key={idx} className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-800">
-                                    <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
-                                    <p className="text-2xl font-bold text-white">{stat.value}</p>
-                                    <stat.icon className={`w-8 h-8 mt-4 text-indigo-400`} />
+                        <>
+                            {!selectedRestaurant ? (
+                                <div className="space-y-8">
+                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                        <div>
+                                            <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Discover Restaurants</h2>
+                                            <p className="text-gray-400 font-medium">Pick a place to browse their menu and book a table</p>
+                                        </div>
+                                    </div>
+
+                                    {loadingRestaurants ? (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            {[1, 2, 3].map(i => (
+                                                <div key={i} className="h-64 bg-white/5 rounded-3xl animate-pulse" />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            {restaurants.map((res) => (
+                                                <motion.div
+                                                    key={res._id}
+                                                    whileHover={{ y: -8 }}
+                                                    className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 border border-gray-800 hover:border-indigo-500/50 transition-all cursor-pointer overflow-hidden"
+                                                    onClick={() => {
+                                                        setSelectedRestaurant(res);
+                                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                    }}
+                                                >
+                                                    <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <ArrowRightIcon className="w-6 h-6 text-indigo-400" />
+                                                    </div>
+                                                    <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 shadow-lg shadow-indigo-600/20">
+                                                        {res.name.charAt(0)}
+                                                    </div>
+                                                    <h3 className="text-xl font-bold text-white mb-2">{res.name}</h3>
+                                                    <p className="text-sm text-gray-400 mb-6 line-clamp-2">{res.description || "Premium dining experience awaits you."}</p>
+                                                    <div className="flex items-center gap-4 text-xs text-indigo-400 font-bold uppercase tracking-widest">
+                                                        <div className="flex items-center gap-1">
+                                                            <MapPinIcon className="w-4 h-4" />
+                                                            {res.cuisine}
+                                                        </div>
+                                                        <div className="flex items-center gap-1">
+                                                            <CalendarIcon className="w-4 h-4" />
+                                                            Book Table
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                            ))}
-                        </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                    {stats.map((stat, idx) => (
+                                        <div key={idx} className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-800">
+                                            <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
+                                            <p className="text-2xl font-bold text-white">{stat.value}</p>
+                                            <stat.icon className={`w-8 h-8 mt-4 text-indigo-400`} />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </>
                     )}
 
                     <AnimatePresence mode="wait">
@@ -164,13 +253,7 @@ const UserDashboard = ({ user, logout }) => {
                             {activeTab === 'Menu' && <Menu />}
                             {(activeTab === 'My Orders' || activeTab === 'Orders') && <Orders />}
                             {activeTab === 'Settings' && <Settings />}
-                            {activeTab === 'Reservations' && (
-                                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-800 p-12 text-center">
-                                    <CalendarIcon className="w-10 h-10 text-orange-400 mx-auto mb-4" />
-                                    <h3 className="text-xl font-semibold text-white mb-2">My Reservations</h3>
-                                    <p className="text-gray-400">Coming Soon</p>
-                                </div>
-                            )}
+                            {activeTab === 'Reservations' && <Reservations />}
                         </motion.div>
                     </AnimatePresence>
                 </div>

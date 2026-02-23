@@ -8,6 +8,7 @@ import Customers from './Customers';
 import Analytics from './Analytics';
 import KitchenDisplay from './KitchenDisplay';
 import TableMap from './TableMap';
+import Reservations from '../Reservations';
 import NotificationTray from '../NotificationTray';
 import {
     HomeIcon,
@@ -28,7 +29,9 @@ import {
     ExclamationTriangleIcon,
     ArrowPathIcon,
     MapIcon,
-    CheckCircleIcon
+    CheckCircleIcon,
+    ArrowRightIcon,
+    CalendarIcon
 } from '@heroicons/react/24/outline';
 
 import AuthContext from '../../../context/AuthContext';
@@ -36,7 +39,7 @@ import { useContext } from 'react';
 
 // Main administration console
 const AdminDashboard = () => {
-    const { user, logout, selectedRestaurant } = useContext(AuthContext);
+    const { user, logout, selectedRestaurant, setSelectedRestaurant } = useContext(AuthContext);
     const [activeTab, setActiveTab] = useState('Overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -81,6 +84,7 @@ const AdminDashboard = () => {
         { name: 'Kitchen', icon: FireIcon, color: 'from-orange-500 to-red-500' },
         { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-indigo-500' },
         { name: 'Orders', icon: ShoppingBagIcon, color: 'from-green-500 to-emerald-500' },
+        { name: 'Reservations', icon: CalendarIcon, color: 'from-yellow-500 to-amber-500' },
         { name: 'Customers', icon: UsersIcon, color: 'from-orange-500 to-red-500' },
         { name: 'Analytics', icon: ChartBarIcon, color: 'from-indigo-500 to-purple-500' },
         { name: 'Settings', icon: Cog6ToothIcon, color: 'from-gray-500 to-gray-600' },
@@ -89,7 +93,7 @@ const AdminDashboard = () => {
     const stats = [
         {
             label: 'Total Sales',
-            value: `$${analytics.totalSales}`,
+            value: `$${(analytics.totalSales || 0).toLocaleString()}`,
             change: '+12.5%',
             icon: CurrencyDollarIcon,
             color: 'from-green-500 to-emerald-500',
@@ -255,6 +259,45 @@ const AdminDashboard = () => {
                         >
                             {activeTab === 'Overview' && (
                                 <div className="space-y-8">
+                                    {/* Selected Restaurant Profile Header */}
+                                    {selectedRestaurant && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: -20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="bg-indigo-600/10 border border-indigo-500/20 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6"
+                                        >
+                                            <div className="w-20 h-20 bg-indigo-600 rounded-2xl flex items-center justify-center text-3xl font-bold shadow-lg shadow-indigo-600/20">
+                                                {selectedRestaurant.name.charAt(0)}
+                                            </div>
+                                            <div className="flex-1 text-center md:text-left">
+                                                <div className="flex items-center justify-center md:justify-start gap-3 mb-1">
+                                                    <h2 className="text-2xl font-bold text-white">{selectedRestaurant.name}</h2>
+                                                    <span className="px-2 py-0.5 bg-indigo-500/20 text-indigo-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-500/20">Active Establishment</span>
+                                                </div>
+                                                <p className="text-indigo-300/60 text-sm max-w-xl">{selectedRestaurant.description || "No description provided for this establishment."}</p>
+                                                <div className="flex items-center justify-center md:justify-start gap-4 mt-3">
+                                                    <div className="flex items-center gap-1 text-xs text-indigo-400/80">
+                                                        <MapIcon className="w-3 h-3" />
+                                                        {selectedRestaurant.address}
+                                                    </div>
+                                                    <div className="flex items-center gap-1 text-xs text-indigo-400/80">
+                                                        <FireIcon className="w-3 h-3" />
+                                                        {selectedRestaurant.cuisine} Cuisine
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => {
+                                                    // This resets the state and shows global platform view
+                                                    setSelectedRestaurant(null);
+                                                }}
+                                                className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-600/30 hover:bg-indigo-500 transition active:scale-95"
+                                            >
+                                                Platform View
+                                            </button>
+                                        </motion.div>
+                                    )}
+
                                     <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                         {stats.map((stat, idx) => {
                                             const Icon = stat.icon;
@@ -326,11 +369,82 @@ const AdminDashboard = () => {
                                             </div>
                                         )}
                                     </motion.div>
+                                    {/* Multi-Establishment Performance Table (Platform View Only) */}
+                                    {!selectedRestaurant && analytics.restaurantStats && analytics.restaurantStats.length > 0 && (
+                                        <motion.div variants={fadeInUp} className="bg-gray-900/40 border border-gray-800 rounded-3xl overflow-hidden backdrop-blur-xl">
+                                            <div className="p-8 border-b border-gray-800 flex items-center justify-between">
+                                                <div>
+                                                    <h2 className="text-xl font-bold text-white">Multi-Establishment Performance</h2>
+                                                    <p className="text-sm text-gray-400">Establishment-wise breakdown of key metrics</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => setActiveTab('Restaurants')}
+                                                    className="px-4 py-2 bg-indigo-600/10 text-indigo-400 border border-indigo-600/20 rounded-xl hover:bg-indigo-600 hover:text-white transition font-bold text-xs uppercase tracking-widest"
+                                                >
+                                                    Manage All
+                                                </button>
+                                            </div>
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-left">
+                                                    <thead>
+                                                        <tr className="bg-black/20 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
+                                                            <th className="px-8 py-4">Establishment</th>
+                                                            <th className="px-8 py-4">Orders</th>
+                                                            <th className="px-8 py-4">Active</th>
+                                                            <th className="px-8 py-4 text-right">Revenue</th>
+                                                            <th className="px-8 py-4">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-gray-800/50">
+                                                        {analytics.restaurantStats.map((stat) => (
+                                                            <tr key={stat.id} className="group hover:bg-white/5 transition-colors">
+                                                                <td className="px-8 py-5">
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="w-10 h-10 bg-indigo-600/20 rounded-xl flex items-center justify-center text-indigo-400 font-bold border border-indigo-500/20">
+                                                                            {stat.name.charAt(0)}
+                                                                        </div>
+                                                                        <div>
+                                                                            <p className="text-sm font-bold text-white uppercase tracking-wider">{stat.name}</p>
+                                                                            <p className="text-xs text-gray-500">{stat.cuisine} Cuisine</p>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-8 py-5">
+                                                                    <span className="text-sm font-medium text-gray-300">{stat.totalOrders}</span>
+                                                                </td>
+                                                                <td className="px-8 py-5">
+                                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${stat.activeOrders > 0 ? 'bg-orange-500/20 text-orange-400' : 'bg-gray-800 text-gray-500'}`}>
+                                                                        {stat.activeOrders} Active
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-8 py-5 text-right">
+                                                                    <span className="text-sm font-bold text-green-400">${(stat.totalSales || 0).toLocaleString()}</span>
+                                                                </td>
+                                                                <td className="px-8 py-5">
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            setSelectedRestaurant(stat);
+                                                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                                        }}
+                                                                        className="p-2 opacity-0 group-hover:opacity-100 bg-white/5 hover:bg-indigo-600 hover:text-white rounded-lg transition-all"
+                                                                    >
+                                                                        <ArrowRightIcon className="w-4 h-4" />
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </motion.div>
+                                    )}
+
                                     <Analytics />
                                 </div>
                             )}
                             {activeTab === 'Restaurants' && <RestaurantManagement onSelect={setActiveTab} />}
                             {activeTab === 'Orders' && <Orders />}
+                            {activeTab === 'Reservations' && <Reservations />}
                             {activeTab === 'Kitchen' && <KitchenDisplay />}
                             {activeTab === 'Table Map' && <TableMap />}
                             {activeTab === 'Settings' && <Settings />}

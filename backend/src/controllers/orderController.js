@@ -153,6 +153,30 @@ const getAnalytics = asyncHandler(async (req, res) => {
         newCustomers = 0; // Not applicable for regular users
     }
 
+    // Get per-restaurant stats for Admin (if no restaurantId is specified)
+    let restaurantStats = [];
+    if (!restaurantId && (req.user.role === 'admin' || req.user.role === 'staff')) {
+        const Restaurant = require('../models/Restaurant');
+        const restaurants = await Restaurant.find({});
+
+        restaurantStats = await Promise.all(restaurants.map(async (r) => {
+            const rOrders = await Order.find({ restaurant: r._id });
+            const rTotalSales = rOrders
+                .filter(o => o.status === 'Completed')
+                .reduce((acc, o) => acc + o.totalPrice, 0);
+
+            return {
+                id: r._id,
+                name: r.name,
+                totalOrders: rOrders.length,
+                activeOrders: rOrders.filter(o => o.status !== 'Completed' && o.status !== 'Cancelled').length,
+                totalSales: rTotalSales,
+                cuisine: r.cuisine,
+                tableCount: r.tables?.length || 0
+            };
+        }));
+    }
+
     // Get daily sales for the last 7 days (Admin only)
     let dailySales = [];
     if (req.user.role === 'admin' || req.user.role === 'staff') {
@@ -186,6 +210,7 @@ const getAnalytics = asyncHandler(async (req, res) => {
         totalSales,
         newCustomers,
         dailySales,
+        restaurantStats,
         loyaltyPoints: user ? user.loyaltyPoints : 0
     });
 });

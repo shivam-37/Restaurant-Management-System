@@ -126,7 +126,7 @@ const Orders = () => {
             <div className="flex justify-between items-end mb-8">
                 <div>
                     <h1 className="text-2xl font-bold text-white mb-1">
-                        {(user?.role === 'admin' || user?.role === 'staff') ? 'Order Flow' : 'My Orders'}
+                        {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner') ? 'Order Flow' : 'My Orders'}
                     </h1>
                     <p className="text-gray-400 text-sm">Real-time status tracking for all orders</p>
                 </div>
@@ -150,13 +150,19 @@ const Orders = () => {
                                 <div className="flex-1">
                                     <div className="flex items-center gap-4 mb-4">
                                         <div className="w-12 h-12 bg-indigo-600/10 rounded-xl flex items-center justify-center text-indigo-400 font-bold border border-indigo-500/20">
-                                            #{order.tableNumber}
+                                            {order.tableNumber}
                                         </div>
                                         <div>
-                                            <div className="flex items-center gap-3">
-                                                <h3 className="font-bold text-white">Order #{order._id.slice(-6).toUpperCase()}</h3>
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-bold text-white">Table {order.tableNumber}</h3>
+                                                {!selectedRestaurant && (
+                                                    <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-md text-[10px] font-black uppercase tracking-wider border border-indigo-500/10">
+                                                        {order.restaurant?.name || 'Local'}
+                                                    </span>
+                                                )}
                                                 <StatusBadge status={order.status} />
                                             </div>
+                                            <p className="text-xs text-gray-500">{(order.items || []).length} items • ${(order.totalPrice || 0).toFixed(2)}</p>
                                             <p className="text-[10px] text-gray-500 mt-1">
                                                 Placed {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
@@ -164,15 +170,15 @@ const Orders = () => {
                                     </div>
 
                                     <div className="space-y-2 mb-4 bg-black/20 p-4 rounded-xl">
-                                        {order.items.map((item, idx) => (
+                                        {(order.items || []).map((item, idx) => (
                                             <div key={idx} className="flex justify-between text-sm">
                                                 <span className="text-gray-300">{item.quantity}x {item.name}</span>
-                                                <span className="text-gray-500">${(item.price * item.quantity).toFixed(2)}</span>
+                                                <span className="text-gray-500">${((item.price || 0) * (item.quantity || 0)).toFixed(2)}</span>
                                             </div>
                                         ))}
                                         <div className="pt-2 border-t border-gray-700 flex justify-between items-center">
                                             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total</span>
-                                            <span className="text-lg font-bold text-indigo-400">${order.totalPrice.toFixed(2)}</span>
+                                            <span className="text-lg font-bold text-indigo-400">${(order.totalPrice || 0).toFixed(2)}</span>
                                         </div>
                                     </div>
 
@@ -206,8 +212,8 @@ const Orders = () => {
                                     )}
                                 </div>
 
-                                {/* Admin Actions */}
-                                {(user?.role === 'admin' || user?.role === 'staff') && (
+                                {/* Admin/Owner Actions */}
+                                {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner') && (
                                     <div className="flex flex-col gap-2 w-full md:w-auto">
                                         {order.status === 'Pending' && (
                                             <button

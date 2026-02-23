@@ -6,9 +6,9 @@ const {
     updateMenuItem,
     deleteMenuItem
 } = require('../controllers/menuController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, admin } = require('../middleware/authMiddleware');
 
-router.route('/').get(getMenuItems).post(protect, createMenuItem);
-router.route('/:id').put(protect, updateMenuItem).delete(protect, deleteMenuItem);
+router.route('/').get(getMenuItems).post(protect, admin, createMenuItem);
+router.route('/:id').put(protect, admin, updateMenuItem).delete(protect, admin, deleteMenuItem);
 
 module.exports = router;

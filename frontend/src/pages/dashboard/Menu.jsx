@@ -249,16 +249,18 @@ const Menu = () => {
             >
                 <div>
                     <h1 className="text-2xl font-bold text-white">
-                        {(user?.role === 'admin' || user?.role === 'staff') ? 'Menu Management' : 'Our Menu'}
+                        {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner')
+                            ? `Menu Management ${selectedRestaurant ? `• ${selectedRestaurant.name}` : ''}`
+                            : selectedRestaurant ? `${selectedRestaurant.name} Menu` : 'Our Menu'}
                     </h1>
                     <p className="text-gray-400 text-sm mt-1">
-                        {(user?.role === 'admin' || user?.role === 'staff')
-                            ? 'Manage your restaurant\'s menu items'
-                            : 'Explore our delicious selection of dishes'}
+                        {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner')
+                            ? `Manage items for ${selectedRestaurant?.name || 'your restaurant'}`
+                            : `Discover the flavors of ${selectedRestaurant?.name || 'our kitchen'}`}
                     </p>
                 </div>
 
-                {(user?.role === 'admin' || user?.role === 'staff') ? (
+                {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner') ? (
                     <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -424,7 +426,7 @@ const Menu = () => {
                                                 </p>
 
                                                 {/* Action Buttons */}
-                                                {(user?.role === 'admin' || user?.role === 'staff') ? (
+                                                {(user?.role === 'admin' || user?.role === 'staff' || user?.role === 'owner') ? (
                                                     <div className="flex justify-end gap-2 pt-2 border-t border-gray-800">
                                                         <motion.button
                                                             whileHover={{ scale: 1.1 }}
