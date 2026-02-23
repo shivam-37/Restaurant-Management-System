@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getRestaurants, getRestaurantDetails, updateTableStatus, createRestaurant } = require('../controllers/restaurantController');
+const { getRestaurants, getRestaurantDetails, updateTableStatus, createRestaurant, updateRestaurant } = require('../controllers/restaurantController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 // Public routes

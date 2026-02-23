@@ -33,6 +33,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // Create user
     role = role ? role.toLowerCase() : 'user';
+    console.log(`Attempting to register user with role: ${role}`);
     const user = await User.create({
         name,
         email,

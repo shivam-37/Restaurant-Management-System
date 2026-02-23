@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+console.log('User Model Loaded with roles:', ['user', 'admin', 'staff', 'owner']);
+
 const userSchema = mongoose.Schema({
     name: {
         type: String,
@@ -23,7 +25,10 @@ const userSchema = mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin', 'staff', 'owner'],
+        enum: {
+            values: ['user', 'admin', 'staff', 'owner'],
+            message: '{VALUE} is not a valid role (current version includes owner)'
+        },
         default: 'user'
     },
     restaurant: {
