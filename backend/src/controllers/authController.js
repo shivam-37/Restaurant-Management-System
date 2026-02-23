@@ -42,20 +42,7 @@ const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
-        // Auto-create restaurant if admin
-        if (role === 'admin') {
-            const restaurant = await Restaurant.create({
-                name: `${name}'s Restaurant`,
-                tables: [
-                    { number: 1, capacity: 4, status: 'Available' },
-                    { number: 2, capacity: 4, status: 'Available' },
-                    { number: 3, capacity: 2, status: 'Available' },
-                    { number: 4, capacity: 6, status: 'Available' }
-                ]
-            });
-            user.restaurant = restaurant._id;
-            await user.save();
-        }
+        // Auto-create restaurant logic removed for admin to allow pure platform oversight
 
         res.status(201).json({
             _id: user.id,

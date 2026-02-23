@@ -32,8 +32,8 @@ const AuthProvider = ({ children }) => {
                 if (token) {
                     const { data } = await getMe();
                     setUser(data);
-                    // If admin/staff, auto-set their restaurant if linked
-                    if (data.restaurant && !selectedRestaurant) {
+                    // If staff, auto-set their linked restaurant. Admins start with platform view.
+                    if (data.restaurant && data.role === 'staff' && !selectedRestaurant) {
                         const restaurantObj = typeof data.restaurant === 'string'
                             ? { _id: data.restaurant, name: 'My Restaurant' }
                             : data.restaurant;
@@ -57,9 +57,9 @@ const AuthProvider = ({ children }) => {
         const { data } = await apiLogin({ email, password });
         localStorage.setItem('token', data.token);
         setUser(data);
-        if (data.restaurant) {
+        if (data.restaurant && data.role !== 'admin') {
             const restaurantObj = typeof data.restaurant === 'string'
-                ? { _id: data.restaurant, name: 'My Restaurant' }
+                ? { _id: data.restaurant, name: data.restaurantName || 'My Restaurant' }
                 : data.restaurant;
             setSelectedRestaurant(restaurantObj);
         }
@@ -70,9 +70,9 @@ const AuthProvider = ({ children }) => {
         const { data } = await apiRegister({ name, email, password, role });
         localStorage.setItem('token', data.token);
         setUser(data);
-        if (data.restaurant) {
+        if (data.restaurant && data.role !== 'admin') {
             const restaurantObj = typeof data.restaurant === 'string'
-                ? { _id: data.restaurant, name: 'My Restaurant' }
+                ? { _id: data.restaurant, name: data.restaurantName || 'My Restaurant' }
                 : data.restaurant;
             setSelectedRestaurant(restaurantObj);
         }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAnalytics, predictInventory } from '../../../services/api';
-import Menu from '../Menu';
+import RestaurantManagement from './RestaurantManagement';
 import Orders from '../Orders';
 import Settings from '../Settings';
 import Customers from './Customers';
@@ -77,7 +77,7 @@ const AdminDashboard = () => {
 
     const navItems = [
         { name: 'Overview', icon: HomeIcon, color: 'from-blue-500 to-cyan-500' },
-        { name: 'Menu', icon: ClipboardDocumentListIcon, color: 'from-purple-500 to-pink-500' },
+        { name: 'Restaurants', icon: ClipboardDocumentListIcon, color: 'from-purple-500 to-pink-500' },
         { name: 'Kitchen', icon: FireIcon, color: 'from-orange-500 to-red-500' },
         { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-indigo-500' },
         { name: 'Orders', icon: ShoppingBagIcon, color: 'from-green-500 to-emerald-500' },
@@ -232,7 +232,7 @@ const AdminDashboard = () => {
                     <div className="flex items-center justify-between px-8 py-4">
                         <div>
                             <motion.h1 key={activeTab} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-2xl font-bold text-white">{activeTab}</motion.h1>
-                            <p className="text-sm text-gray-400 mt-1">{selectedRestaurant?.name || 'Admin Control Center'}</p>
+                            <p className="text-sm text-gray-400 mt-1">{selectedRestaurant ? selectedRestaurant.name : 'Platform Overview'}</p>
                         </div>
                         <div className="flex items-center space-x-4">
                             <div className="relative">
@@ -245,85 +245,91 @@ const AdminDashboard = () => {
                 </motion.header>
 
                 <div className="p-8">
-                    {activeTab === 'Overview' && (
-                        <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                            {stats.map((stat, idx) => {
-                                const Icon = stat.icon;
-                                return (
-                                    <motion.div key={idx} variants={fadeInUp} whileHover={{ y: -4 }} className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition-all duration-300 overflow-hidden">
-                                        <div className={`absolute inset-0 ${stat.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-                                        <div className="flex items-start justify-between">
-                                            <div>
-                                                <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
-                                                <p className="text-2xl font-bold text-white">{stat.value}</p>
-                                                <p className="text-xs text-green-400 mt-1">{stat.change}</p>
-                                            </div>
-                                            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} p-3 shadow-lg`}><Icon className="w-6 h-6 text-white" /></div>
-                                        </div>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeTab}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            {activeTab === 'Overview' && (
+                                <div className="space-y-8">
+                                    <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                        {stats.map((stat, idx) => {
+                                            const Icon = stat.icon;
+                                            return (
+                                                <motion.div key={idx} variants={fadeInUp} whileHover={{ y: -4 }} className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-800 hover:border-gray-700 transition-all duration-300 overflow-hidden">
+                                                    <div className={`absolute inset-0 ${stat.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                                                    <div className="flex items-start justify-between">
+                                                        <div>
+                                                            <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
+                                                            <p className="text-2xl font-bold text-white">{stat.value}</p>
+                                                            <p className="text-xs text-green-400 mt-1">{stat.change}</p>
+                                                        </div>
+                                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} p-3 shadow-lg`}><Icon className="w-6 h-6 text-white" /></div>
+                                                    </div>
+                                                </motion.div>
+                                            );
+                                        })}
                                     </motion.div>
-                                );
-                            })}
-                        </motion.div>
-                    )}
 
-                    {activeTab === 'Overview' && (
-                        <motion.div variants={fadeInUp} initial="initial" animate="animate" className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-3xl p-8 mb-8 backdrop-blur-xl">
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
-                                        <SparklesIcon className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-bold text-white">Gemini AI Stock Predictions</h2>
-                                        <p className="text-sm text-indigo-300">Intelligent inventory forecasting</p>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={fetchAIPredictions}
-                                    disabled={isPredicting}
-                                    className="p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition group"
-                                >
-                                    <ArrowPathIcon className={`w-5 h-5 text-indigo-400 group-hover:rotate-180 transition-transform duration-500 ${isPredicting ? 'animate-spin' : ''}`} />
-                                </button>
-                            </div>
-
-                            {isPredicting ? (
-                                <div className="space-y-4">
-                                    {[1, 2].map(i => (
-                                        <div key={i} className="h-20 bg-white/5 rounded-2xl animate-pulse"></div>
-                                    ))}
-                                </div>
-                            ) : predictions.length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {predictions.map((p, idx) => (
-                                        <div key={idx} className="bg-black/40 border border-white/5 p-5 rounded-2xl group hover:border-indigo-500/30 transition-colors">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <h4 className="font-bold text-white">{p.name}</h4>
-                                                <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${p.risk === 'High' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400'
-                                                    }`}>
-                                                    {p.risk} Risk
-                                                </span>
+                                    <motion.div variants={fadeInUp} initial="initial" animate="animate" className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-3xl p-8 backdrop-blur-xl">
+                                        <div className="flex items-center justify-between mb-8">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                                                    <SparklesIcon className="w-6 h-6 text-white" />
+                                                </div>
+                                                <div>
+                                                    <h2 className="text-xl font-bold text-white">Gemini AI Stock Predictions</h2>
+                                                    <p className="text-sm text-indigo-300">Intelligent inventory forecasting</p>
+                                                </div>
                                             </div>
-                                            <p className="text-xs text-gray-400 mb-4 line-clamp-2 leading-relaxed">{p.reason}</p>
-                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-400">
-                                                <ExclamationTriangleIcon className="w-3 h-3" />
-                                                {p.recommendation}
-                                            </div>
+                                            <button
+                                                onClick={fetchAIPredictions}
+                                                disabled={isPredicting}
+                                                className="p-3 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 transition group"
+                                            >
+                                                <ArrowPathIcon className={`w-5 h-5 text-indigo-400 group-hover:rotate-180 transition-transform duration-500 ${isPredicting ? 'animate-spin' : ''}`} />
+                                            </button>
                                         </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-12 bg-black/20 rounded-2xl border border-white/5 border-dashed">
-                                    <CheckCircleIcon className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-                                    <p className="text-gray-500 font-medium">Inventory looks stable. No critical items flagged.</p>
+
+                                        {isPredicting ? (
+                                            <div className="space-y-4">
+                                                {[1, 2].map(i => (
+                                                    <div key={i} className="h-20 bg-white/5 rounded-2xl animate-pulse"></div>
+                                                ))}
+                                            </div>
+                                        ) : predictions.length > 0 ? (
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                {predictions.map((p, idx) => (
+                                                    <div key={idx} className="bg-black/40 border border-white/5 p-5 rounded-2xl group hover:border-indigo-500/30 transition-colors">
+                                                        <div className="flex items-start justify-between mb-3">
+                                                            <h4 className="font-bold text-white">{p.name}</h4>
+                                                            <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${p.risk === 'High' ? 'bg-red-500/20 text-red-400' : 'bg-orange-500/20 text-orange-400'
+                                                                }`}>
+                                                                {p.risk} Risk
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-gray-400 mb-4 line-clamp-2 leading-relaxed">{p.reason}</p>
+                                                        <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-400">
+                                                            <ExclamationTriangleIcon className="w-3 h-3" />
+                                                            {p.recommendation}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-12 bg-black/20 rounded-2xl border border-white/5 border-dashed">
+                                                <CheckCircleIcon className="w-12 h-12 text-gray-700 mx-auto mb-4" />
+                                                <p className="text-gray-500 font-medium">Inventory looks stable. No critical items flagged.</p>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                    <Analytics />
                                 </div>
                             )}
-                        </motion.div>
-                    )}
-
-                    <AnimatePresence mode="wait">
-                        <motion.div key={activeTab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}>
-                            {activeTab === 'Menu' && <Menu />}
+                            {activeTab === 'Restaurants' && <RestaurantManagement onSelect={setActiveTab} />}
                             {activeTab === 'Orders' && <Orders />}
                             {activeTab === 'Kitchen' && <KitchenDisplay />}
                             {activeTab === 'Table Map' && <TableMap />}
@@ -332,10 +338,6 @@ const AdminDashboard = () => {
                             {activeTab === 'Analytics' && <Analytics />}
                         </motion.div>
                     </AnimatePresence>
-
-                    {activeTab === 'Overview' && (
-                        <Analytics />
-                    )}
                 </div>
             </main>
         </div>
