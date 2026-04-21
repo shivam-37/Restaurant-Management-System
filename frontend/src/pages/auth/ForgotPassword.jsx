@@ -1,15 +1,17 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, ArrowRight, UtensilsCrossed, KeyRound, CheckCircle2 } from 'lucide-react';
+import { Mail, ArrowRight, ChefHat, KeyRound, CheckCircle2 } from 'lucide-react';
 import AuthContext from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const ForgotPassword = () => {
+    const { theme } = useTheme();
     const [email, setEmail] = useState('');
     const { forgotPassword } = useContext(AuthContext);
     const [status, setStatus] = useState(null); // 'success', 'error', 'loading'
     const [message, setMessage] = useState('');
-    const [resetLink, setResetLink] = useState(''); // Only for simulation purposes
+    const [resetLink, setResetLink] = useState('');
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -18,219 +20,100 @@ const ForgotPassword = () => {
             const data = await forgotPassword(email.trim());
             setStatus('success');
             setMessage(data.message);
-            if (data.resetLink) {
-                setResetLink(data.resetLink);
-            }
+            if (data.resetLink) setResetLink(data.resetLink);
         } catch (err) {
             setStatus('error');
             setMessage(err.response?.data?.message || err.message || 'Something went wrong');
         }
     };
 
-    const fadeInUp = {
-        initial: { opacity: 0, y: 30 },
-        animate: { opacity: 1, y: 0 },
-        transition: { duration: 0.6 }
-    };
-
     return (
-        <div className="min-h-screen bg-black overflow-hidden relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            {/* Animated Background */}
-            <div className="fixed inset-0 overflow-hidden -z-10">
-                <div className="absolute top-0 -left-40 w-[500px] h-[500px] bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-                <div className="absolute top-0 -right-40 w-[500px] h-[500px] bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-                <div className="absolute bottom-40 left-20 w-[500px] h-[500px] bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-                <div
-                    className="absolute inset-0 opacity-20 w-full h-full"
-                    style={{
-                        backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0)',
-                        backgroundSize: '40px 40px'
-                    }}
-                />
-            </div>
-
+        <div className="min-h-screen relative flex items-center justify-center py-12 px-4 shadow-inner" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+            {/* Dynamic Pattern Background */}
+            <div className="fixed inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, var(--text-primary) 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+            
             {/* Back Link */}
-            <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-                className="absolute top-8 left-8"
-            >
-                <Link
-                    to="/login"
-                    className="flex items-center space-x-2 text-gray-400 hover:text-white transition group"
-                >
-                    <ArrowRight className="w-5 h-5 rotate-180 group-hover:-translate-x-1 transition" />
-                    <span>Back to Login</span>
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="absolute top-8 left-8">
+                <Link to="/login" className="flex items-center space-x-2 text-[10px] font-black uppercase tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity group">
+                    <ArrowRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition" />
+                    <span>Portal Return</span>
                 </Link>
             </motion.div>
 
             {/* Logo */}
-            <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="absolute top-8 right-8"
-            >
-                <Link to="/" className="flex items-center space-x-2 group">
-                    <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg blur-lg group-hover:blur-xl transition-all opacity-50"></div>
-                        <div className="relative w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                            <UtensilsCrossed className="w-4 h-4 text-white" />
-                        </div>
+            <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="absolute top-8 right-8">
+                <Link to="/" className="flex items-center space-x-3 group">
+                    <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+                        <ChefHat className="w-5 h-5 text-white" />
                     </div>
-                    <span className="text-lg font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-                        RestoManager
-                    </span>
                 </Link>
             </motion.div>
 
-            {/* Main Content */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="w-full max-w-md"
-            >
-                {/* Header */}
-                <motion.div
-                    variants={fadeInUp}
-                    initial="initial"
-                    animate="animate"
-                    className="text-center mb-8"
-                >
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5 }}
-                        className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 mb-4 shadow-lg shadow-indigo-600/20"
-                    >
-                        <KeyRound className="w-8 h-8 text-white" />
-                    </motion.div>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md relative z-10">
+                <div className="text-center mb-10">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/10 mb-6 shadow-inner">
+                        <KeyRound className="w-8 h-8 text-amber-600" />
+                    </div>
+                    <h2 className="text-4xl font-black uppercase tracking-tighter leading-none mb-3">Recover <span className="text-amber-500">Access</span></h2>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-30">Security Protocol Alpha-9</p>
+                </div>
 
-                    <h2 className="text-3xl font-bold text-white mb-2">
-                        Reset Password
-                    </h2>
-                    <p className="text-gray-400">
-                        Enter your email to receive reset instructions
-                    </p>
-                </motion.div>
-
-                {/* Card */}
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 shadow-2xl border border-gray-800"
-                >
+                <div className="theme-card rounded-[2.5rem] p-10 border border-black/5 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-3xl -z-10" />
+                    
                     {status === 'success' ? (
                         <div className="text-center space-y-6">
-                            <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto"
-                            >
-                                <CheckCircle2 className="w-10 h-10 text-green-500" />
+                            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto border border-amber-500/20">
+                                <CheckCircle2 className="w-8 h-8 text-amber-600" />
                             </motion.div>
-                            <div className="space-y-2">
-                                <h3 className="text-xl font-semibold text-white">Instructions Sent</h3>
-                                <p className="text-gray-400 text-sm">{message}</p>
+                            <div>
+                                <h3 className="text-xl font-black uppercase tracking-tight mb-2">Instructions Sent</h3>
+                                <p className="text-[11px] font-medium opacity-40 uppercase tracking-widest">{message}</p>
                             </div>
-
                             {resetLink && (
-                                <div className="mt-6 p-4 bg-indigo-600/10 border border-indigo-600/20 rounded-xl">
-                                    <p className="text-xs text-indigo-400 mb-2 font-medium uppercase tracking-wider">Simulation Only: Reset Link</p>
-                                    <a
-                                        href={resetLink}
-                                        className="text-sm text-white hover:text-indigo-300 break-all underline underline-offset-4"
-                                    >
-                                        {resetLink}
-                                    </a>
+                                <div className="p-4 theme-card-item rounded-2xl border border-black/5">
+                                    <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-2">Internal Simulation Link</p>
+                                    <a href={resetLink} className="text-[10px] font-bold text-amber-600 truncate block underline underline-offset-4">{resetLink}</a>
                                 </div>
                             )}
-
-                            <button
-                                onClick={() => setStatus(null)}
-                                className="w-full bg-gray-800 text-white py-3 rounded-xl font-medium hover:bg-gray-700 transition"
-                            >
-                                Try another email
-                            </button>
+                            <button onClick={() => setStatus(null)} className="w-full py-4 px-6 theme-card-item rounded-xl text-[10px] font-black uppercase tracking-widest border border-black/5 hover:border-amber-500/30 transition-all">Retry Identification</button>
                         </div>
                     ) : (
-                        <form className="space-y-6" onSubmit={onSubmit}>
+                        <form className="space-y-8" onSubmit={onSubmit}>
                             {status === 'error' && (
-                                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-                                    <p className="text-sm text-red-400 text-center">{message}</p>
+                                <div className="bg-red-500/5 border border-red-500/10 rounded-2xl p-4">
+                                    <p className="text-[10px] font-black text-red-500 uppercase tracking-widest text-center">{message}</p>
                                 </div>
                             )}
 
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                                    Email Address
-                                </label>
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 ml-1">Terminal ID (Email)</label>
                                 <div className="relative group">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur-lg opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                                    <div className="relative">
-                                        <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-indigo-400 transition" />
-                                        <input
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                            required
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            className="w-full bg-gray-800/50 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                                            placeholder="Enter your email"
-                                        />
-                                    </div>
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 opacity-20 group-focus-within:opacity-100 group-focus-within:text-amber-500 transition-all" />
+                                    <input
+                                        type="email"
+                                        required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full theme-card-item border border-black/5 rounded-2xl py-5 pl-12 pr-6 text-[11px] font-black uppercase tracking-widest focus:outline-none focus:border-amber-500/30 transition-all"
+                                        placeholder="user@dfi-nodes.com"
+                                    />
                                 </div>
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={status === 'loading'}
-                                className="relative w-full group overflow-hidden rounded-xl font-semibold text-lg"
+                                className="w-full py-5 bg-amber-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-amber-500/30 hover:bg-amber-600 transition-all flex items-center justify-center gap-4 disabled:opacity-50"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600"></div>
-                                <div className="absolute inset-0 bg-gradient-to-r from-indigo-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                <span className="relative text-white flex items-center justify-center space-x-2 py-3">
-                                    {status === 'loading' ? (
-                                        <>
-                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            <span>Sending...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span>Send Reset Link</span>
-                                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
-                                        </>
-                                    )}
-                                </span>
+                                {status === 'loading' ? 'Encrypting Request...' : (
+                                    <>Authorize Reset <ArrowRight className="w-4 h-4" /></>
+                                )}
                             </button>
                         </form>
                     )}
-                </motion.div>
+                </div>
             </motion.div>
-
-            <style jsx>{`
-                @keyframes blob {
-                    0% { transform: translate(0px, 0px) scale(1); }
-                    33% { transform: translate(30px, -50px) scale(1.1); }
-                    66% { transform: translate(-20px, 20px) scale(0.9); }
-                    100% { transform: translate(0px, 0px) scale(1); }
-                }
-                .animate-blob {
-                    animation: blob 7s infinite;
-                }
-                .animation-delay-2000 {
-                    animation-delay: 2s;
-                }
-                .animation-delay-4000 {
-                    animation-delay: 4s;
-                }
-            `}</style>
         </div>
     );
 };

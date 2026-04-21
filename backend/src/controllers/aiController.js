@@ -4,11 +4,11 @@ const OpenAI = require('openai');
 const dotenv = require('dotenv');
 const path = require('path');
 
-const MODEL_NAME = "deepseek-ai/deepseek-v3.2";
+const MODEL_NAME = "google/gemma-3n-e4b-it";
 
 // ── In-memory request queue to prevent burst calls ──────────────────────────
 let lastCallTime = 0;
-const MIN_INTERVAL_MS = 15000; // At most 1 call per 15 seconds (4/min staying safely under 5 RPM)
+const MIN_INTERVAL_MS = 2000; // Reduced to 2s for significantly better UI responsiveness
 
 const rateLimitedAICall = async (prompt) => {
     const now = Date.now();
@@ -26,20 +26,26 @@ const rateLimitedAICall = async (prompt) => {
         baseURL: 'https://integrate.api.nvidia.com/v1',
     });
 
-    const completion = await openai.chat.completions.create({
+    const stream = await openai.chat.completions.create({
         model: MODEL_NAME,
         messages: [
             { role: "system", content: "You are a backend restaurant AI. Maintain a highly professional, gourmet tone. For array or JSON answers, output strictly JSON without markdown tags." },
             { role: "user", content: prompt }
         ],
-        temperature: 0.60,
-        top_p: 0.95,
-        max_tokens: 8192,
-        stream: false,
-        extra_body: { chat_template_kwargs: { thinking: true } }
+        temperature: 0.20,
+        top_p: 0.70,
+        max_tokens: 512,
+        frequency_penalty: 0.00,
+        presence_penalty: 0.00,
+        stream: true
     });
 
-    let text = completion.choices[0].message.content.trim();
+    let text = '';
+    for await (const chunk of stream) {
+        text += chunk.choices[0]?.delta?.content || '';
+    }
+
+    // Strip any leftover <think>...</think> blocks
     if (text.includes('<think>') && text.includes('</think>')) {
         text = text.replace(/<think>[\s\S]*?<\/think>\n?/g, '');
     }
@@ -346,17 +352,27 @@ const chatWithNvidia = asyncHandler(async (req, res) => {
             content: "You are an intelligent, helpful, and polite Restaurant Management Assistant. Your job is to help the restaurant owner manage their business, analyze inventory, understand orders, and generate menu ideas. Keep your answers reasonably concise, professional, and well-organized. If asked about something unrelated to restaurant management, politely steer the conversation back."
         };
 
-        const completion = await openai.chat.completions.create({
-            model: "deepseek-ai/deepseek-v3.2",
+        const stream = await openai.chat.completions.create({
+            model: MODEL_NAME,
             messages: [systemMessage, ...messages],
-            temperature: 0.60,
-            top_p: 0.95,
-            max_tokens: 8192,
-            stream: false,
-            extra_body: { chat_template_kwargs: { thinking: true } }
+            temperature: 0.20,
+            top_p: 0.70,
+            max_tokens: 512,
+            frequency_penalty: 0.00,
+            presence_penalty: 0.00,
+            stream: true
         });
 
-        let replyContent = completion.choices[0].message.content;
+        let replyContent = '';
+        for await (const chunk of stream) {
+            replyContent += chunk.choices[0]?.delta?.content || '';
+        }
+
+        // Strip thinking tokens if present
+        if (replyContent.includes('<think>') && replyContent.includes('</think>')) {
+            replyContent = replyContent.replace(/<think>[\s\S]*?<\/think>\n?/g, '').trim();
+        }
+
         res.json({ reply: replyContent });
     } catch (error) {
         console.error('[AI CHAT ERROR]:', error.response ? error.response.data : error.message);

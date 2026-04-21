@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight,
   Play,
@@ -23,18 +23,14 @@ import {
 import { useState, useEffect, useContext } from 'react';
 import RestaurantList from '../../components/RestaurantList';
 import AuthContext from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
 
 const LandingPage = () => {
+  const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  // Use the shared context restaurants list so any cover image update
-  // from Settings is immediately reflected here without a page reload
   const { restaurants, refreshRestaurants } = useContext(AuthContext);
   const isLoading = restaurants.length === 0;
-
-  // Derive unique owners from restaurants list
-  const uniqueOwners = Array.from(new Set(restaurants.map(r => r.owner?._id)))
-    .map(id => restaurants.find(r => r.owner?._id === id)?.owner)
-    .filter(Boolean);
 
   useEffect(() => {
     refreshRestaurants();
@@ -47,461 +43,223 @@ const LandingPage = () => {
     transition: { duration: 0.6 }
   };
 
-  const staggerContainer = {
-    initial: { opacity: 0 },
-    whileInView: { opacity: 1 },
-    viewport: { once: true },
-    transition: { staggerChildren: 0.15 }
-  };
-
   return (
-    <div className="min-h-screen bg-black overflow-hidden">
-      {/* Modern Gradient Background - Dark Mode */}
-      <div className="fixed inset-0 bg-gradient-to-br from-black via-gray-900 to-black opacity-90 -z-10" />
-      <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-5 -z-10" />
+    <div className="min-h-screen overflow-hidden" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+      {/* Dynamic Background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute top-0 -left-40 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-3xl opacity-20 animate-blob" />
+        <div className="absolute bottom-40 right-0 w-[500px] h-[500px] bg-amber-600/10 rounded-full blur-3xl opacity-20 animate-blob animation-delay-2000" />
+      </div>
 
-      {/* Navigation */}
+      {/* Modern Navigation */}
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="sticky top-0 z-50 backdrop-blur-lg bg-black/80 border-b border-gray-800"
+        className="sticky top-0 z-50 backdrop-blur-xl border-b border-black/5"
+        style={{ background: 'var(--navbar-bg)' }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center space-x-2"
-            >
-                <div className="w-10 h-10 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center">
-                  <ChefHat className="w-5 h-5 text-amber-500" />
-                </div>
-                <div>
-                  <span className="text-xl font-light tracking-wider text-white">RESTO</span>
-                  <span className="text-xl font-bold text-amber-500 ml-1">MANAGER</span>
-                </div>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20 md:h-24">
+            <motion.div whileHover={{ scale: 1.05 }} className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-xl shadow-amber-500/20">
+                <ChefHat className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-black uppercase tracking-tighter leading-none">Restaurant</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-500 mt-1">Manager</span>
+              </div>
             </motion.div>
 
-            {/* Desktop Menu */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-300 hover:text-white transition font-medium">Features</a>
-              <a href="#pricing" className="text-gray-300 hover:text-white transition font-medium">Pricing</a>
-              <a href="#about" className="text-gray-300 hover:text-white transition font-medium">About</a>
-              <a href="#contact" className="text-gray-300 hover:text-white transition font-medium">Contact</a>
+            <div className="hidden lg:flex items-center gap-10">
+              {['Features', 'Restaurants', 'Enterprise', 'Support'].map(item => (
+                <a key={item} href={`#${item.toLowerCase()}`} className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 hover:opacity-100 transition-opacity">
+                  {item}
+                </a>
+              ))}
             </div>
 
-            {/* Desktop Auth Buttons */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Link to="/login" className="px-5 py-2 text-gray-300 hover:text-amber-500 transition font-medium">
-                Sign In
+            <div className="hidden md:flex items-center gap-6">
+              <button 
+                onClick={toggleTheme} 
+                className="w-10 h-10 flex items-center justify-center theme-card-item border border-black/5 rounded-xl hover:border-amber-500/30 transition-all"
+              >
+                {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-amber-600" />}
+              </button>
+              <Link to="/login" className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 hover:opacity-100 px-4 transition-opacity">
+                Matrix Portal
               </Link>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
                   to="/register"
-                  className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-medium hover:shadow-xl hover:shadow-amber-600/20 transition-all duration-300 flex items-center space-x-2 group"
+                  className="px-8 py-3.5 bg-amber-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-amber-500/30 hover:bg-amber-600 transition-all flex items-center gap-2"
                 >
-                  <span>Get Started</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition" />
+                  Initiate Trial
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </motion.div>
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-800 transition text-gray-300"
-            >
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-black/5 text-amber-500">
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-black border-t border-gray-800"
-          >
-            <div className="px-4 py-4 space-y-3">
-              <a href="#features" className="block px-4 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition">Features</a>
-              <a href="#pricing" className="block px-4 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition">Pricing</a>
-              <a href="#about" className="block px-4 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition">About</a>
-              <a href="#contact" className="block px-4 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition">Contact</a>
-              <div className="pt-4 space-y-3">
-                <Link to="/login" className="block px-4 py-2 text-center text-gray-300 hover:bg-gray-800 rounded-lg transition">
-                  Sign In
-                </Link>
-                <Link to="/register" className="block px-4 py-2 text-center bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg">
-                  Get Started
-                </Link>
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="md:hidden border-t border-black/5 overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
+              <div className="px-6 py-8 space-y-4">
+                {['Features', 'Restaurants', 'Enterprise', 'Support'].map(item => (
+                  <a key={item} href={`#${item.toLowerCase()}`} className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 py-2">
+                    {item}
+                  </a>
+                ))}
+                <div className="pt-6 grid grid-cols-2 gap-4">
+                  <Link to="/login" className="flex items-center justify-center px-6 py-4 theme-card-item rounded-2xl text-[10px] font-black uppercase tracking-widest border border-black/5">Portal</Link>
+                  <Link to="/register" className="flex items-center justify-center px-6 py-4 bg-amber-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-amber-500/20">Sign Up</Link>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.nav>
 
-      {/* Hero Section */}
-      <section className="relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 md:pt-20 md:pb-32">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Left Content */}
+      {/* High-Contrast Hero Section */}
+      <section className="relative pt-16 pb-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-20 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-8"
+              transition={{ duration: 0.8 }}
             >
-              {/* Badge */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="inline-flex items-center space-x-2 bg-amber-500/10 rounded-full px-4 py-2 border border-amber-500/20"
-              >
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <span className="text-sm font-medium text-amber-500">AI-Powered Restaurant Management</span>
-              </motion.div>
+              <div className="inline-flex items-center gap-3 px-4 py-2 bg-amber-500/10 border border-amber-500/10 rounded-full mb-8">
+                <Sparkles className="w-4 h-4 text-amber-600" />
+                <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-600">Smart Management System</span>
+              </div>
 
-              {/* Heading */}
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
-                <span className="text-gray-200">Manage your</span>
-                <br />
-                <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
-                  restaurant smarter
-                </span>
-                <br />
-                <span className="text-gray-200">with AI</span>
+              <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] mb-8">
+                The New <br />
+                <span className="text-amber-500">Restaurant</span> <br />
+                <span className="opacity-40">System.</span>
               </h1>
 
-              <p className="text-xl text-gray-400 max-w-xl leading-relaxed">
-                Streamline operations, boost profits, and create amazing dining experiences with our intelligent restaurant management platform.
+              <p className="text-xl font-medium opacity-40 leading-relaxed max-w-lg mb-12 uppercase tracking-widest text-[11px]">
+                Effortlessly manage your restaurant operations. Automate orders, track sales, and optimize your business with precision.
               </p>
 
-              {/* CTA Buttons */}
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-6">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     to="/register"
-                    className="group relative px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-2xl font-semibold text-lg shadow-2xl shadow-amber-600/20 hover:shadow-amber-600/30 transition-all duration-300 inline-flex items-center space-x-2"
+                    className="px-10 py-5 bg-amber-500 text-white rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] shadow-2xl shadow-amber-500/40 hover:bg-amber-600 transition-all flex items-center gap-4"
                   >
-                    <span>Start Free Trial</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
+                    Get Started
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 </motion.div>
-
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Link
                     to="/demo"
-                    className="px-8 py-4 bg-gray-900 text-gray-300 rounded-2xl font-semibold text-lg border border-gray-800 hover:border-amber-500/50 hover:bg-gray-800 transition-all duration-300 inline-flex items-center space-x-2 group"
+                    className="px-10 py-5 theme-card-item border border-black/5 rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.3em] hover:border-amber-500/30 transition-all flex items-center gap-4"
                   >
-                    <Play className="w-5 h-5 text-amber-500 group-hover:scale-110 transition" />
-                    <span>Watch Demo</span>
+                    <Play className="w-4 h-4 text-amber-500 fill-amber-500" />
+                    View Demo
                   </Link>
                 </motion.div>
               </div>
 
-              {/* Social Proof */}
-              <div className="pt-8 flex items-center space-x-6">
-                <div className="flex -space-x-2">
-                  {uniqueOwners.length > 0 ? (
-                    uniqueOwners.slice(0, 5).map((owner, i) => (
-                      <div key={i} className="w-10 h-10 rounded-full border-2 border-gray-800 bg-gray-900 overflow-hidden shadow-lg shadow-amber-500/10">
-                        {owner.avatar ? (
-                          <img src={owner.avatar} alt={owner.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-[10px] font-bold text-white uppercase">
-                            {owner.name?.charAt(0)}
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    [1, 2, 3, 4].map((i) => (
-                      <div key={i} className="w-10 h-10 rounded-full border-2 border-gray-800 bg-gradient-to-br from-amber-500 to-amber-600 shadow-lg" />
-                    ))
-                  )}
-                </div>
-                <div>
-                  <div className="flex items-center space-x-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-amber-500 text-amber-500" />
-                    ))}
+              {/* Verified Grid */}
+              <div className="mt-16 pt-8 border-t border-black/5 grid grid-cols-3 gap-6">
+                {[
+                  { value: '42%', label: 'Profit Delta' },
+                  { value: '2.5s', label: 'Order Velocity' },
+                  { value: '99.9%', label: 'Uptime Protocol' }
+                ].map((item, idx) => (
+                  <div key={idx}>
+                    <p className="text-2xl font-black uppercase tracking-tighter">{item.value}</p>
+                    <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mt-1">{item.label}</p>
                   </div>
-                  <p className="text-sm text-gray-400">Join {uniqueOwners.length > 0 ? uniqueOwners.length : 'many'} happy restaurant owners</p>
-                </div>
+                ))}
               </div>
             </motion.div>
 
-            {/* Right Image */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.2 }}
               className="relative"
             >
-              <div className="absolute -inset-4 bg-amber-500/20 rounded-[40px] blur-3xl opacity-20 animate-pulse" />
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-gray-800">
+              <div className="absolute -inset-10 bg-amber-500/20 rounded-full blur-[100px] opacity-20 animate-pulse" />
+              <div className="relative theme-card rounded-[3rem] p-4 border border-black/5 shadow-2xl overflow-hidden group">
                 <img
                   src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80"
-                  alt="Restaurant Interior"
-                  className="w-full h-[500px] object-cover opacity-90"
+                  alt="Restaurant Interoir"
+                  className="w-full h-[600px] object-cover rounded-[2.5rem] group-hover:scale-105 transition-transform duration-[2s]"
                 />
-                {/* Floating Stats Card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 }}
-                  className="absolute bottom-8 left-8 bg-gray-900/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl border border-gray-800"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-green-600/20 rounded-xl flex items-center justify-center">
-                      <TrendingUp className="w-6 h-6 text-green-400" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Revenue increase</p>
-                      <p className="text-2xl font-bold text-white">+42%</p>
-                    </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+                <div className="absolute bottom-12 left-12 right-12">
+                  <div className="p-6 backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60 mb-2">Management System</p>
+                    <h3 className="text-2xl font-black uppercase tracking-tight text-white">Interactive Dashboard</h3>
                   </div>
-                </motion.div>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Restaurant Selection Section */}
-      {restaurants.length > 0 && (
-        <section id="restaurants" className="py-20 bg-black relative">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              {...fadeInUp}
-              className="text-center max-w-3xl mx-auto mb-16"
-            >
-              <span className="text-amber-500 font-semibold text-sm uppercase tracking-wider">Explore</span>
-              <h2 className="text-4xl md:text-5xl font-bold text-white mt-4 mb-6">
-                Browse <span className="text-amber-500">Our Restaurants</span>
-              </h2>
-              <p className="text-xl text-gray-400">
-                Pick your favorite spot and start ordering right away
-              </p>
-            </motion.div>
-            <RestaurantList restaurants={restaurants} loading={isLoading} />
-          </div>
-        </section>
-      )}
-
-      {/* Features Section */}
-      <section id="features" className="relative py-20 md:py-32 bg-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            {...fadeInUp}
-            className="text-center max-w-3xl mx-auto mb-16"
-          >
-            <span className="text-amber-500 font-semibold text-sm uppercase tracking-wider">Features</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mt-4 mb-6">
-              Everything you need to run a <span className="text-amber-500">successful restaurant</span>
+      {/* Feature Manifest */}
+      <section id="features" className="py-32 relative bg-black/[0.02]">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <motion.div {...fadeInUp} className="text-center mb-24">
+            <span className="text-amber-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Key Features</span>
+            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-8">
+              Superior <span className="text-amber-500">Infrastructural</span> <br /> Capabilities.
             </h2>
-            <p className="text-xl text-gray-400">
-              Powerful tools that work together to streamline your operations and grow your business
-            </p>
           </motion.div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="whileInView"
-            viewport={{ once: true }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-          >
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              {
-                icon: <Smartphone className="w-6 h-6" />,
-                title: "Smart Order Management",
-                desc: "Process orders 3x faster with AI-powered kitchen display and real-time updates.",
-                color: "from-amber-500 to-amber-600",
-                stats: "2.5s avg. processing"
-              },
-              {
-                icon: <BarChart3 className="w-6 h-6" />,
-                title: "Advanced Analytics",
-                desc: "Real-time insights into sales, inventory, and staff performance with predictive trends.",
-                color: "from-amber-600 to-amber-700",
-                stats: "99.9% accuracy"
-              },
-              {
-                icon: <Users className="w-6 h-6" />,
-                title: "Customer CRM",
-                desc: "Build lasting relationships with automated marketing and loyalty programs.",
-                color: "from-amber-500 to-amber-600",
-                stats: "40% retention increase"
-              },
-              {
-                icon: <Clock className="w-6 h-6" />,
-                title: "Staff Management",
-                desc: "Optimize schedules and track performance with intelligent shift planning.",
-                color: "from-amber-600 to-amber-700",
-                stats: "20% cost reduction"
-              },
-              {
-                icon: <Shield className="w-6 h-6" />,
-                title: "Secure Payments",
-                desc: "PCI-compliant payment processing with support for all major payment methods.",
-                color: "from-amber-500 to-amber-600",
-                stats: "Bank-level security"
-              },
-              {
-                icon: <TrendingUp className="w-6 h-6" />,
-                title: "Inventory Tracking",
-                desc: "Automated inventory management with waste reduction and supplier integration.",
-                color: "from-amber-600 to-amber-700",
-                stats: "15% waste reduction"
-              }
+              { icon: <Zap />, title: "Fast Processing", desc: "Proprietary order processing logic delivering sub-second execution." },
+              { icon: <BarChart3 />, title: "Detailed Analytics", desc: "Deterministic sales mapping and trend forecasting with high accuracy." },
+              { icon: <Shield />, title: "Secure System", desc: "Military-grade encryption protocols securing every transaction." },
+              { icon: <Smartphone />, title: "Mobile Friendly", desc: "Full administrative control from any mobile device." },
+              { icon: <UtensilsCrossed />, title: "Menu Management", desc: "Easily manage your dishes and categories in real-time." },
+              { icon: <CheckCircle />, title: "Maximum Uptime", desc: "Robust architecture ensuring continuous operational availability." }
             ].map((feature, idx) => (
               <motion.div
                 key={idx}
-                variants={fadeInUp}
-                whileHover={{ y: -8 }}
-                className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-800"
+                {...fadeInUp}
+                whileHover={{ y: -10 }}
+                className="theme-card p-10 rounded-[2.5rem] border border-black/5 hover:shadow-2xl hover:shadow-amber-500/5 hover:border-amber-500/20 transition-all duration-500 group"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 rounded-3xl transition-opacity duration-300`} />
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} p-3 mb-6 shadow-lg`}>
-                  <div className="text-white">{feature.icon}</div>
+                <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600 mb-8 group-hover:scale-110 transition-transform shadow-lg shadow-amber-500/5">
+                  {feature.icon}
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">{feature.title}</h3>
-                <p className="text-gray-400 mb-4">{feature.desc}</p>
-                <div className="flex items-center text-sm font-medium text-amber-500">
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  <span>{feature.stats}</span>
-                </div>
+                <h3 className="text-xl font-black uppercase tracking-tight mb-4">{feature.title}</h3>
+                <p className="text-xs font-medium opacity-40 leading-relaxed uppercase tracking-widest">{feature.desc}</p>
               </motion.div>
             ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="relative py-20 bg-gradient-to-br from-gray-900 to-black">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            whileInView="whileInView"
-            viewport={{ once: true }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8"
-          >
-            {[
-              { value: "98%", label: "Customer Satisfaction", icon: "😊" },
-              { value: "5k+", label: "Orders Daily", icon: "📦" },
-              { value: restaurants.length > 0 ? `${restaurants.length}` : '0', label: "Active Restaurants", icon: "🏪" },
-              { value: "24/7", label: "Customer Support", icon: "🎯" }
-            ].map((stat, idx) => (
-              <motion.div
-                key={idx}
-                variants={fadeInUp}
-                className="text-center text-white"
-              >
-                <div className="text-4xl mb-2">{stat.icon}</div>
-                <div className="text-3xl md:text-4xl font-bold mb-2">{stat.value}</div>
-                <div className="text-sm md:text-base text-gray-400">{stat.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 md:py-32 bg-black">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="bg-gradient-to-br from-gray-900 to-black rounded-[50px] p-12 md:p-20 shadow-2xl relative overflow-hidden border border-gray-800"
-          >
-            <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-5" />
-            <div className="absolute top-0 -left-20 w-40 h-40 bg-indigo-600/20 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 -right-20 w-60 h-60 bg-purple-600/20 rounded-full blur-3xl" />
-
-            <div className="relative">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Ready to transform your restaurant?
-              </h2>
-              <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-                Join thousands of successful restaurants already using RestoManager to grow their business.
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link
-                    to="/register"
-                    className="group px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300 inline-flex items-center space-x-2"
-                  >
-                    <span>Start Free Trial</span>
-                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition" />
-                  </Link>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Link
-                    to="/contact"
-                    className="px-8 py-4 bg-transparent text-white rounded-2xl font-semibold text-lg border-2 border-gray-800 hover:border-amber-500/50 hover:bg-gray-900 transition-all duration-300"
-                  >
-                    Contact Sales
-                  </Link>
-                </motion.div>
-              </div>
-              <p className="text-gray-500 mt-6 text-sm">
-                No credit card required • 14-day free trial • Cancel anytime
-              </p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-black border-t border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center justify-center">
-                  <ChefHat className="w-4 h-4 text-amber-500" />
-                </div>
-                <span className="text-xl font-bold text-white">
-                  RESTO<span className="text-amber-500 ml-1">MANAGER</span>
-                </span>
-              </div>
-              <p className="text-gray-400 text-sm">
-                Revolutionizing restaurant management with AI-powered solutions.
-              </p>
-            </div>
-
-            {[
-              { title: "Product", links: ["Features", "Pricing", "Demo", "Integrations"] },
-              { title: "Company", links: ["About", "Blog", "Careers", "Press"] },
-              { title: "Support", links: ["Help Center", "Contact", "Privacy", "Terms"] }
-            ].map((column, idx) => (
-              <div key={idx}>
-                <h4 className="font-semibold text-white mb-4">{column.title}</h4>
-                <ul className="space-y-2">
-                  {column.links.map((link, i) => (
-                    <li key={i}>
-                      <a href="#" className="text-gray-400 hover:text-amber-500 text-sm transition">
-                        {link}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
           </div>
+        </div>
+      </section>
 
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
-            <p>&copy; 2026 RestoManager. All rights reserved.</p>
-          </div>
+      {/* Terminal Footer */}
+      <footer className="py-24 border-t border-black/5">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+            < ChefHat className="w-12 h-12 text-amber-500 mx-auto mb-8 animate-bounce" />
+            <h3 className="text-2xl font-black uppercase tracking-widest mb-12 opacity-20">Restaurant Management System</h3>
+            <div className="flex flex-wrap justify-center gap-10">
+              {['Encryption', 'Compliance', 'Architecture', 'Status'].map(item => (
+                <span key={item} className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">{item}</span>
+              ))}
+            </div>
+            <div className="mt-20 pt-10 border-t border-black/5 flex flex-col md:flex-row justify-between items-center opacity-30 gap-6">
+              <p className="text-[9px] font-black uppercase tracking-[0.3em]">© 2026 Restaurant Management. All rights reserved.</p>
+              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-600">Local System</p>
+            </div>
         </div>
       </footer>
     </div>

@@ -24,22 +24,22 @@ const ReviewForm = ({ orderId, onReviewSubmitted }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="mt-4 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 dark:bg-indigo-900/10 dark:border-indigo-500/20">
-            <p className="text-sm font-bold text-indigo-900 dark:text-indigo-400 mb-3 flex items-center gap-2">
-                <StarIcon className="w-4 h-4" /> Rate your experience
+        <form onSubmit={handleSubmit} className="mt-8 p-6 theme-card-item rounded-2xl border border-amber-500/10 shadow-lg">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-500 mb-4 flex items-center gap-2">
+                <StarIcon className="w-4 h-4" /> Hospitality Feedback
             </p>
-            <div className="flex gap-2 mb-4">
+            <div className="flex gap-3 mb-6">
                 {[1, 2, 3, 4, 5].map((star) => (
                     <button
                         key={star}
                         type="button"
                         onClick={() => setRating(star)}
-                        className="transition-transform active:scale-90"
+                        className="transition-all active:scale-90 hover:scale-110"
                     >
                         {star <= rating ? (
-                            <StarIcon className="w-6 h-6 text-yellow-400" />
+                            <StarIcon className="w-8 h-8 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.4)]" />
                         ) : (
-                            <StarOutline className="w-6 h-6 text-gray-300" />
+                            <StarOutline className="w-8 h-8 opacity-20" />
                         )}
                     </button>
                 ))}
@@ -47,16 +47,16 @@ const ReviewForm = ({ orderId, onReviewSubmitted }) => {
             <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Share your feedback..."
-                className="w-full p-3 text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition mb-3"
-                rows="2"
+                placeholder="Compose your thoughts..."
+                className="w-full theme-card rounded-xl p-4 text-sm font-bold focus:ring-4 focus:ring-amber-500/10 focus:outline-none transition-all mb-4 placeholder:opacity-30 border border-black/5"
+                rows="3"
             />
             <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 transition disabled:opacity-50"
+                className="w-full py-4 bg-amber-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-amber-700 transition-all shadow-xl shadow-amber-600/30 disabled:opacity-50 active:scale-95"
             >
-                {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                {isSubmitting ? 'Transmitting...' : 'Dispatch Review'}
             </button>
         </form>
     );
@@ -103,14 +103,14 @@ const Orders = () => {
 
     const StatusBadge = ({ status }) => {
         const colors = {
-            Pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-            Preparing: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-            Ready: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-            Completed: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400',
-            Cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+            Pending: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+            Preparing: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+            Ready: 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20',
+            Completed: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20',
+            Cancelled: 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'
         };
         return (
-            <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider ${colors[status] || 'bg-gray-100'}`}>
+            <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] shadow-sm ${colors[status] || 'bg-black/5 dark:bg-white/5'}`}>
                 {status}
             </span>
         );
@@ -118,26 +118,30 @@ const Orders = () => {
 
     if (loading) return (
         <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
         </div>
     );
 
     return (
         <div className="p-6 max-w-5xl mx-auto">
-            <div className="flex justify-between items-end mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-white mb-1">
-                        {(user?.role === 'admin' || user?.role === 'owner') ? 'Order Flow' : 'My Orders'}
+                    <h1 className="text-3xl font-black uppercase tracking-tighter leading-none mb-3">
+                        {(user?.role === 'admin' || user?.role === 'owner') ? 'Order Logistics' : 'My Sessions'}
                     </h1>
-                    <p className="text-gray-400 text-sm">Real-time status tracking for all orders</p>
+                    <p className="opacity-40 text-[10px] font-black uppercase tracking-[0.3em]">Real-time sequence monitoring protocol</p>
+                </div>
+                <div className="flex items-center gap-3 bg-amber-500/5 px-6 py-3 rounded-2xl border border-amber-500/10">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Neural Pulse: Active</span>
                 </div>
             </div>
 
             <div className="grid gap-6">
                 {orders.length === 0 ? (
-                    <div className="text-center py-20 bg-gray-900/30 rounded-3xl border border-gray-800 border-dashed">
-                        <ShoppingBagIcon className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-                        <p className="text-gray-500">No orders found</p>
+                    <div className="text-center py-20 theme-card rounded-3xl border-dashed">
+                        <ShoppingBagIcon className="w-12 h-12 opacity-20 mx-auto mb-4" />
+                        <p className="opacity-50">No orders found</p>
                     </div>
                 ) : (
                     orders.map((order) => (
@@ -145,66 +149,66 @@ const Orders = () => {
                             key={order._id}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 p-6 rounded-2xl border border-gray-800/50 shadow-xl backdrop-blur-sm"
+                            className="theme-card p-6 rounded-2xl shadow-xl shadow-black/5"
                         >
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 bg-indigo-600/10 rounded-xl flex items-center justify-center text-indigo-400 font-bold border border-indigo-500/20">
+                                        <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500 font-bold border border-amber-500/20">
                                             {(order.orderType === 'Home Delivery' || order.tableNumber === 0) ? '🛵' : order.tableNumber}
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2 flex-wrap">
-                                                <h3 className="font-bold text-white">
+                                                <h3 className="font-bold">
                                                     {(order.orderType === 'Home Delivery' || order.tableNumber === 0) ? 'Home Delivery' : `Table ${order.tableNumber}`}
                                                 </h3>
                                                 {!selectedRestaurant && (
-                                                    <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-md text-[10px] font-black uppercase tracking-wider border border-indigo-500/10">
+                                                    <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded-md text-[10px] font-black uppercase tracking-wider border border-amber-500/10">
                                                         {order.restaurant?.name || 'Local'}
                                                     </span>
                                                 )}
                                                 <StatusBadge status={order.status} />
                                                 {order.orderType && (
                                                     <span className={`px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider ${order.orderType === 'Home Delivery'
-                                                        ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
-                                                        : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                                        ? 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20'
+                                                        : 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
                                                         }`}>
                                                         {order.orderType === 'Home Delivery' ? '🛵 Delivery' : '🍽️ Dine-In'}
                                                     </span>
                                                 )}
                                                 {order.paymentMethod && (
-                                                    <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-green-500/10 text-green-400 border border-green-500/20">
+                                                    <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20">
                                                         {order.paymentMethod === 'Cash' ? '💵' : order.paymentMethod === 'Card' ? '💳' : '📱'} {order.paymentMethod}
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-xs text-gray-500">{(order.items || []).length} items • ₹{(order.totalPrice || 0).toFixed(2)}</p>
+                                            <p className="text-xs opacity-60">{(order.items || []).length} items • ₹{(order.totalPrice || 0).toFixed(2)}</p>
                                             {order.orderType === 'Home Delivery' && order.deliveryAddress && (
-                                                <p className="text-xs text-orange-400/70 mt-0.5">📍 {order.deliveryAddress}</p>
+                                                <p className="text-xs text-orange-500 font-medium mt-0.5">📍 {order.deliveryAddress}</p>
                                             )}
-                                            <p className="text-[10px] text-gray-500 mt-1">
+                                            <p className="text-[10px] opacity-40 mt-1">
                                                 Placed {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="space-y-2 mb-4 bg-black/20 p-4 rounded-xl">
+                                     <div className="space-y-2 mb-4 theme-card-item p-4 rounded-xl border border-black/5">
                                         {(order.items || []).map((item, idx) => (
                                             <div key={idx} className="flex justify-between text-sm">
-                                                <span className="text-gray-300">{item.quantity}x {item.name}</span>
-                                                <span className="text-gray-500">₹{((item.price || 0) * (item.quantity || 0)).toFixed(2)}</span>
+                                                <span className="opacity-80">{item.quantity}x {item.name}</span>
+                                                <span className="opacity-60">₹{((item.price || 0) * (item.quantity || 0)).toFixed(2)}</span>
                                             </div>
                                         ))}
-                                        <div className="pt-2 border-t border-gray-700 flex justify-between items-center">
-                                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Total</span>
-                                            <span className="text-lg font-bold text-indigo-400">₹{(order.totalPrice || 0).toFixed(2)}</span>
+                                        <div className="pt-2 border-t border-black/5 flex justify-between items-center">
+                                            <span className="text-xs font-bold opacity-40 uppercase tracking-wider">Total</span>
+                                            <span className="text-lg font-bold text-amber-500">₹{(order.totalPrice || 0).toFixed(2)}</span>
                                         </div>
                                     </div>
 
                                     {order.specialInstructions && (
                                         <div className="mb-4 flex gap-2 items-start opacity-70">
-                                            <ChatBubbleBottomCenterTextIcon className="w-4 h-4 text-gray-500 mt-0.5" />
-                                            <p className="text-xs italic text-gray-400">"{order.specialInstructions}"</p>
+                                            <ChatBubbleBottomCenterTextIcon className="w-4 h-4 text-amber-500 mt-0.5" />
+                                            <p className="text-xs italic opacity-80">"{order.specialInstructions}"</p>
                                         </div>
                                     )}
 
@@ -213,19 +217,19 @@ const Orders = () => {
                                         !order.review ? (
                                             <ReviewForm orderId={order._id} onReviewSubmitted={fetchOrders} />
                                         ) : (
-                                            <div className="mt-4 p-4 bg-green-500/5 rounded-xl border border-green-500/10">
+                                            <div className="mt-4 p-4 theme-card-item rounded-xl border border-green-500/10">
                                                 <div className="flex items-center justify-between mb-2">
                                                     <div className="flex gap-1">
                                                         {[...Array(order.review.rating)].map((_, i) => (
                                                             <StarIcon key={i} className="w-4 h-4 text-yellow-400" />
                                                         ))}
                                                     </div>
-                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${order.review.sentiment === 'Positive' ? 'bg-green-500/20 text-green-400' : order.review.sentiment === 'Negative' ? 'bg-red-500/20 text-red-400' : 'bg-gray-500/20 text-gray-400'
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${order.review.sentiment === 'Positive' ? 'bg-green-500/20 text-green-600 dark:text-green-400' : order.review.sentiment === 'Negative' ? 'bg-red-500/20 text-red-600 dark:text-red-400' : 'bg-slate-500/20 text-slate-600 dark:text-slate-400'
                                                         }`}>
                                                         {order.review.sentiment} Vibe
                                                     </span>
                                                 </div>
-                                                <p className="text-sm text-gray-400">"{order.review.comment}"</p>
+                                                <p className="text-sm opacity-70">"{order.review.comment}"</p>
                                             </div>
                                         )
                                     )}
@@ -233,37 +237,37 @@ const Orders = () => {
 
                                 {/* Admin/Owner Actions */}
                                 {(user?.role === 'admin' || user?.role === 'owner') && (
-                                    <div className="flex flex-col gap-2 w-full md:w-auto">
+                                    <div className="flex flex-col gap-3 w-full md:w-auto">
                                         {order.status === 'Pending' && (
                                             <button
                                                 onClick={() => handleStatusUpdate(order._id, 'Preparing')}
-                                                className="w-full px-6 py-3 bg-indigo-600/10 text-indigo-400 border border-indigo-600/20 rounded-xl hover:bg-indigo-600 hover:text-white transition font-bold text-sm"
+                                                className="w-full px-8 py-4 bg-amber-600 text-white rounded-2xl hover:bg-amber-700 transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-amber-600/30"
                                             >
-                                                Accept & Prepare
+                                                Initialize Preparation
                                             </button>
                                         )}
                                         {order.status === 'Preparing' && (
                                             <button
                                                 onClick={() => handleStatusUpdate(order._id, 'Ready')}
-                                                className="w-full px-6 py-3 bg-green-600/10 text-green-400 border border-green-600/20 rounded-xl hover:bg-green-600 hover:text-white transition font-bold text-sm"
+                                                className="w-full px-8 py-4 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-emerald-600/30"
                                             >
-                                                Mark as Ready
+                                                Dispatch to Front
                                             </button>
                                         )}
                                         {order.status === 'Ready' && (
                                             <button
                                                 onClick={() => handleStatusUpdate(order._id, 'Completed')}
-                                                className="w-full px-6 py-3 bg-gray-700 text-white rounded-xl hover:bg-gray-600 transition font-bold text-sm shadow-lg"
+                                                className="w-full px-8 py-4 bg-amber-600 text-white rounded-2xl hover:bg-amber-700 transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-amber-600/30"
                                             >
-                                                Finish Order
+                                                Seal Transaction
                                             </button>
                                         )}
                                         {order.status !== 'Completed' && order.status !== 'Cancelled' && (
                                             <button
                                                 onClick={() => handleStatusUpdate(order._id, 'Cancelled')}
-                                                className="w-full px-6 py-3 border border-red-500/30 text-red-400 rounded-xl hover:bg-red-500 hover:text-white transition font-bold text-sm"
+                                                className="w-full px-8 py-4 theme-card-item border border-red-500/20 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest"
                                             >
-                                                Decline
+                                                Void Sequence
                                             </button>
                                         )}
                                     </div>

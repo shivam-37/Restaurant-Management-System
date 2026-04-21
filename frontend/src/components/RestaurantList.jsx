@@ -29,7 +29,7 @@ const RestaurantList = ({ restaurants: propsRestaurants, loading: propsLoading }
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
                 {[1, 2, 3].map(i => (
-                    <div key={i} className="h-64 bg-gray-900/50 rounded-3xl animate-pulse"></div>
+                    <div key={i} className="h-64 rounded-3xl animate-pulse" style={{ background: 'var(--bg-secondary)' }}></div>
                 ))}
             </div>
         );
@@ -42,7 +42,7 @@ const RestaurantList = ({ restaurants: propsRestaurants, loading: propsLoading }
                     key={restaurant._id}
                     whileHover={{ y: -10 }}
                     transition={{ type: "spring", stiffness: 300 }}
-                    className="group relative bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl overflow-hidden cursor-pointer hover:border-amber-500/50"
+                    className="group relative theme-card rounded-3xl overflow-hidden cursor-pointer hover:border-amber-500/50"
                     onClick={() => handleSelect(restaurant)}
                 >
                     <div className="h-48 relative overflow-hidden">
@@ -57,14 +57,14 @@ const RestaurantList = ({ restaurants: propsRestaurants, loading: propsLoading }
                                 <h2 className="text-3xl font-black text-white/10 uppercase tracking-widest">{restaurant.name}</h2>
                             </div>
                         )}
-                        <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 border border-white/10">
+                        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 border border-white/10">
                             <StarIcon className="w-4 h-4 text-yellow-500" />
                             <span className="text-xs font-bold text-white">{restaurant.rating || '4.5'}</span>
                         </div>
                     </div>
 
                     <div className="p-6">
-                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-amber-500 transition-colors">
+                        <h3 className="text-xl font-bold mb-2 group-hover:text-amber-500 transition-colors">
                             {restaurant.name}
                         </h3>
 
@@ -86,7 +86,7 @@ const RestaurantList = ({ restaurants: propsRestaurants, loading: propsLoading }
                         <div className="mt-6 flex items-center justify-between">
                             <div className="flex flex-wrap gap-2">
                                 {(restaurant.cuisine || 'Restaurant').split(',').slice(0, 2).map(tag => (
-                                    <span key={tag} className="text-[10px] uppercase font-black tracking-wider px-2 py-1 bg-white/5 rounded-md text-gray-500">
+                                    <span key={tag} className="text-[10px] uppercase font-black tracking-wider px-2 py-1 theme-card-item rounded-md opacity-60">
                                         {tag.trim()}
                                     </span>
                                 ))}

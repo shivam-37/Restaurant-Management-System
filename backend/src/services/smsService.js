@@ -10,14 +10,14 @@ const sendSms = async (options) => {
 
     // Add actual Twilio/Firebase backend logic here if needed in the future
     // Example:
-    /*
+    
     const client = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
     await client.messages.create({
         body: message,
         from: process.env.TWILIO_PHONE_NUMBER,
         to: phone
     });
-    */
+    
    
     return true;
 };

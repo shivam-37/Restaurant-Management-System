@@ -1,11 +1,12 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, ArrowRight, ChefHat, Eye, EyeOff, Shield, Smartphone } from 'lucide-react';
+import { User, Mail, Lock, ArrowRight, ChefHat, Eye, EyeOff, Shield, Smartphone, Sun, Moon } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
 import AuthContext from '../../context/AuthContext';
 import VerifyOtpModal from '../../components/auth/VerifyOtpModal';
 import { countries } from '../../utils/countries';
+import { useTheme } from '../../context/ThemeContext';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -21,7 +22,8 @@ const Register = () => {
     const { name, email, countryCode, phone, password, confirmPassword, role } = formData;
 
     const navigate = useNavigate();
-    const { register, loginWithGoogle, verifyUserOtp, sendOtp } = useContext(AuthContext);
+    const { register, loginWithGoogle, verifyUserOtp, sendOtp, logout } = useContext(AuthContext);
+    const { theme, toggleTheme } = useTheme();
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -76,16 +78,20 @@ const Register = () => {
             setIsLoading(false);
         } else {
             try {
-                // Combine country code and phone
                 const fullPhone = phone ? `${countryCode}${phone}` : '';
-                await register(name.trim(), email.trim(), fullPhone.trim(), password.trim(), role);
+                const result = await register(name.trim(), email.trim(), fullPhone.trim(), password.trim(), role);
                 
-                // Redirect to login with success message
-                navigate('/login', { 
-                    state: { 
-                        message: 'Account created successfully! Please sign in to verify your account.' 
-                    } 
-                });
+                if (result && result.requiresOtp) {
+                    setOtpMethod(result.method);
+                    setShowOtpModal(true);
+                } else {
+                    // Redirect to login with success message
+                    navigate('/login', { 
+                        state: { 
+                            message: 'Account created successfully! Please sign in.' 
+                        } 
+                    });
+                }
             } catch (err) {
                 setError(err.response?.data?.message || err.message || 'Registration failed');
             } finally {
@@ -102,8 +108,16 @@ const Register = () => {
             else payload.phone = `${countryCode}${phone}`;
             
             await verifyUserOtp(payload);
+            
+            // Logout silently to fulfill the requirement of logging in again
+            logout();
+            
             setShowOtpModal(false);
-            navigate('/dashboard');
+            navigate('/login', { 
+                state: { 
+                    message: 'Account verified successfully! Please log in.' 
+                } 
+            });
         } catch (err) {
             throw err;
         } finally {
@@ -140,7 +154,7 @@ const Register = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-black flex font-sans">
+        <div className="min-h-screen flex font-sans" style={{ background: 'var(--bg-primary)' }}>
             {/* Left Side - Image Grid with Overlay */}
             <motion.div 
                 initial={{ opacity: 0 }}
@@ -187,8 +201,8 @@ const Register = () => {
                                 <ChefHat className="w-7 h-7 text-amber-500" />
                             </div>
                             <div>
-                                <span className="text-2xl font-light tracking-wider text-white">RESTO</span>
-                                <span className="text-2xl font-bold text-amber-500 ml-2">MANAGER</span>
+                                <span className="text-2xl font-light tracking-wider text-white">DINE FLOW</span>
+                                <span className="text-2xl font-bold text-amber-500 ml-2">AI</span>
                             </div>
                         </Link>
                     </motion.div>
@@ -214,8 +228,16 @@ const Register = () => {
                 </div>
             </motion.div>
 
-            {/* Right Side - Registration Form with Pure Black Background */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-black relative">
+            {/* Right Side - Registration Form */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative" style={{ background: 'var(--bg-primary)' }}>
+                {/* Theme Toggle - top right */}
+                <button
+                    onClick={toggleTheme}
+                    className="theme-toggle absolute top-6 right-6 z-20"
+                    title="Toggle theme"
+                >
+                    {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </button>
                 {/* Subtle Glow Effect */}
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent"></div>
                 
@@ -237,8 +259,8 @@ const Register = () => {
                             <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center border border-amber-500/20 group-hover:bg-amber-500/20 transition-colors">
                                 <ChefHat className="w-6 h-6 text-amber-500" />
                             </div>
-                            <span className="text-2xl font-light text-white">RESTO</span>
-                            <span className="text-2xl font-bold text-amber-500">MANAGER</span>
+                            <span className="text-2xl font-light text-white">DINE FLOW</span>
+                            <span className="text-2xl font-bold text-amber-500">AI</span>
                         </Link>
                     </div>
 
@@ -248,7 +270,8 @@ const Register = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="text-4xl font-black text-white mb-2"
+                            className="text-4xl font-black uppercase tracking-tighter mb-2"
+                            style={{ color: 'var(--text-primary)' }}
                         >
                             CREATE ACCOUNT
                         </motion.h2>
@@ -256,9 +279,9 @@ const Register = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="text-gray-500"
+                            className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30"
                         >
-                            Join Resto Manager today
+                            Join Dine Flow AI today
                         </motion.p>
                     </div>
 
@@ -281,144 +304,126 @@ const Register = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.3 }}
                         >
-                            <label 
-                                htmlFor="name" 
-                                className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-                                    focusedField === 'name' ? 'text-amber-500' : 'text-gray-500'
-                                }`}
-                            >
-                                Full Name
-                            </label>
-                            <div className="relative group">
-                                <div className={`absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl blur-lg transition-opacity duration-300 ${
-                                    focusedField === 'name' ? 'opacity-30' : 'opacity-0'
-                                }`}></div>
-                                <div className="relative">
-                                    <User className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                                        focusedField === 'name' ? 'text-amber-500' : 'text-gray-600'
-                                    }`} />
-                                    <input
-                                        id="name"
-                                        name="name"
-                                        type="text"
-                                        required
-                                        value={name}
-                                        onChange={onChange}
-                                        onFocus={() => setFocusedField('name')}
-                                        onBlur={() => setFocusedField(null)}
-                                        className="w-full bg-gray-900/50 border border-gray-800 rounded-xl py-4 pl-12 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all duration-300"
-                                        placeholder="John Doe"
-                                    />
-                                </div>
-                            </div>
-                        </motion.div>
-
-                        {/* Email Field */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.4 }}
-                        >
-                            <label 
-                                htmlFor="email" 
-                                className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-                                    focusedField === 'email' ? 'text-amber-500' : 'text-gray-500'
-                                }`}
-                            >
-                                Email Address
-                            </label>
-                            <div className="relative group">
-                                <div className={`absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl blur-lg transition-opacity duration-300 ${
-                                    focusedField === 'email' ? 'opacity-30' : 'opacity-0'
-                                }`}></div>
-                                <div className="relative">
-                                    <Mail className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                                        focusedField === 'email' ? 'text-amber-500' : 'text-gray-600'
-                                    }`} />
-                                    <input
-                                        id="email"
-                                        name="email"
-                                        type="email"
-                                        autoComplete="email"
-                                        value={email}
-                                        onChange={onChange}
-                                        onFocus={() => setFocusedField('email')}
-                                        onBlur={() => setFocusedField(null)}
-                                        className="w-full bg-gray-900/50 border border-gray-800 rounded-xl py-4 pl-12 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all duration-300"
-                                        placeholder="manager@restaurant.com"
-                                    />
-                                </div>
-                            </div>
-                        </motion.div>
-
-                        {/* Phone Field - FIXED VERSION */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.45 }}
-                        >
-                            <label 
-                                htmlFor="phone" 
-                                className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-                                    focusedField === 'phone' ? 'text-amber-500' : 'text-gray-500'
-                                }`}
-                            >
-                                Phone Number
-                            </label>
-                            <div className="relative group">
-                                <div className={`absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl blur-lg transition-opacity duration-300 ${
-                                    focusedField === 'phone' ? 'opacity-30' : 'opacity-0'
-                                }`}></div>
-                                    <div className="relative flex items-center bg-gray-900/50 border border-gray-800 rounded-xl focus-within:border-amber-500/50 focus-within:ring-1 focus-within:ring-amber-500/50 transition-all duration-300">
-                                        {/* Smartphone Icon */}
-                                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
-                                            <Smartphone className={`w-5 h-5 transition-colors duration-300 ${
-                                                focusedField === 'phone' ? 'text-amber-500' : 'text-gray-600'
-                                            }`} />
-                                        </div>
-                                        <select
-                                            name="countryCode"
-                                            value={countryCode}
-                                            onChange={onChange}
-                                            onFocus={() => setFocusedField('phone')}
-                                            onBlur={() => setFocusedField(null)}
-                                            className="bg-transparent border-r border-gray-800 text-white pl-12 pr-2 py-4 focus:outline-none focus:ring-0 cursor-pointer min-w-[120px] max-w-[150px] text-sm"
-                                        >
-                                            {countries.map((c) => (
-                                                <option key={`${c.iso}-${c.code}`} value={c.code} className="bg-gray-900">
-                                                    {c.iso} ({c.code})
-                                                </option>
-                                            ))}
-                                        </select>
+                                <label 
+                                    htmlFor="name" 
+                                    className={`text-[10px] font-black uppercase tracking-[0.3em] mb-3 block transition-colors duration-300 ${
+                                        focusedField === 'name' ? 'text-amber-500' : 'opacity-40'
+                                    }`}
+                                >
+                                    Full Name
+                                </label>
+                                <div className="relative group">
+                                    <div className="relative">
+                                        <User className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
+                                            focusedField === 'name' ? 'text-amber-500' : 'opacity-20'
+                                        }`} />
                                         <input
-                                            id="phone"
-                                            name="phone"
-                                            type="tel"
-                                            value={phone}
+                                            id="name"
+                                            name="name"
+                                            type="text"
+                                            required
+                                            value={name}
                                             onChange={onChange}
-                                            onFocus={() => setFocusedField('phone')}
+                                            onFocus={() => setFocusedField('name')}
                                             onBlur={() => setFocusedField(null)}
-                                            className="flex-1 bg-transparent py-4 pl-4 pr-24 text-white placeholder-gray-600 focus:outline-none transition-all duration-300"
-                                            placeholder="1234567890"
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl py-5 pl-12 pr-6 text-[11px] font-black uppercase tracking-widest focus:outline-none focus:border-amber-500/30 transition-all"
+                                            placeholder="John Doe"
                                         />
-                                        <button
-                                            type="button"
-                                            onClick={handleSendOtp}
-                                            disabled={isOtpSending || otpSent || !phone}
-                                            className={`absolute right-2 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${
-                                                otpSent 
-                                                    ? 'bg-green-500/20 text-green-500 border border-green-500/20' 
-                                                    : 'bg-amber-500/10 text-amber-500 border border-amber-500/20 hover:bg-amber-500 hover:text-white'
-                                            } disabled:opacity-50 disabled:cursor-not-allowed`}
-                                        >
-                                            {isOtpSending ? '...' : otpSent ? 'SENT' : 'SEND OTP'}
-                                        </button>
                                     </div>
                                 </div>
-                            <p className="mt-1 text-xs text-gray-500">
-                                Enter number without country code
-                            </p>
                         </motion.div>
+
+                        {/* Email Field - Hidden if phone is entered */}
+                        {!phone && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.4 }}
+                            >
+                                <label 
+                                    htmlFor="email" 
+                                    className={`text-[10px] font-black uppercase tracking-[0.3em] mb-3 block transition-colors duration-300 ${
+                                        focusedField === 'email' ? 'text-amber-500' : 'opacity-40'
+                                    }`}
+                                >
+                                    Email Address
+                                </label>
+                                <div className="relative group">
+                                    <div className="relative">
+                                        <Mail className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
+                                            focusedField === 'email' ? 'text-amber-500' : 'opacity-20'
+                                        }`} />
+                                        <input
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            autoComplete="email"
+                                            value={email}
+                                            onChange={onChange}
+                                            onFocus={() => setFocusedField('email')}
+                                            onBlur={() => setFocusedField(null)}
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl py-5 pl-12 pr-6 text-[11px] font-black uppercase tracking-widest focus:outline-none focus:border-amber-500/30 transition-all"
+                                            placeholder="manager@restaurant.com"
+                                        />
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Phone Field - Hidden if email is entered */}
+                        {!email && (
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.45 }}
+                            >
+                                <label 
+                                    htmlFor="phone" 
+                                    className={`text-[10px] font-black uppercase tracking-[0.3em] mb-3 block transition-colors duration-300 ${
+                                        focusedField === 'phone' ? 'text-amber-500' : 'opacity-40'
+                                    }`}
+                                >
+                                    Phone Number
+                                </label>
+                                <div className="relative group">
+                                        <div className={`relative flex items-center theme-card-item border border-black/5 rounded-2xl focus-within:border-amber-500/30 transition-all`}>
+                                            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
+                                                <Smartphone className={`w-4 h-4 transition-colors duration-300 ${
+                                                    focusedField === 'phone' ? 'text-amber-500' : 'opacity-20'
+                                                }`} />
+                                            </div>
+                                            <select
+                                                name="countryCode"
+                                                value={countryCode}
+                                                onChange={onChange}
+                                                onFocus={() => setFocusedField('phone')}
+                                                onBlur={() => setFocusedField(null)}
+                                                className="bg-transparent border-r border-black/10 text-[11px] font-black pl-12 pr-2 py-5 focus:outline-none focus:ring-0 cursor-pointer min-w-[120px] max-w-[150px]"
+                                            >
+                                                {countries.map((c) => (
+                                                    <option key={`${c.iso}-${c.code}`} value={c.code} className="bg-white text-black dark:bg-black dark:text-white">
+                                                        {c.iso} ({c.code})
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <input
+                                                id="phone"
+                                                name="phone"
+                                                type="tel"
+                                                value={phone}
+                                                onChange={onChange}
+                                                onFocus={() => setFocusedField('phone')}
+                                                onBlur={() => setFocusedField(null)}
+                                                className="flex-1 bg-transparent py-5 pl-4 pr-4 text-[11px] font-black uppercase tracking-widest placeholder-gray-600 focus:outline-none transition-all"
+                                                placeholder="1234567890"
+                                            />
+                                        </div>
+                                    </div>
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Enter number without country code
+                                </p>
+                            </motion.div>
+                        )}
 
                         {/* Role Selection */}
                         <motion.div
@@ -426,42 +431,39 @@ const Register = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5 }}
                         >
-                            <label 
-                                htmlFor="role" 
-                                className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-                                    focusedField === 'role' ? 'text-amber-500' : 'text-gray-500'
-                                }`}
-                            >
-                                Register As
-                            </label>
-                            <div className="relative group">
-                                <div className={`absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl blur-lg transition-opacity duration-300 ${
-                                    focusedField === 'role' ? 'opacity-30' : 'opacity-0'
-                                }`}></div>
-                                <div className="relative">
-                                    <Shield className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                                        focusedField === 'role' ? 'text-amber-500' : 'text-gray-600'
-                                    }`} />
-                                    <select
-                                        id="role"
-                                        name="role"
-                                        value={role}
-                                        onChange={onChange}
-                                        onFocus={() => setFocusedField('role')}
-                                        onBlur={() => setFocusedField(null)}
-                                        className="w-full bg-gray-900/50 border border-gray-800 rounded-xl py-4 pl-12 pr-10 text-white appearance-none focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all duration-300 cursor-pointer"
-                                    >
-                                        <option value="user" className="bg-gray-900">User - Regular Account</option>
-                                        <option value="owner" className="bg-gray-900">Owner - Restaurant Manager</option>
-                                        <option value="admin" className="bg-gray-900">Admin - Monitoring Access</option>
-                                    </select>
-                                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                                        <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
+                                <label 
+                                    htmlFor="role" 
+                                    className={`text-[10px] font-black uppercase tracking-[0.3em] mb-3 block transition-colors duration-300 ${
+                                        focusedField === 'role' ? 'text-amber-500' : 'opacity-40'
+                                    }`}
+                                >
+                                    Register As
+                                </label>
+                                <div className="relative group">
+                                    <div className="relative">
+                                        <Shield className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
+                                            focusedField === 'role' ? 'text-amber-500' : 'opacity-20'
+                                        }`} />
+                                        <select
+                                            id="role"
+                                            name="role"
+                                            value={role}
+                                            onChange={onChange}
+                                            onFocus={() => setFocusedField('role')}
+                                            onBlur={() => setFocusedField(null)}
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl py-5 pl-12 pr-10 text-[11px] font-black uppercase tracking-widest appearance-none focus:outline-none focus:border-amber-500/30 transition-all cursor-pointer"
+                                        >
+                                            <option value="user" className="bg-white text-black dark:bg-black dark:text-white">User - Regular Account</option>
+                                            <option value="owner" className="bg-white text-black dark:bg-black dark:text-white">Owner - Restaurant Manager</option>
+                                            <option value="admin" className="bg-white text-black dark:bg-black dark:text-white">Admin - Monitoring Access</option>
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none opacity-20">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                         </motion.div>
 
                         {/* Password Field */}
@@ -470,44 +472,41 @@ const Register = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.6 }}
                         >
-                            <label 
-                                htmlFor="password" 
-                                className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-                                    focusedField === 'password' ? 'text-amber-500' : 'text-gray-500'
-                                }`}
-                            >
-                                Password
-                            </label>
-                            <div className="relative group">
-                                <div className={`absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl blur-lg transition-opacity duration-300 ${
-                                    focusedField === 'password' ? 'opacity-30' : 'opacity-0'
-                                }`}></div>
-                                <div className="relative">
-                                    <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                                        focusedField === 'password' ? 'text-amber-500' : 'text-gray-600'
-                                    }`} />
-                                    <input
-                                        id="password"
-                                        name="password"
-                                        type={showPassword ? "text" : "password"}
-                                        autoComplete="new-password"
-                                        required
-                                        value={password}
-                                        onChange={onChange}
-                                        onFocus={() => setFocusedField('password')}
-                                        onBlur={() => setFocusedField(null)}
-                                        className="w-full bg-gray-900/50 border border-gray-800 rounded-xl py-4 pl-12 pr-12 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all duration-300"
-                                        placeholder="Create a password"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-amber-500 transition"
-                                    >
-                                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                    </button>
+                                <label 
+                                    htmlFor="password" 
+                                    className={`text-[10px] font-black uppercase tracking-[0.3em] mb-3 block transition-colors duration-300 ${
+                                        focusedField === 'password' ? 'text-amber-500' : 'opacity-40'
+                                    }`}
+                                >
+                                    Password
+                                </label>
+                                <div className="relative group">
+                                    <div className="relative">
+                                        <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
+                                            focusedField === 'password' ? 'text-amber-500' : 'opacity-20'
+                                        }`} />
+                                        <input
+                                            id="password"
+                                            name="password"
+                                            type={showPassword ? "text" : "password"}
+                                            autoComplete="new-password"
+                                            required
+                                            value={password}
+                                            onChange={onChange}
+                                            onFocus={() => setFocusedField('password')}
+                                            onBlur={() => setFocusedField(null)}
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl py-5 pl-12 pr-12 text-[11px] font-black uppercase tracking-widest focus:outline-none focus:border-amber-500/30 transition-all"
+                                            placeholder="Create a signature"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-20 hover:opacity-100 transition"
+                                        >
+                                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
                         </motion.div>
 
                         {/* Confirm Password Field */}
@@ -516,44 +515,41 @@ const Register = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.7 }}
                         >
-                            <label 
-                                htmlFor="confirmPassword" 
-                                className={`block text-sm font-medium mb-2 transition-colors duration-300 ${
-                                    focusedField === 'confirmPassword' ? 'text-amber-500' : 'text-gray-500'
-                                }`}
-                            >
-                                Confirm Password
-                            </label>
-                            <div className="relative group">
-                                <div className={`absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl blur-lg transition-opacity duration-300 ${
-                                    focusedField === 'confirmPassword' ? 'opacity-30' : 'opacity-0'
-                                }`}></div>
-                                <div className="relative">
-                                    <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                                        focusedField === 'confirmPassword' ? 'text-amber-500' : 'text-gray-600'
-                                    }`} />
-                                    <input
-                                        id="confirmPassword"
-                                        name="confirmPassword"
-                                        type={showConfirmPassword ? "text" : "password"}
-                                        autoComplete="new-password"
-                                        required
-                                        value={confirmPassword}
-                                        onChange={onChange}
-                                        onFocus={() => setFocusedField('confirmPassword')}
-                                        onBlur={() => setFocusedField(null)}
-                                        className="w-full bg-gray-900/50 border border-gray-800 rounded-xl py-4 pl-12 pr-12 text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/50 transition-all duration-300"
-                                        placeholder="Confirm your password"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-amber-500 transition"
-                                    >
-                                        {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                                    </button>
+                                <label 
+                                    htmlFor="confirmPassword" 
+                                    className={`text-[10px] font-black uppercase tracking-[0.3em] mb-3 block transition-colors duration-300 ${
+                                        focusedField === 'confirmPassword' ? 'text-amber-500' : 'opacity-40'
+                                    }`}
+                                >
+                                    Confirm Signature
+                                </label>
+                                <div className="relative group">
+                                    <div className="relative">
+                                        <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
+                                            focusedField === 'confirmPassword' ? 'text-amber-500' : 'opacity-20'
+                                        }`} />
+                                        <input
+                                            id="confirmPassword"
+                                            name="confirmPassword"
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            autoComplete="new-password"
+                                            required
+                                            value={confirmPassword}
+                                            onChange={onChange}
+                                            onFocus={() => setFocusedField('confirmPassword')}
+                                            onBlur={() => setFocusedField(null)}
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl py-5 pl-12 pr-12 text-[11px] font-black uppercase tracking-widest focus:outline-none focus:border-amber-500/30 transition-all"
+                                            placeholder="Verify signature"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-20 hover:opacity-100 transition"
+                                        >
+                                            {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
                         </motion.div>
 
                         {/* Password Strength Indicator */}
@@ -622,29 +618,15 @@ const Register = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 1.0 }}
                         >
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold py-4 px-4 rounded-xl transition duration-300 ease-in-out transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-black relative overflow-hidden group"
-                            >
-                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-                                <span className="relative flex items-center justify-center">
-                                    {isLoading ? (
-                                        <>
-                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            CREATING ACCOUNT...
-                                        </>
-                                    ) : (
-                                        <>
-                                            CREATE ACCOUNT
-                                            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                        </>
+                                <button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="w-full py-5 bg-amber-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-amber-500/30 hover:bg-amber-600 transition-all flex items-center justify-center gap-4 disabled:opacity-50"
+                                >
+                                    {isLoading ? 'Creating Node...' : (
+                                        <>Deploy Account <ArrowRight className="w-4 h-4" /></>
                                     )}
-                                </span>
-                            </button>
+                                </button>
                         </motion.div>
 
                         {/* Sign In Link */}
@@ -652,16 +634,16 @@ const Register = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 1.1 }}
-                            className="text-center pt-4 border-t border-gray-800"
+                            className="text-center pt-8"
                         >
-                            <p className="text-gray-500">
+                            <p className="text-[10px] font-black uppercase tracking-widest opacity-30">
                                 Already have an account?{' '}
                                 <Link
                                     to="/login"
-                                    className="text-amber-500 hover:text-amber-400 font-semibold inline-flex items-center group"
+                                    className="text-amber-500 hover:text-amber-600 font-black inline-flex items-center group ml-2"
                                 >
                                     SIGN IN
-                                    <ArrowRight className="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    <ArrowRight className="ml-1 w-3 h-3 group-hover:translate-x-1 transition-transform" />
                                 </Link>
                             </p>
                         </motion.div>
@@ -684,15 +666,15 @@ const Register = () => {
                                 type="button"
                                 onClick={() => handleGoogleLogin()}
                                 disabled={isLoading}
-                                className="w-full bg-gray-900/50 hover:bg-gray-800 border border-gray-800 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center space-x-2 transition duration-300 disabled:opacity-50"
+                                className="w-full theme-card-item hover:opacity-80 border border-black/5 rounded-2xl py-4 flex items-center justify-center space-x-3 transition duration-300 disabled:opacity-50 text-[10px] font-black uppercase tracking-widest"
                             >
-                                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4" viewBox="0 0 24 24">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                     <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                                 </svg>
-                                <span>Google</span>
+                                <span style={{ color: 'var(--text-primary)' }}>Integrate Google Node</span>
                             </button>
                         </motion.div>
                     </form>

@@ -290,36 +290,36 @@ const Menu = () => {
                 className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
             >
                 <div>
-                    <h1 className="text-2xl font-bold text-white">
+                    <h1 className="text-3xl font-black uppercase tracking-tighter">
                         {(user?.role === 'admin' || user?.role === 'owner')
-                            ? `Menu Management ${selectedRestaurant ? `• ${selectedRestaurant.name}` : ''}`
-                            : selectedRestaurant ? `${selectedRestaurant.name} Menu` : 'Our Menu'}
+                            ? `Menu Management`
+                            : `Restaurant Menu`}
                     </h1>
-                    <p className="text-gray-400 text-sm mt-1">
+                    <p className="opacity-60 text-sm font-medium mt-1 uppercase tracking-widest">
                         {(user?.role === 'admin' || user?.role === 'owner')
-                            ? `Manage items for ${selectedRestaurant?.name || 'your restaurant'}`
-                            : `Discover the flavors of ${selectedRestaurant?.name || 'our kitchen'}`}
+                            ? `Restaurant: ${selectedRestaurant?.name || 'Central Unit'}`
+                            : `Menu for: ${selectedRestaurant?.name || 'Local Kitchen'}`}
                     </p>
                 </div>
 
                 {(user?.role === 'admin' || user?.role === 'owner') ? (
                     <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => handleOpenModal()}
-                        className="flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-indigo-600/20 transition-all duration-300 group"
+                        className="flex items-center px-8 py-4 bg-amber-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-amber-600/30 hover:bg-amber-700 transition-all group"
                     >
-                        <PlusIcon className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-                        Add New Item
+                        <PlusIcon className="h-5 w-5 mr-3 group-hover:rotate-90 transition-transform duration-500" />
+                        Add Menu Item
                     </motion.button>
                 ) : (
                     <button
                         onClick={() => setIsCartOpen(true)}
-                        className="relative p-3 bg-gray-900 border border-gray-800 rounded-xl hover:bg-gray-800 transition group"
+                        className="relative p-4 theme-card rounded-2xl hover:border-amber-500 transition-all group shadow-lg"
                     >
-                        <ShoppingCartIcon className="w-6 h-6 text-indigo-400" />
+                        <ShoppingCartIcon className="w-6 h-6 text-amber-500 group-hover:scale-110 transition-transform" />
                         {cart.length > 0 && (
-                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-indigo-600 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-black font-bold">
+                            <span className="absolute -top-2 -right-2 w-6 h-6 bg-amber-600 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white/10 font-black shadow-lg">
                                 {cart.length}
                             </span>
                         )}
@@ -331,37 +331,42 @@ const Menu = () => {
             {isLoading && !menuItems.length ? (
                 <div className="flex items-center justify-center h-64">
                     <div className="relative">
-                        <div className="w-16 h-16 border-4 border-gray-800 border-t-indigo-600 rounded-full animate-spin"></div>
+                        <div className="w-16 h-16 border-4 border-gray-800 border-t-amber-600 rounded-full animate-spin"></div>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full animate-pulse"></div>
+                            <div className="w-8 h-8 bg-gradient-to-r from-amber-600 to-purple-600 rounded-full animate-pulse"></div>
                         </div>
                     </div>
                 </div>
             ) : (
                 <>
                     {/* AI Recommendations Section */}
-                    {user?.role === 'user' && recommendations.length > 0 && (
+                     {user?.role === 'user' && recommendations.length > 0 && (
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-2xl p-6 mb-8"
+                            className="theme-card border border-amber-500/10 rounded-[2.5rem] p-8 mb-10 overflow-hidden relative"
                         >
-                            <div className="flex items-center gap-2 mb-4">
-                                <SparklesIcon className="w-5 h-5 text-indigo-400" />
-                                <h2 className="text-lg font-bold text-white uppercase tracking-wider">AI Recommended for You</h2>
+                            <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12">
+                                <SparklesIcon className="w-32 h-32 text-amber-500" />
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="flex items-center gap-3 mb-6 relative z-10">
+                                <SparklesIcon className="w-5 h-5 text-amber-500" />
+                                <h2 className="text-sm font-black uppercase tracking-[0.3em] text-amber-600/80">Autonomous Suggestions</h2>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
                                 {recommendations.map((item) => (
-                                    <div key={item._id} className="bg-black/40 border border-gray-800 rounded-xl p-4 flex gap-4 group">
-                                        <img src={item.image} alt={item.name} className="w-16 h-16 rounded-lg object-cover" />
+                                    <div key={item._id} className="theme-card-item rounded-2xl p-5 flex gap-5 group border border-transparent hover:border-amber-500/20 transition-all cursor-pointer">
+                                        <div className="w-16 h-16 rounded-xl overflow-hidden shadow-lg border border-white/10">
+                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        </div>
                                         <div className="flex-1 min-w-0">
-                                            <h4 className="font-bold text-white truncate text-sm">{item.name}</h4>
-                                            <p className="text-xs text-gray-400 truncate mb-2">{item.category}</p>
+                                            <h4 className="font-black truncate text-sm uppercase tracking-tight">{item.name}</h4>
+                                            <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest mt-1">{item.category}</p>
                                             <button
                                                 onClick={() => addToCart(item)}
-                                                className="text-[10px] font-bold text-indigo-400 hover:text-white uppercase transition-colors"
+                                                className="text-[10px] font-black text-amber-500 hover:text-amber-600 uppercase tracking-widest mt-3 flex items-center gap-1 transition-colors"
                                             >
-                                                Add to cart
+                                                Authorize <PlusIcon className="w-3 h-3" />
                                             </button>
                                         </div>
                                     </div>
@@ -375,29 +380,29 @@ const Menu = () => {
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-800 p-12 text-center"
+                            className="theme-card rounded-2xl p-12 text-center"
                         >
-                            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center">
-                                <XMarkIcon className="w-10 h-10 text-red-400" />
+                            <div className="w-20 h-20 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center">
+                                <XMarkIcon className="w-10 h-10 text-red-500" />
                             </div>
-                            <h3 className="text-xl font-semibold text-white mb-2">No Restaurant Selected</h3>
-                            <p className="text-gray-400 mb-6">You must select a restaurant to manage menu items.</p>
+                            <h3 className="text-xl font-semibold mb-2">No Restaurant Selected</h3>
+                            <p className="opacity-60 mb-6">You must select a restaurant to manage menu items.</p>
                         </motion.div>
                     ) : menuItems.length === 0 ? (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-800 p-12 text-center"
+                            className="theme-card rounded-2xl p-12 text-center"
                         >
-                            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center">
-                                <PhotoIcon className="w-10 h-10 text-indigo-400" />
+                            <div className="w-20 h-20 mx-auto mb-4 bg-amber-500/10 rounded-2xl flex items-center justify-center">
+                                <PhotoIcon className="w-10 h-10 text-amber-500" />
                             </div>
-                            <h3 className="text-xl font-semibold text-white mb-2">
+                            <h3 className="text-xl font-semibold mb-2">
                                 {(user?.role === 'admin' || user?.role === 'owner')
                                     ? 'No Menu Items Yet'
                                     : 'Menu Coming Soon'}
                             </h3>
-                            <p className="text-gray-400 mb-6">
+                            <p className="opacity-60 mb-6">
                                 {(user?.role === 'admin' || user?.role === 'owner')
                                     ? 'Get started by adding your first menu item'
                                     : 'This restaurant hasn\'t added any items to their menu yet.'}
@@ -407,7 +412,7 @@ const Menu = () => {
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => handleOpenModal()}
-                                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium"
+                                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-600 to-purple-600 text-white rounded-xl font-medium"
                                 >
                                     <PlusIcon className="h-5 w-5 mr-2" />
                                     Add Your First Item
@@ -432,7 +437,7 @@ const Menu = () => {
                                             layout
                                             exit={{ opacity: 0, scale: 0.9 }}
                                             whileHover={{ y: -8 }}
-                                            className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-gray-800 overflow-hidden hover:border-indigo-500/50 transition-all duration-300"
+                                            className="group relative theme-card rounded-2xl overflow-hidden hover:border-amber-500/50 transition-all duration-300"
                                         >
                                             {/* Image */}
                                             <div className="relative h-48 overflow-hidden">
@@ -464,46 +469,46 @@ const Menu = () => {
                                             {/* Content */}
                                             <div className="p-5">
                                                 <div className="flex justify-between items-start mb-3">
-                                                    <h3 className="text-lg font-bold text-white group-hover:text-indigo-400 transition">
+                                                    <h3 className="text-lg font-bold group-hover:text-amber-500 transition">
                                                         {item.name}
                                                     </h3>
-                                                    <div className="flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-1 rounded-full">
+                                                    <div className="flex items-center bg-amber-600 px-3 py-1 rounded-full">
                                                         <span className="text-white font-bold text-sm">₹{item.price}</span>
                                                     </div>
                                                 </div>
 
-                                                <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                                                <p className="opacity-60 text-sm mb-4 line-clamp-2">
                                                     {item.description}
                                                 </p>
 
                                                 {/* Action Buttons */}
                                                 {(user?.role === 'admin' || user?.role === 'owner') ? (
-                                                    <div className="flex justify-end gap-2 pt-2 border-t border-gray-800">
+                                                    <div className="flex justify-end gap-3 pt-5 border-t border-black/5">
                                                         <motion.button
-                                                            whileHover={{ scale: 1.1 }}
+                                                            whileHover={{ scale: 1.1, rotate: -5 }}
                                                             whileTap={{ scale: 0.9 }}
                                                             onClick={() => handleOpenModal(item)}
-                                                            className="p-2 text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-all"
+                                                            className="p-3 theme-card-item rounded-xl text-amber-500 hover:bg-amber-600 hover:text-white transition-all shadow-md"
                                                         >
                                                             <PencilIcon className="h-5 w-5" />
                                                         </motion.button>
                                                         <motion.button
-                                                            whileHover={{ scale: 1.1 }}
+                                                            whileHover={{ scale: 1.1, rotate: 5 }}
                                                             whileTap={{ scale: 0.9 }}
                                                             onClick={() => handleDelete(item._id)}
-                                                            className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                                                            className="p-3 theme-card-item rounded-xl text-red-500 hover:bg-red-600 hover:text-white transition-all shadow-md"
                                                         >
                                                             <TrashIcon className="h-5 w-5" />
                                                         </motion.button>
                                                     </div>
                                                 ) : (
-                                                    <div className="pt-2 border-t border-gray-800">
+                                                    <div className="pt-5 border-t border-black/5">
                                                         <button
                                                             onClick={() => addToCart(item)}
                                                             disabled={item.stock === 0}
-                                                            className="w-full py-2 bg-indigo-600/10 text-indigo-400 border border-indigo-600/20 rounded-xl hover:bg-indigo-600 hover:text-white transition-all duration-300 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                                            className="w-full py-4 bg-amber-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-amber-600/20 active:scale-95 transition-all disabled:opacity-50"
                                                         >
-                                                            {item.stock > 0 ? 'Add to Order' : 'Out of Stock'}
+                                                            {item.stock > 0 ? 'Add To Cart' : 'Out of Stock'}
                                                         </button>
                                                     </div>
                                                 )}
@@ -532,19 +537,19 @@ const Menu = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
                             transition={{ type: "spring", duration: 0.3 }}
-                            className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl w-full max-w-md border border-gray-800 shadow-2xl"
+                            className="theme-card rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* Modal Header */}
-                            <div className="flex items-center justify-between p-6 border-b border-gray-800">
-                                <h2 className="text-xl font-bold text-white">
+                            <div className="flex items-center justify-between p-6 border-b">
+                                <h2 className="text-xl font-bold">
                                     {currentItem ? 'Edit Menu Item' : 'Add New Menu Item'}
                                 </h2>
                                 <motion.button
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
                                     onClick={() => setIsModalOpen(false)}
-                                    className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition"
+                                    className="p-2 opacity-60 hover:opacity-100 transition"
                                 >
                                     <XMarkIcon className="h-5 w-5" />
                                 </motion.button>
@@ -552,20 +557,20 @@ const Menu = () => {
 
                             {/* AI Magic Generator */}
                             {!currentItem && (
-                                <div className="p-6 pb-0">
-                                    <div className="bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-xl p-4 flex flex-col gap-3 relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 p-4 opacity-10">
-                                            <SparklesOutline className="w-16 h-16 text-indigo-400" />
+                                <div className="px-8 pt-8 pb-0">
+                                    <div className="theme-card border border-amber-500/20 rounded-[2rem] p-6 flex flex-col gap-4 relative overflow-hidden bg-amber-500/5">
+                                        <div className="absolute top-0 right-0 p-6 opacity-[0.05]">
+                                            <SparklesOutline className="w-20 h-20 text-amber-500" />
                                         </div>
                                         <div className="relative z-10">
-                                            <h3 className="text-sm font-bold text-indigo-300 flex items-center gap-2 mb-2">
-                                                <SparklesIcon className="w-4 h-4" /> AI Magic Add
+                                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600 flex items-center gap-2 mb-3">
+                                                <SparklesIcon className="w-4 h-4" /> Neural Synthesis
                                             </h3>
                                             <div className="flex gap-2">
                                                 <input
                                                     type="text"
-                                                    className="flex-1 bg-black/40 border border-indigo-500/30 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-400"
-                                                    placeholder="e.g. A spicy beef Mexican taco..."
+                                                    className="flex-1 theme-card-item border border-black/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 font-bold placeholder:opacity-30"
+                                                    placeholder="Describe culinary vision..."
                                                     value={aiDishPrompt}
                                                     onChange={(e) => setAiDishPrompt(e.target.value)}
                                                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAiFullGenerate())}
@@ -574,170 +579,139 @@ const Menu = () => {
                                                     type="button"
                                                     onClick={handleAiFullGenerate}
                                                     disabled={isAiFullGenerating}
-                                                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-medium transition disabled:opacity-50 flex items-center gap-2 shadow-[0_0_15px_rgba(79,70,229,0.4)]"
+                                                    className="px-6 py-3 bg-amber-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-2 shadow-xl shadow-amber-600/30"
                                                 >
                                                     {isAiFullGenerating ? (
                                                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                    ) : "Generate"}
+                                                    ) : "Synthesize"}
                                                 </button>
                                             </div>
-                                            <p className="text-[10px] text-gray-400 mt-2">Instantly fills Name, Description, Category, and creates an Image.</p>
+                                            <p className="text-[10px] font-bold opacity-40 mt-3 uppercase tracking-wider">Automates description, categorization, and visual mapping.</p>
                                         </div>
                                     </div>
                                 </div>
-                            )}
-
-                            {/* Modal Form */}
-                            <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                                        Item Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        required
-                                        className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                                        placeholder="e.g., Grilled Salmon"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    />
-                                </div>
-
-                                <div>
-                                    <div className="flex justify-between items-center mb-2">
-                                        <label className="block text-sm font-medium text-gray-300">
-                                            Description
-                                        </label>
-                                        <button
-                                            type="button"
-                                            onClick={handleAiGenerate}
-                                            disabled={isAiGenerating}
-                                            className="flex items-center text-xs font-medium text-indigo-400 hover:text-indigo-300 transition-colors disabled:opacity-50"
-                                        >
-                                            {isAiGenerating ? (
-                                                <div className="w-3 h-3 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin mr-1"></div>
-                                            ) : (
-                                                <SparklesOutline className="w-3 h-3 mr-1" />
-                                            )}
-                                            {isAiGenerating ? 'Generating...' : 'AI Generate'}
-                                        </button>
-                                    </div>
-                                    <textarea
-                                        required
-                                        rows="3"
-                                        className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                                        placeholder="Describe your dish..."
-                                        value={formData.description}
-                                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
+                            )}                            {/* Modal Form */}
+                            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                                <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                                            Price (₹)
-                                        </label>
-                                        <div className="relative">
-                                            <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                            <input
-                                                type="number"
-                                                required
-                                                step="0.01"
-                                                min="0"
-                                                className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                                                placeholder="29.99"
-                                                value={formData.price}
-                                                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                                            Stock
-                                        </label>
-                                        <div className="relative">
-                                            <CubeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                            <input
-                                                type="number"
-                                                required
-                                                min="0"
-                                                className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                                                placeholder="50"
-                                                value={formData.stock}
-                                                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                                        Category
-                                    </label>
-                                    <div className="relative">
-                                        <TagIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-                                        <select
-                                            className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-10 pr-10 py-3 text-white appearance-none focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition cursor-pointer"
-                                            value={formData.category}
-                                            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                        >
-                                            {categories.map(cat => (
-                                                <option key={cat.name} value={cat.name} className="bg-gray-800">
-                                                    {cat.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                                        Image URL
-                                    </label>
-                                    <div className="relative">
-                                        <PhotoIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Item Designation</label>
                                         <input
                                             type="text"
-                                            className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
-                                            placeholder="https://example.com/image.jpg"
-                                            value={formData.image}
-                                            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                            required
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
+                                            placeholder="e.g., SEARING SALMON"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         />
                                     </div>
+                                    <div className="relative">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">Technical Description</label>
+                                            <button
+                                                type="button"
+                                                onClick={handleAiGenerate}
+                                                disabled={isAiGenerating}
+                                                className="flex items-center text-[9px] font-black uppercase tracking-widest text-amber-500 hover:text-amber-600 transition-colors disabled:opacity-50"
+                                            >
+                                                {isAiGenerating ? (
+                                                    <div className="w-3 h-3 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mr-1.5"></div>
+                                                ) : (
+                                                    <SparklesIcon className="w-3 h-3 mr-1.5" />
+                                                )}
+                                                Synthesis
+                                            </button>
+                                        </div>
+                                        <textarea
+                                            required
+                                            rows="4"
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30 resize-none"
+                                            placeholder="Elucidate the item characteristics..."
+                                            value={formData.description}
+                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Value Units (₹)</label>
+                                            <div className="relative">
+                                                <CurrencyDollarIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" />
+                                                <input
+                                                    type="number"
+                                                    required
+                                                    step="0.01"
+                                                    className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
+                                                    placeholder="999"
+                                                    value={formData.price}
+                                                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Inventory Count</label>
+                                            <div className="relative">
+                                                <CubeIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" />
+                                                <input
+                                                    type="number"
+                                                    required
+                                                    className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
+                                                    placeholder="50"
+                                                    value={formData.stock}
+                                                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Classification</label>
+                                        <div className="relative">
+                                            <TagIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" />
+                                            <select
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold appearance-none cursor-pointer"
+                                                value={formData.category}
+                                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                            >
+                                                {categories.map(cat => (
+                                                    <option key={cat.name} value={cat.name} className="theme-card-item">{cat.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Visual Mapping (URL)</label>
+                                        <div className="relative">
+                                            <PhotoIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" />
+                                            <input
+                                                type="text"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
+                                                placeholder="https://..."
+                                                value={formData.image}
+                                                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-
-                                {/* Form Actions */}
-                                <div className="flex justify-end gap-3 pt-4 border-t border-gray-800">
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
+                                <div className="flex gap-4 pt-4">
+                                    <button
                                         type="button"
                                         onClick={() => setIsModalOpen(false)}
-                                        className="px-6 py-2.5 text-gray-400 hover:text-white bg-gray-800/50 hover:bg-gray-800 rounded-xl transition"
+                                        className="flex-1 py-4 theme-card-item border border-black/5 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black/5 transition-all active:scale-95"
                                     >
                                         Cancel
-                                    </motion.button>
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
+                                    </button>
+                                    <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium hover:shadow-lg hover:shadow-indigo-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="flex-[2] py-4 bg-amber-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl shadow-amber-600/40 hover:bg-amber-700 transition-all active:scale-95 disabled:opacity-50"
                                     >
-                                        {isLoading ? 'Saving...' : 'Save Item'}
-                                    </motion.button>
+                                        {isLoading ? 'Processing...' : (currentItem ? 'Authorize Mutation' : 'Authorize Insertion')}
+                                    </button>
                                 </div>
                             </form>
                         </motion.div>
                     </motion.div>
                 )}
             </AnimatePresence>
+
             {/* Cart Drawer */}
             <AnimatePresence>
                 {isCartOpen && (
@@ -753,151 +727,148 @@ const Menu = () => {
                             initial={{ x: '100%' }}
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
-                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-gray-900 border-l border-gray-800 z-50 flex flex-col"
+                            className="fixed right-0 top-0 h-full w-full max-w-md theme-card border-l border-black/5 z-50 flex flex-col shadow-2xl"
                         >
-                            <div className="p-6 border-b border-gray-800 flex justify-between items-center">
-                                <div className="flex items-center gap-3">
-                                    <ShoppingCartIcon className="w-6 h-6 text-indigo-400" />
-                                    <h2 className="text-xl font-bold text-white">Your Order</h2>
+                            <div className="p-8 border-b border-black/5 flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-amber-600/10 rounded-xl">
+                                        <ShoppingCartIcon className="w-6 h-6 text-amber-500" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-black uppercase tracking-tighter">Order Cartage</h2>
+                                        <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{cart.length} Manifest Items</p>
+                                    </div>
                                 </div>
-                                <button onClick={() => setIsCartOpen(false)} className="p-2 text-gray-500 hover:text-white transition">
+                                <button
+                                    onClick={() => setIsCartOpen(false)}
+                                    className="p-3 hover:bg-black/5 rounded-full transition-colors"
+                                >
                                     <XMarkIcon className="w-6 h-6" />
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                            <div className="flex-1 overflow-y-auto p-8 space-y-6">
                                 {cart.length === 0 ? (
-                                    <div className="text-center py-20">
-                                        <ShoppingCartIcon className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-                                        <p className="text-gray-500">Your cart is empty</p>
+                                    <div className="h-full flex flex-col items-center justify-center opacity-30">
+                                        <ShoppingCartIcon className="w-16 h-16 mb-4" />
+                                        <p className="font-black uppercase tracking-widest text-[10px]">Manifest Empty</p>
                                     </div>
                                 ) : (
-                                    cart.map((item) => (
-                                        <div key={item._id} className="flex justify-between items-center bg-gray-800/30 p-4 rounded-xl border border-gray-800">
-                                            <div>
-                                                <h4 className="font-bold text-white">{item.name}</h4>
-                                                <p className="text-indigo-400 text-sm">{item.quantity}x ₹{item.price}</p>
+                                    <div className="space-y-4">
+                                        {cart.map((item) => (
+                                            <div key={item._id} className="theme-card-item rounded-3xl p-5 border border-black/5 flex gap-5 items-center group">
+                                                <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-lg">
+                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className="font-black uppercase tracking-tight text-sm mb-1">{item.name}</h4>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-600">₹{item.price}</span>
+                                                        <div className="flex items-center gap-3 theme-card-item rounded-lg px-2 py-1">
+                                                            <button onClick={() => removeFromCart(item._id)} className="p-1 hover:text-red-500 transition-colors">
+                                                                <MinusIcon className="w-3 h-3" />
+                                                            </button>
+                                                            <span className="text-xs font-black">{item.quantity}</span>
+                                                            <button onClick={() => addToCart(item)} className="p-1 hover:text-amber-500 transition-colors">
+                                                                <PlusIcon className="w-3 h-3" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <button onClick={() => removeFromCart(item._id)} className="text-gray-500 hover:text-red-400 transition">
-                                                <TrashIcon className="w-5 h-5" />
-                                            </button>
-                                        </div>
-                                    ))
-                                )}
+                                        ))}
 
-                                {cart.length > 0 && (
-                                    <div className="mt-6 space-y-5">
+                                        <div className="mt-8 space-y-6">
+                                            <div>
+                                                <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Service Protocol</label>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    {['Dine-In', 'Home Delivery'].map(type => (
+                                                        <button
+                                                            key={type}
+                                                            onClick={() => setOrderType(type)}
+                                                            className={`py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all ${orderType === type ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/20' : 'theme-card-item border border-black/5 opacity-50 hover:opacity-100'}`}
+                                                        >
+                                                            {type}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
 
-                                        {/* Order Type Toggle */}
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Order Type</label>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {['Dine-In', 'Home Delivery'].map(type => (
+                                            {orderType === 'Dine-In' ? (
+                                                <div>
+                                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Table Allocation</label>
+                                                    <input
+                                                        type="number"
+                                                        placeholder="Table Number"
+                                                        value={tableNumber}
+                                                        onChange={(e) => setTableNumber(e.target.value)}
+                                                        className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 text-sm font-bold placeholder:opacity-30"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Delivery Coordinates</label>
+                                                    <textarea
+                                                        placeholder="Address Protocol"
+                                                        value={deliveryAddress}
+                                                        onChange={(e) => setDeliveryAddress(e.target.value)}
+                                                        className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 text-sm font-bold placeholder:opacity-30 h-24 resize-none"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            <div>
+                                                <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Settlement Method</label>
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {['Cash', 'Card', 'UPI'].map(method => (
+                                                        <button
+                                                            key={method}
+                                                            onClick={() => setPaymentMethod(method)}
+                                                            className={`py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all ${paymentMethod === method ? 'bg-emerald-600 text-white shadow-lg' : 'theme-card-item border border-black/5 opacity-50'}`}
+                                                        >
+                                                            {method}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className="relative">
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1">Preparation Directives</label>
                                                     <button
-                                                        key={type}
-                                                        type="button"
-                                                        onClick={() => setOrderType(type)}
-                                                        className={`py-3 rounded-xl text-sm font-bold border transition-all ${orderType === type
-                                                            ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                                                            : 'bg-gray-800/40 border-gray-700 text-gray-400 hover:border-indigo-500/50'
-                                                            }`}
+                                                        onClick={handleAiGenerateInstructions}
+                                                        disabled={isAiGeneratingInstructions}
+                                                        className="flex items-center text-[9px] font-black uppercase tracking-widest text-amber-500 hover:text-amber-600"
                                                     >
-                                                        {type === 'Dine-In' ? '🍽️ Dine-In' : '🛵 Home Delivery'}
+                                                        <SparklesIcon className={`w-3 h-3 mr-1 ${isAiGeneratingInstructions ? 'animate-spin' : ''}`} />
+                                                        AI Polish
                                                     </button>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Table Number (Dine-In only) */}
-                                        {orderType === 'Dine-In' && (
-                                            <div>
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Table Number</label>
-                                                <input
-                                                    type="number"
-                                                    min="1"
-                                                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition text-sm"
-                                                    placeholder="Enter your table number"
-                                                    value={tableNumber}
-                                                    onChange={e => setTableNumber(e.target.value)}
-                                                />
-                                            </div>
-                                        )}
-
-                                        {/* Delivery Address (Home Delivery only) */}
-                                        {orderType === 'Home Delivery' && (
-                                            <div>
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Delivery Address</label>
+                                                </div>
                                                 <textarea
-                                                    className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition text-sm"
-                                                    placeholder="Enter your full delivery address..."
-                                                    rows="2"
-                                                    value={deliveryAddress}
-                                                    onChange={e => setDeliveryAddress(e.target.value)}
+                                                    placeholder="Special instructions..."
+                                                    value={cartInstructions}
+                                                    onChange={(e) => setCartInstructions(e.target.value)}
+                                                    className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 text-sm font-bold placeholder:opacity-30 h-24 resize-none"
                                                 />
                                             </div>
-                                        )}
-
-                                        {/* Payment Method */}
-                                        <div>
-                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 block">Payment Method</label>
-                                            <div className="grid grid-cols-3 gap-2">
-                                                {[{ id: 'Cash', icon: '💵' }, { id: 'Card', icon: '💳' }, { id: 'UPI', icon: '📱' }].map(method => (
-                                                    <button
-                                                        key={method.id}
-                                                        type="button"
-                                                        onClick={() => setPaymentMethod(method.id)}
-                                                        className={`py-3 rounded-xl text-sm font-bold border transition-all ${paymentMethod === method.id
-                                                            ? 'bg-green-600/80 border-green-500 text-white shadow-lg shadow-green-600/20'
-                                                            : 'bg-gray-800/40 border-gray-700 text-gray-400 hover:border-green-500/50'
-                                                            }`}
-                                                    >
-                                                        <span className="block text-lg mb-0.5">{method.icon}</span>
-                                                        {method.id}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Special Instructions */}
-                                        <div>
-                                            <div className="flex justify-between items-center mb-2">
-                                                <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Special Instructions</label>
-                                                <button
-                                                    onClick={handleAiGenerateInstructions}
-                                                    disabled={isAiGeneratingInstructions || !cartInstructions}
-                                                    className="flex items-center text-xs font-medium text-indigo-400 hover:text-indigo-300 disabled:opacity-50"
-                                                >
-                                                    {isAiGeneratingInstructions ? 'Polishing...' : 'AI Polish'}
-                                                    <SparklesOutline className="w-3 h-3 ml-1" />
-                                                </button>
-                                            </div>
-                                            <textarea
-                                                className="w-full bg-gray-800/50 border border-gray-800 rounded-xl p-3 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition"
-                                                placeholder="e.g., spicy, no onions..."
-                                                rows="2"
-                                                value={cartInstructions}
-                                                onChange={(e) => setCartInstructions(e.target.value)}
-                                            />
                                         </div>
                                     </div>
                                 )}
                             </div>
 
                             {cart.length > 0 && (
-                                <div className="p-6 border-t border-gray-800 space-y-4 bg-gray-900/50">
+                                <div className="p-8 theme-card-item border-t border-black/5 space-y-6 bg-black/[0.02]">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-gray-400">Total Price</span>
-                                        <span className="text-2xl font-bold text-white">
-                                            ₹{cart.reduce((acc, item) => acc + (item.price * item.quantity), 0).toFixed(2)}
-                                        </span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Total Quantum</span>
+                                        <span className="text-2xl font-black uppercase tracking-tighter">₹{cart.reduce((sum, item) => sum + item.price * item.quantity, 0)}</span>
                                     </div>
+
                                     <button
                                         onClick={handlePlaceOrder}
                                         disabled={isLoading}
-                                        className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-indigo-600/20 transition-all disabled:opacity-50"
+                                        className="w-full py-5 bg-amber-600 text-white rounded-[2.5rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-amber-600/40 hover:bg-amber-700 transition-all active:scale-95 disabled:opacity-50"
                                     >
-                                        Place Order
+                                        {isLoading ? 'Transmitting...' : 'Authorize Transaction'}
                                     </button>
                                 </div>
                             )}

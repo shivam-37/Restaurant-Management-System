@@ -68,18 +68,18 @@ const registerUser = asyncHandler(async (req, res) => {
     const user = await User.create(userObj);
 
     if (user) {
-        // Send OTP
+        // Send OTP asynchronously
         if (email) {
-            await sendEmail({
+            sendEmail({
                 email: user.email,
                 subject: 'Verify your account',
                 message: `Your verification OTP is: ${otp}`
-            });
+            }).catch(err => console.error('Background Email Sending Failed:', err));
         } else if (phone) {
-            await sendSms({
+            sendSms({
                 phone: user.phone,
                 message: `Your verification OTP is: ${otp}`
-            });
+            }).catch(err => console.error('Background SMS Sending Failed:', err));
         }
 
         res.status(201).json({
@@ -161,39 +161,52 @@ const loginUser = asyncHandler(async (req, res) => {
     
     identifier = identifier.toLowerCase().trim();
 
+    const searchConditions = [
+        { email: identifier },
+        { phone: identifier }
+    ];
+
+    // If identifier is a sequence of at least 7 digits (no country code '+'),
+    // we search for a phone number in the DB that ends with exactly these digits.
+    if (/^\d{7,}$/.test(identifier)) {
+        searchConditions.push({ 
+            phone: { $regex: new RegExp(identifier + '$') } 
+        });
+    }
+
     // Check for user by email or phone
     const user = await User.findOne({
-        $or: [{ email: identifier }, { phone: identifier }]
+        $or: searchConditions
     }).populate('restaurant');
 
     if (user && (await user.matchPassword(password))) {
-        // Enforce Verification
-        const isEmailLogin = user.email === identifier;
-        const isPhoneLogin = user.phone === identifier;
+        // Enforce 2FA (Two-Factor Authentication) on every login
+        const isEmailLogin = identifier.includes('@');
+        const isPhoneLogin = !isEmailLogin;
 
-        if (isEmailLogin && !user.isEmailVerified) {
+        if (isEmailLogin) {
             const otp = generateOtp();
             user.emailOtp = otp;
             user.emailOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
             await user.save();
-            await sendEmail({
+            sendEmail({
                 email: user.email,
-                subject: 'Verify your account',
-                message: `Your verification OTP is: ${otp}`
-            });
-            return res.status(403).json({ requiresOtp: true, method: 'email', userId: user._id, message: 'Please verify your email.' });
+                subject: 'Login Verification Code',
+                message: `Your login verification OTP is: ${otp}`
+            }).catch(err => console.error('Background Email Sending Failed:', err));
+            return res.status(200).json({ requiresOtp: true, method: 'email', userId: user._id, message: 'Please verify your identity with the OTP sent to your email.' });
         }
 
-        if (isPhoneLogin && !user.isPhoneVerified) {
+        if (isPhoneLogin) {
             const otp = generateOtp();
             user.phoneOtp = otp;
             user.phoneOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
             await user.save();
-            await sendSms({
+            sendSms({
                 phone: user.phone,
-                message: `Your verification OTP is: ${otp}`
-            });
-            return res.status(403).json({ requiresOtp: true, method: 'phone', userId: user._id, message: 'Please verify your phone number.' });
+                message: `Your login verification OTP is: ${otp}`
+            }).catch(err => console.error('Background SMS Sending Failed:', err));
+            return res.status(200).json({ requiresOtp: true, method: 'phone', userId: user._id, message: 'Please verify your identity with the OTP sent to your phone.' });
         }
 
         res.json({
@@ -337,17 +350,17 @@ const sendOtp = asyncHandler(async (req, res) => {
     const otp = generateOtp();
 
     if (email) {
-        await sendEmail({
+        sendEmail({
             email,
             subject: 'Your Verification Code',
             message: `Your verification OTP is: ${otp}`
-        });
+        }).catch(err => console.error('Background Email Sending Failed:', err));
         res.status(200).json({ message: 'OTP sent to email', method: 'email' });
     } else if (phone) {
-        await sendSms({
+        sendSms({
             phone,
             message: `Your verification OTP is: ${otp}`
-        });
+        }).catch(err => console.error('Background SMS Sending Failed:', err));
         res.status(200).json({ message: 'OTP sent to phone', method: 'phone' });
     }
 });

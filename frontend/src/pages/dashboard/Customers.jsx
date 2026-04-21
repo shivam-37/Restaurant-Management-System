@@ -38,68 +38,87 @@ const Customers = () => {
     );
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Customers</h1>
-                <div className="relative">
-                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+        <div className="p-6 space-y-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="text-3xl font-black uppercase tracking-tighter">Customers</h1>
+                    <p className="opacity-60 font-medium mt-1">Manage and view your restaurant's clientele</p>
+                </div>
+                <div className="relative w-full md:w-auto">
+                    <MagnifyingGlassIcon className="h-5 w-5 text-amber-500 absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none" />
                     <input
                         type="text"
                         placeholder="Search customers..."
-                        className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        className="w-full theme-card-item border-transparent rounded-2xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500 transition font-medium"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50 border-b border-gray-100">
-                        <tr>
-                            <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">User</th>
-                            <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Role</th>
-                            <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Joined</th>
-                            <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {filteredUsers.map((u) => (
-                            <tr key={u._id} className="hover:bg-gray-50 transition">
-                                <td className="px-6 py-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
-                                            {u.name.charAt(0)}
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-900">{u.name}</p>
-                                            <p className="text-xs text-gray-500">{u.email}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'
-                                        }`}>
-                                        {u.role}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 text-sm text-gray-500">
-                                    {new Date(u.createdAt).toLocaleDateString()}
-                                </td>
-                                <td className="px-6 py-4 text-right">
-                                    {u._id !== user._id && (
-                                        <button
-                                            onClick={() => handleDelete(u._id)}
-                                            className="text-gray-400 hover:text-red-600 transition"
-                                        >
-                                            <TrashIcon className="h-5 w-5" />
-                                        </button>
-                                    )}
-                                </td>
+            <div className="theme-card rounded-[2rem] border border-black/5 shadow-2xl overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b border-black/5 bg-amber-500/5">
+                                <th className="px-8 py-5 text-[10px] font-black text-amber-500 uppercase tracking-widest">User Details</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-amber-500 uppercase tracking-widest">Access Role</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-amber-500 uppercase tracking-widest">Member Since</th>
+                                <th className="px-8 py-5 text-right text-[10px] font-black text-amber-500 uppercase tracking-widest">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="divide-y divide-black/5">
+                            {filteredUsers.map((u) => (
+                                <tr key={u._id} className="hover:bg-black/5 transition-colors group">
+                                    <td className="px-8 py-5">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-amber-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-amber-500/20">
+                                                {u.name.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-sm">{u.name}</p>
+                                                <p className="text-xs opacity-50 font-medium">{u.email}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-5">
+                                        <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ${u.role === 'admin'
+                                            ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20'
+                                            : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                                            }`}>
+                                            {u.role}
+                                        </span>
+                                    </td>
+                                    <td className="px-8 py-5">
+                                        <p className="text-xs font-bold opacity-60 uppercase tracking-tighter">
+                                            {new Date(u.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                                        </p>
+                                    </td>
+                                    <td className="px-8 py-5 text-right">
+                                        {u._id !== user._id ? (
+                                            <button
+                                                onClick={() => handleDelete(u._id)}
+                                                className="p-2 opacity-30 hover:opacity-100 hover:bg-red-500/10 hover:text-red-500 rounded-xl transition-all"
+                                                title="Delete Customer"
+                                            >
+                                                <TrashIcon className="h-5 w-5" />
+                                            </button>
+                                        ) : (
+                                            <span className="text-[10px] font-black uppercase tracking-widest opacity-20">You</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                {filteredUsers.length === 0 && (
+                    <div className="p-16 text-center">
+                        <UserIcon className="h-16 w-16 opacity-10 mx-auto mb-4" />
+                        <h3 className="text-xl font-bold opacity-40">No customers found</h3>
+                        <p className="text-sm opacity-20 italic">Try searching with a different term</p>
+                    </div>
+                )}
             </div>
         </div>
     );

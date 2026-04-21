@@ -85,10 +85,10 @@ const Reservations = () => {
                 className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
             >
                 <div>
-                    <h1 className="text-3xl font-black text-white uppercase tracking-tighter">
+                    <h1 className="text-3xl font-black uppercase tracking-tighter">
                         {(user.role === 'admin' || user.role === 'owner') ? 'Reservations Desk' : 'My Bookings'}
                     </h1>
-                    <p className="text-gray-400 font-medium">
+                    <p className="opacity-60 font-medium">
                         {(user.role === 'admin' || user.role === 'owner')
                             ? `Incoming reservations for ${selectedRestaurant?.name || 'All Locations'}`
                             : `Your upcoming visits to ${selectedRestaurant?.name || 'our restaurants'}`}
@@ -98,10 +98,10 @@ const Reservations = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold text-sm shadow-lg shadow-indigo-600/20 hover:bg-indigo-500 transition group"
+                    className="flex items-center px-8 py-4 bg-amber-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-amber-600/30 hover:bg-amber-700 transition-all group"
                 >
-                    <PlusIcon className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-                    Book A Table
+                    <PlusIcon className="h-5 w-5 mr-3 group-hover:rotate-90 transition-transform duration-500" />
+                    Initialize Request
                 </motion.button>
             </motion.div>
 
@@ -109,17 +109,17 @@ const Reservations = () => {
             {loading ? (
                 <div className="space-y-4">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="h-24 bg-white/5 rounded-3xl animate-pulse" />
+                        <div key={i} className="h-24 bg-amber-500/5 rounded-3xl animate-pulse" />
                     ))}
                 </div>
             ) : reservations.length === 0 ? (
                 <motion.div
                     {...fadeInUp}
-                    className="bg-gray-900/40 border-2 border-dashed border-gray-800 rounded-3xl p-16 text-center"
+                    className="theme-card border-2 border-dashed border-black/5 rounded-3xl p-16 text-center"
                 >
-                    <CalendarIcon className="h-16 w-16 text-gray-700 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-white mb-2">No Reservations Found</h3>
-                    <p className="text-gray-500 max-w-xs mx-auto mb-8">It looks like there are no bookings scheduled here yet.</p>
+                    <CalendarIcon className="h-16 w-16 text-amber-500/20 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold mb-2">No Reservations Found</h3>
+                    <p className="opacity-50 max-w-xs mx-auto mb-8">It looks like there are no bookings scheduled here yet.</p>
                 </motion.div>
             ) : (
                 <div className="grid grid-cols-1 gap-4">
@@ -131,25 +131,25 @@ const Reservations = () => {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
-                                className="group bg-gray-900/40 border border-gray-800 hover:border-indigo-500/30 rounded-3xl p-6 transition-all backdrop-blur-xl"
+                                className="group theme-card border border-black/5 hover:border-amber-500/30 rounded-3xl p-6 transition-all"
                             >
                                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                                     <div className="flex items-center gap-6 flex-1 w-full">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-indigo-600/20">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-purple-600 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-amber-600/20 text-white">
                                             {res.name.charAt(0)}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-3 mb-1">
-                                                <h3 className="text-lg font-bold text-white truncate">{res.name}</h3>
-                                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em] ${res.status === 'Confirmed' ? 'bg-green-500/20 text-green-400' :
-                                                    res.status === 'Cancelled' ? 'bg-red-500/20 text-red-400' :
-                                                        'bg-orange-500/20 text-orange-400'
+                                                <h3 className="text-lg font-bold truncate">{res.name}</h3>
+                                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em] ${res.status === 'Confirmed' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20' :
+                                                    res.status === 'Cancelled' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20' :
+                                                        'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
                                                     }`}>
                                                     {res.status}
                                                 </span>
                                             </div>
-                                            <div className="flex flex-wrap items-center gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                                <div className="flex items-center gap-1.5 text-indigo-400">
+                                            <div className="flex flex-wrap items-center gap-4 text-xs font-bold opacity-60 uppercase tracking-widest">
+                                                <div className="flex items-center gap-1.5 text-amber-500">
                                                     <CalendarIcon className="w-4 h-4" />
                                                     {new Date(res.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                                                 </div>
@@ -157,11 +157,11 @@ const Reservations = () => {
                                                     <ClockIcon className="w-4 h-4" />
                                                     {res.time}
                                                 </div>
-                                                <div className="flex items-center gap-1.5 border-l border-gray-800 pl-4">
+                                                <div className="flex items-center gap-1.5 border-l border-black/5 pl-4">
                                                     <UserGroupIcon className="w-4 h-4" />
                                                     {res.partySize} Guests
                                                 </div>
-                                                <div className="flex items-center gap-1.5 border-l border-gray-800 pl-4 hidden sm:flex">
+                                                <div className="flex items-center gap-1.5 border-l border-black/5 pl-4 hidden sm:flex">
                                                     <PhoneIcon className="w-4 h-4" />
                                                     {res.phone}
                                                 </div>
@@ -169,19 +169,19 @@ const Reservations = () => {
                                         </div>
                                     </div>
 
-                                    {(user.role === 'admin' || user.role === 'owner') && res.status === 'Pending' && (
-                                        <div className="flex items-center gap-2 w-full md:w-auto">
+                                     {(user.role === 'admin' || user.role === 'owner') && res.status === 'Pending' && (
+                                        <div className="flex items-center gap-3 w-full md:w-auto">
                                             <button
                                                 onClick={() => handleStatusUpdate(res._id, 'Confirmed')}
-                                                className="flex-1 md:flex-none px-4 py-2 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl hover:bg-green-500 hover:text-white transition font-bold text-[10px] uppercase tracking-widest"
+                                                className="flex-1 md:flex-none px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-black text-[9px] uppercase tracking-widest shadow-xl shadow-emerald-600/20"
                                             >
-                                                Confirm
+                                                Authorize
                                             </button>
                                             <button
                                                 onClick={() => handleStatusUpdate(res._id, 'Cancelled')}
-                                                className="flex-1 md:flex-none px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl hover:bg-red-500 hover:text-white transition font-bold text-[10px] uppercase tracking-widest"
+                                                className="flex-1 md:flex-none px-6 py-3 theme-card-item border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all font-black text-[9px] uppercase tracking-widest"
                                             >
-                                                Decline
+                                                Erase
                                             </button>
                                         </div>
                                     )}
@@ -203,82 +203,83 @@ const Reservations = () => {
                         onClick={() => setIsModalOpen(false)}
                     >
                         <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            initial={{ scale: 0.9, opacity: 0, y: 30 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="bg-gray-900 border border-gray-800 rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl shadow-indigo-500/10"
+                            exit={{ scale: 0.9, opacity: 0, y: 30 }}
+                            className="theme-card rounded-[3rem] w-full max-w-lg overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-white/10"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="p-8 border-b border-gray-800 flex justify-between items-center bg-gradient-to-r from-indigo-600/10 to-transparent">
+                            <div className="p-10 border-b border-black/5 flex justify-between items-center bg-amber-500/5">
                                 <div>
-                                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter">Reserve Table</h2>
-                                    <p className="text-xs text-indigo-400 font-bold uppercase tracking-widest">{selectedRestaurant?.name}</p>
+                                    <h2 className="text-2xl font-black uppercase tracking-tighter">Reserve Table</h2>
+                                    <p className="text-xs text-amber-500 font-bold uppercase tracking-widest">{selectedRestaurant?.name}</p>
                                 </div>
-                                <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-500 hover:text-white hover:bg-white/5 rounded-xl transition">
+                                <button onClick={() => setIsModalOpen(false)} className="p-2 opacity-60 hover:opacity-100 theme-card-item rounded-xl transition">
                                     <XMarkIcon className="w-6 h-6" />
                                 </button>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="p-8 space-y-6">
-                                <div className="space-y-4">
+                             <form onSubmit={handleSubmit} className="p-10 space-y-8">
+                                <div className="space-y-5">
                                     <div>
-                                        <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-2 invisible h-0">Guest Name</label>
-                                        <div className="relative">
-                                            <UserGroupIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                        <div className="relative group">
+                                            <UserGroupIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 transition-transform group-focus-within:scale-110" />
                                             <input
                                                 type="text"
                                                 required
-                                                placeholder="Guest Name"
-                                                className="w-full bg-black/40 border border-gray-800 rounded-2xl pl-12 pr-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition"
+                                                placeholder="Registrant Name"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
                                                 value={formData.name}
                                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <div className="relative">
-                                            <PhoneIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                        <div className="relative group">
+                                            <PhoneIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 transition-transform group-focus-within:scale-110" />
                                             <input
                                                 type="tel"
                                                 required
-                                                placeholder="Phone Number"
-                                                className="w-full bg-black/40 border border-gray-800 rounded-2xl pl-12 pr-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition"
+                                                placeholder="Mobile Signal"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
                                                 value={formData.phone}
                                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                             />
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="relative">
-                                            <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <div className="relative group">
+                                            <CalendarIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 pointer-events-none transition-transform group-focus-within:scale-110" />
                                             <input
                                                 type="date"
                                                 required
-                                                className="w-full bg-black/40 border border-gray-800 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-indigo-500 transition [color-scheme:dark]"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold"
                                                 value={formData.date}
                                                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                                             />
                                         </div>
-                                        <div className="relative">
-                                            <ClockIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                                        <div className="relative group">
+                                            <ClockIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 pointer-events-none transition-transform group-focus-within:scale-110" />
                                             <input
                                                 type="time"
                                                 required
-                                                className="w-full bg-black/40 border border-gray-800 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-indigo-500 transition [color-scheme:dark]"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold"
                                                 value={formData.time}
                                                 onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                                             />
                                         </div>
                                     </div>
-                                    <div className="relative">
-                                        <UserGroupIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                                    <div className="relative group">
+                                        <UserGroupIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 transition-transform group-focus-within:scale-110" />
                                         <select
-                                            className="w-full bg-black/40 border border-gray-800 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-indigo-500 transition appearance-none"
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all appearance-none font-bold"
                                             value={formData.partySize}
                                             onChange={(e) => setFormData({ ...formData, partySize: e.target.value })}
                                         >
                                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
-                                                <option key={n} value={n} className="bg-gray-900">{n} People</option>
+                                                <option key={n} value={n} className="theme-card-item text-black dark:text-white">
+                                                    {n} Individual{n > 1 ? 's' : ''}
+                                                </option>
                                             ))}
                                         </select>
                                     </div>
@@ -287,9 +288,9 @@ const Reservations = () => {
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     type="submit"
-                                    className="w-full py-5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-indigo-600/20 active:scale-95 transition"
+                                    className="w-full py-6 bg-amber-600 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-amber-600/40 active:scale-95 transition-all"
                                 >
-                                    Confirm Reservation
+                                    Authorize Placement
                                 </motion.button>
                             </form>
                         </motion.div>

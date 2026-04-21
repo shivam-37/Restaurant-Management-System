@@ -22,11 +22,15 @@ import {
     CalendarIcon,
     MapPinIcon,
     ArrowRightIcon,
-    ArrowPathIcon
+    ArrowPathIcon,
+    SunIcon,
+    MoonIcon
 } from '@heroicons/react/24/outline';
+import { useTheme } from '../../../context/ThemeContext';
 
 const UserDashboard = ({ user, logout }) => {
     const { selectedRestaurant, setSelectedRestaurant, restaurants, refreshRestaurants } = useContext(AuthContext);
+    const { theme, toggleTheme } = useTheme();
     const [loadingRestaurants, setLoadingRestaurants] = useState(false);
     const [activeTab, setActiveTab] = useState('Overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -65,105 +69,97 @@ const UserDashboard = ({ user, logout }) => {
 
     const stats = [
         {
-            label: 'Total Spent',
+            label: 'Manifest Value',
             value: `₹${analytics.totalSales}`,
             icon: CurrencyDollarIcon,
-            color: 'from-green-500 to-emerald-500',
-            bgColor: 'bg-gradient-to-br from-green-500/20 to-emerald-500/20',
-            textColor: 'text-green-400'
+            color: 'from-green-500 to-emerald-500'
         },
         {
-            label: 'Active Orders',
+            label: 'Active Transactions',
             value: analytics.activeOrders,
             icon: ClockIcon,
-            color: 'from-blue-500 to-cyan-500',
-            bgColor: 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20',
-            textColor: 'text-blue-400'
+            color: 'from-blue-500 to-cyan-500'
         },
         {
-            label: 'Total Orders',
+            label: 'Total Manifests',
             value: analytics.totalOrders,
             icon: ShoppingBagIcon,
-            color: 'from-purple-500 to-pink-500',
-            bgColor: 'bg-gradient-to-br from-purple-500/20 to-pink-500/20',
-            textColor: 'text-purple-400'
+            color: 'from-purple-500 to-pink-500'
         },
         {
-            label: 'RestoPoints',
+            label: 'Neural Points',
             value: analytics.loyaltyPoints || 0,
             icon: SparklesIcon,
-            color: 'from-amber-500 to-orange-500',
-            bgColor: 'bg-gradient-to-br from-amber-500/20 to-orange-500/20',
-            textColor: 'text-amber-400'
+            color: 'from-amber-500 to-orange-500'
         }
     ];
 
     return (
-        <div className="flex h-screen bg-black text-white overflow-hidden">
+        <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
             <div className="fixed inset-0 overflow-hidden -z-10">
-                <div className="absolute top-0 -left-40 w-[500px] h-[500px] bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+                <div className="absolute top-0 -left-40 w-[500px] h-[500px] bg-amber-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
                 <div className="absolute bottom-40 left-20 w-[500px] h-[500px] bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
             </div>
 
-            <motion.aside initial={{ x: -100 }} animate={{ x: 0 }} className="fixed inset-y-0 left-0 w-72 bg-gradient-to-b from-gray-900 to-black border-r border-gray-800/50 z-20 hidden md:flex flex-col backdrop-blur-xl">
-                <div className="p-6 border-b border-gray-800/50">
+            <motion.aside initial={{ x: -100 }} animate={{ x: 0 }} className="fixed inset-y-0 left-0 w-72 z-20 hidden md:flex flex-col border-r border-black/5" style={{ background: 'var(--sidebar-bg)' }}>
+                <div className="p-8 border-b border-black/5">
                     <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-600/20">
                             <SparklesIcon className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">RestoGuest</span>
+                        <span className="text-xl font-black uppercase tracking-tighter">Dine Guest</span>
                     </div>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-1">
+                <nav className="flex-1 p-6 space-y-2">
                     {navItems.map((item) => (
                         <button
                             key={item.name}
                             onClick={() => setActiveTab(item.name)}
-                            className={`relative w-full flex items-center px-4 py-3 rounded-xl transition-all ${activeTab === item.name ? 'text-white' : 'text-gray-400 hover:text-white'
-                                }`}
+                            className={`relative w-full flex items-center px-5 py-4 rounded-2xl transition-all group ${activeTab === item.name ? 'text-white' : 'opacity-40 hover:opacity-100'}`}
                         >
                             {activeTab === item.name && (
-                                <motion.div layoutId="activeTab" className={`absolute inset-0 bg-gradient-to-r ${item.color} opacity-20 rounded-xl`} />
+                                <motion.div layoutId="userActiveTab" className="absolute inset-0 bg-amber-600 rounded-2xl shadow-xl shadow-amber-600/20" />
                             )}
-                            <item.icon className="h-6 w-6 mr-3 relative z-10" />
-                            <span className="font-medium relative z-10">{item.name}</span>
+                            <item.icon className="h-5 w-5 mr-4 relative z-10" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] relative z-10">{item.name}</span>
                         </button>
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-gray-800/50">
-                    <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800/50">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold">{user?.name?.charAt(0)}</div>
-                        <div className="flex-1 text-left">
-                            <p className="text-sm font-medium">{user?.name}</p>
-                            <p className="text-xs text-gray-400">Guest</p>
+                <div className="p-6 border-t border-black/5 space-y-3">
+                    <div className="flex items-center gap-4 px-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-600/10 flex items-center justify-center text-amber-600 font-black text-xs border border-amber-600/10 uppercase">{user?.name?.charAt(0)}</div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-[10px] font-black uppercase tracking-widest truncate">{user?.name}</p>
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-30 mt-0.5">Guest Cluster</p>
                         </div>
+                    </div>
+                    <button onClick={logout} className="w-full flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-500/5 rounded-2xl transition-colors">
+                        <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-4" /> Sign Out
                     </button>
-                    {isProfileMenuOpen && (
-                        <button onClick={logout} className="mt-2 w-full flex items-center px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 rounded-xl">
-                            <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" /> Sign Out
-                        </button>
-                    )}
                 </div>
             </motion.aside>
 
             <main className="flex-1 md:ml-72 relative overflow-y-auto">
-                <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-gray-800/50 px-8 py-4 flex justify-between items-center">
+                <header className="sticky top-0 z-10 backdrop-blur-xl border-b border-black/5 px-8 py-6 flex justify-between items-center" style={{ background: 'var(--navbar-bg)' }}>
                     <div>
-                        <h1 className="text-2xl font-bold text-white">{activeTab}</h1>
-                        <p className="text-sm text-gray-400">Welcome back, {user?.name} {selectedRestaurant ? `at ${selectedRestaurant.name}` : ''}</p>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter">{activeTab}</h1>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">Guest Identification: {user?.name} {selectedRestaurant ? `// Connected to ${selectedRestaurant.name}` : ''}</p>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-6">
+                        <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-black/5 hover:border-amber-500/30 transition-all shadow-sm" title="Toggle theme">
+                            {theme === 'dark' ? <SunIcon className="w-4 h-4 text-amber-400" /> : <MoonIcon className="w-4 h-4 text-amber-600" />}
+                        </button>
                         {selectedRestaurant && (
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => setSelectedRestaurant(null)}
-                                className="hidden md:flex items-center px-4 py-2 bg-white/5 hover:bg-white/10 border border-gray-800 rounded-xl text-[10px] font-black text-gray-400 uppercase tracking-widest transition"
+                                className="hidden md:flex items-center px-6 py-3 theme-card-item border border-black/5 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:border-amber-500/30 transition shadow-sm"
                             >
-                                <ArrowPathIcon className="w-4 h-4 mr-2" />
-                                Switch Restaurant
+                                <ArrowPathIcon className="w-4 h-4 mr-2.5 opacity-40" />
+                                Sever Connection
                             </motion.button>
                         )}
                         <NotificationTray />
@@ -174,64 +170,64 @@ const UserDashboard = ({ user, logout }) => {
                     {activeTab === 'Overview' && (
                         <>
                             {!selectedRestaurant ? (
-                                <div className="space-y-8">
-                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div className="space-y-10">
+                                    <div className="flex items-end justify-between">
                                         <div>
-                                            <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Discover Restaurants</h2>
-                                            <p className="text-gray-400 font-medium">Pick a place to browse their menu and book a table</p>
+                                            <h2 className="text-4xl font-black uppercase tracking-tighter">Manifest Discovery</h2>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">Available Restaurative Entities in your Sector</p>
                                         </div>
+                                        <div className="hidden lg:block w-32 h-px bg-amber-600/20 mb-3"></div>
                                     </div>
 
                                     {loadingRestaurants ? (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                             {[1, 2, 3].map(i => (
-                                                <div key={i} className="h-64 bg-white/5 rounded-3xl animate-pulse" />
+                                                <div key={i} className="h-80 theme-card-item rounded-[2.5rem] border border-black/5 animate-pulse" />
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                             {restaurants.map((res) => (
                                                 <motion.div
                                                     key={res._id}
-                                                    whileHover={{ y: -8 }}
-                                                    className="group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl border border-gray-800 hover:border-indigo-500/50 transition-all cursor-pointer overflow-hidden"
+                                                    whileHover={{ y: -10 }}
+                                                    className="group relative theme-card rounded-[2.5rem] border border-black/5 hover:border-amber-500/30 transition-all cursor-pointer overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-amber-600/10"
                                                     onClick={() => {
                                                         setSelectedRestaurant(res);
                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                                     }}
                                                 >
-                                                    {/* Cover image or gradient placeholder */}
-                                                    <div className="h-40 overflow-hidden relative">
+                                                    <div className="h-48 overflow-hidden relative">
                                                         {res.image ? (
                                                             <img
                                                                 src={res.image}
                                                                 alt={res.name}
-                                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s]"
                                                                 onError={e => e.target.style.display = 'none'}
                                                             />
                                                         ) : (
-                                                            <div className="w-full h-full bg-gradient-to-br from-indigo-600/30 to-purple-600/30 flex items-center justify-center">
-                                                                <span className="text-5xl font-black text-white/10 uppercase">{res.name.charAt(0)}</span>
+                                                            <div className="w-full h-full bg-amber-600/[0.05] flex items-center justify-center">
+                                                                <span className="text-6xl font-black text-amber-600/10 uppercase tracking-tighter">{res.name.charAt(0)}</span>
                                                             </div>
                                                         )}
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent" />
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
+                                                        <div className="absolute top-6 right-6">
+                                                            <div className="w-10 h-10 bg-amber-600 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 shadow-xl shadow-amber-600/40">
+                                                                <ArrowRightIcon className="w-5 h-5 text-white" />
+                                                            </div>
+                                                        </div>
                                                     </div>
 
-                                                    <div className="p-6">
-                                                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <ArrowRightIcon className="w-5 h-5 text-indigo-400" />
-                                                        </div>
-                                                        <h3 className="text-xl font-bold text-white mb-1">{res.name}</h3>
-                                                        <p className="text-sm text-gray-400 mb-4 line-clamp-2">{res.description || "Premium dining experience awaits you."}</p>
-                                                        <div className="flex items-center gap-4 text-xs text-indigo-400 font-bold uppercase tracking-widest">
-                                                            <div className="flex items-center gap-1">
-                                                                <MapPinIcon className="w-4 h-4" />
-                                                                {res.cuisine}
+                                                    <div className="p-8">
+                                                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500 mb-2 block">{res.cuisine}</span>
+                                                        <h3 className="text-2xl font-black uppercase tracking-tight mb-2">{res.name}</h3>
+                                                        <p className="text-xs font-medium opacity-40 mb-6 line-clamp-2 leading-relaxed uppercase tracking-widest">{res.description || "Premium dining experience awaits you."}</p>
+                                                        <div className="flex items-center justify-between pt-6 border-t border-black/5">
+                                                            <div className="flex items-center gap-2">
+                                                                <MapPinIcon className="w-4 h-4 opacity-20" />
+                                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-60">Verified Sector</span>
                                                             </div>
-                                                            <div className="flex items-center gap-1">
-                                                                <CalendarIcon className="w-4 h-4" />
-                                                                Book Table
-                                                            </div>
+                                                            <div className="px-4 py-1.5 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-60">Active Status</div>
                                                         </div>
                                                     </div>
                                                 </motion.div>
@@ -240,12 +236,17 @@ const UserDashboard = ({ user, logout }) => {
                                     )}
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
                                     {stats.map((stat, idx) => (
-                                        <div key={idx} className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-800">
-                                            <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
-                                            <p className="text-2xl font-bold text-white">{stat.value}</p>
-                                            <stat.icon className={`w-8 h-8 mt-4 text-indigo-400`} />
+                                        <div key={idx} className="theme-card-item rounded-3xl p-8 border border-black/5 relative overflow-hidden group hover:border-amber-500/30 transition-all shadow-sm">
+                                            <div className="relative z-10">
+                                                <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mb-4">{stat.label}</p>
+                                                <p className="text-3xl font-black uppercase tracking-tight">{stat.value}</p>
+                                                <div className={`mt-6 inline-flex p-3 bg-amber-600/10 rounded-xl`}>
+                                                    <stat.icon className="w-5 h-5 text-amber-500" />
+                                                </div>
+                                            </div>
+                                            <stat.icon className="absolute -right-6 -bottom-6 w-32 h-32 opacity-[0.03] group-hover:scale-110 transition-transform duration-700" />
                                         </div>
                                     ))}
                                 </div>

@@ -18,9 +18,9 @@ const Dashboard = () => {
     if (loading) return (
         <div className="min-h-screen bg-black flex items-center justify-center">
             <div className="relative">
-                <div className="w-20 h-20 border-4 border-gray-800 border-t-indigo-600 rounded-full animate-spin"></div>
+                <div className="w-20 h-20 border-4 border-gray-800 border-t-amber-600 rounded-full animate-spin"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full animate-pulse"></div>
+                    <div className="w-10 h-10 bg-gradient-to-r from-amber-600 to-purple-600 rounded-full animate-pulse"></div>
                 </div>
             </div>
         </div>

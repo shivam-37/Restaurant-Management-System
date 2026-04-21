@@ -43,11 +43,11 @@ const NotificationTray = () => {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 bg-gray-900/50 border border-gray-800 rounded-xl hover:bg-gray-800 transition"
+                className="relative w-12 h-12 flex items-center justify-center theme-card-item border border-black/5 rounded-2xl hover:border-amber-500/30 transition-all shadow-sm group"
             >
-                <BellIcon className="w-5 h-5 text-gray-400" />
+                <BellIcon className="w-5 h-5 opacity-40 group-hover:opacity-100 transition-opacity" />
                 {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-indigo-500 rounded-full border-2 border-black animate-pulse"></span>
+                    <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-amber-600 rounded-full border-2 border-[var(--bg-primary)] shadow-lg shadow-amber-600/40"></span>
                 )}
             </button>
 
@@ -56,57 +56,73 @@ const NotificationTray = () => {
                     <>
                         <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)}></div>
                         <motion.div
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            initial={{ opacity: 0, y: 20, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="absolute right-0 mt-3 w-80 bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                            className="absolute right-0 mt-4 w-96 theme-card border border-black/5 rounded-[2rem] shadow-2xl z-50 overflow-hidden"
                         >
-                            <div className="p-4 border-b border-gray-800 flex justify-between items-center bg-gray-900/50">
-                                <h3 className="font-bold text-white">Notifications</h3>
-                                <button onClick={() => setIsOpen(false)} className="text-gray-500 hover:text-white transition">
-                                    <XMarkIcon className="w-5 h-5" />
+                            <div className="p-8 border-b border-black/5 flex justify-between items-center bg-black/[0.02]">
+                                <div>
+                                    <h3 className="text-sm font-black uppercase tracking-widest">Notification Matrix</h3>
+                                    <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">{unreadCount} Unread Pulsations</p>
+                                </div>
+                                <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-black/5 rounded-full transition-colors">
+                                    <XMarkIcon className="w-5 h-5 opacity-40 hover:opacity-100" />
                                 </button>
                             </div>
 
-                            <div className="max-h-96 overflow-y-auto">
+                            <div className="max-h-[32rem] overflow-y-auto">
                                 {notifications.length === 0 ? (
-                                    <div className="p-8 text-center">
-                                        <BellIcon className="w-8 h-8 text-gray-700 mx-auto mb-2" />
-                                        <p className="text-sm text-gray-500">No notifications yet</p>
+                                    <div className="p-16 text-center opacity-20">
+                                        <BellIcon className="w-12 h-12 mx-auto mb-4" />
+                                        <p className="text-[10px] font-black uppercase tracking-[0.2em]">Signal Void</p>
                                     </div>
                                 ) : (
-                                    notifications.map((notif) => (
-                                        <div
-                                            key={notif._id}
-                                            className={`p-4 border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors flex gap-3 ${!notif.isRead ? 'bg-indigo-500/5' : ''}`}
-                                        >
-                                            <div className="mt-1">
-                                                {notif.type === 'Order' ? (
-                                                    <CheckCircleIcon className="w-5 h-5 text-green-400" />
-                                                ) : notif.type === 'Reservation' ? (
-                                                    <InformationCircleIcon className="w-5 h-5 text-indigo-400" />
-                                                ) : (
-                                                    <ExclamationCircleIcon className="w-5 h-5 text-amber-400" />
+                                    <div className="divide-y divide-black/5">
+                                        {notifications.map((notif) => (
+                                            <div
+                                                key={notif._id}
+                                                className={`p-6 hover:bg-black/[0.02] transition-colors flex gap-4 ${!notif.isRead ? 'bg-amber-600/[0.03]' : 'opacity-60'}`}
+                                            >
+                                                <div className="mt-1">
+                                                    {notif.type === 'Order' ? (
+                                                        <div className="p-2 bg-emerald-500/10 rounded-lg"><CheckCircleIcon className="w-4 h-4 text-emerald-500" /></div>
+                                                    ) : notif.type === 'Reservation' ? (
+                                                        <div className="p-2 bg-amber-500/10 rounded-lg"><InformationCircleIcon className="w-4 h-4 text-amber-500" /></div>
+                                                    ) : (
+                                                        <div className="p-2 bg-amber-500/10 rounded-lg"><ExclamationCircleIcon className="w-4 h-4 text-amber-500" /></div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className={`text-[11px] font-black leading-relaxed uppercase tracking-widest ${!notif.isRead ? '' : ''}`}>
+                                                        {notif.message}
+                                                    </p>
+                                                    <div className="flex items-center gap-3 mt-2">
+                                                        <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-30">
+                                                            T-MINUS: {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </p>
+                                                        {!notif.isRead && (
+                                                            <div className="w-1 h-1 bg-amber-600 rounded-full"></div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                {!notif.isRead && (
+                                                    <button
+                                                        onClick={() => handleMarkRead(notif._id)}
+                                                        className="h-2 w-2 bg-amber-600 rounded-full mt-3 flex-shrink-0 animate-pulse shadow-lg shadow-amber-600/40"
+                                                        title="Acknowledge Signal"
+                                                    />
                                                 )}
                                             </div>
-                                            <div className="flex-1">
-                                                <p className={`text-sm ${!notif.isRead ? 'text-white font-medium' : 'text-gray-400'}`}>
-                                                    {notif.message}
-                                                </p>
-                                                <p className="text-[10px] text-gray-500 mt-1">
-                                                    {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </p>
-                                            </div>
-                                            {!notif.isRead && (
-                                                <button
-                                                    onClick={() => handleMarkRead(notif._id)}
-                                                    className="w-2 h-2 bg-indigo-500 rounded-full mt-2 self-start ring-4 ring-indigo-500/20"
-                                                ></button>
-                                            )}
-                                        </div>
-                                    ))
+                                        ))}
+                                    </div>
                                 )}
                             </div>
+                            {notifications.length > 0 && (
+                                <div className="p-6 bg-black/[0.02] border-t border-black/5 text-center">
+                                    <button className="text-[9px] font-black uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-opacity">Clear All Signals</button>
+                                </div>
+                            )}
                         </motion.div>
                     </>
                 )}

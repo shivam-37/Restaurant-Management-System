@@ -303,14 +303,29 @@ const addOrderReview = asyncHandler(async (req, res) => {
     let sentiment = 'Neutral';
     if (comment) {
         try {
-            const { GoogleGenAI } = require("@google/genai");
-            const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY, apiVersion: 'v1beta' });
-            const prompt = `Analyze the sentiment of this restaurant review. Respond with exactly one word: Positive, Neutral, or Negative. Review: "${comment}"`;
-            const result = await ai.models.generateContent({
-                model: "models/gemini-2.0-flash",
-                contents: prompt
+            require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
+            const OpenAI = require('openai');
+            const openai = new OpenAI({
+                apiKey: process.env.NVIDIA_API_KEY,
+                baseURL: 'https://integrate.api.nvidia.com/v1',
             });
-            const text = result.candidates[0].content.parts[0].text.trim();
+            const prompt = `Analyze the sentiment of this restaurant review. Respond with exactly one word: Positive, Neutral, or Negative. Review: "${comment}"`;
+            
+            const completion = await openai.chat.completions.create({
+                model: "google/gemma-3n-e4b-it",
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0.20,
+                top_p: 0.70,
+                max_tokens: 512,
+                frequency_penalty: 0.00,
+                presence_penalty: 0.00,
+                stream: false
+            });
+            
+            let text = completion.choices[0].message.content.trim();
+            if (text.includes('<think>') && text.includes('</think>')) {
+                text = text.replace(/<think>[\s\S]*?<\/think>\n?/g, '').trim();
+            }
             if (['Positive', 'Neutral', 'Negative'].includes(text)) {
                 sentiment = text;
             }

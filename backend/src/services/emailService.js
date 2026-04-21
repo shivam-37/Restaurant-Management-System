@@ -5,9 +5,8 @@ const sendEmail = async (options) => {
     const mailHost = process.env.MAIL_HOST;
     const mailUser = process.env.MAIL_USER;
     
-    const isSimulation = !mailHost || 
-                        mailHost === 'test' || 
-                        (mailHost === 'smtp.gmail.com' && mailUser === 'test@gmail.com');
+    // Simulate if there's no auth info or if it's explicitly set to test
+    const isSimulation = !mailHost || mailHost === 'test' || process.env.MAIL_PASS === 'testpass';
 
     if (isSimulation) {
         console.log(`[SIMULATED EMAIL] To: ${options.email}, Subject: ${options.subject}`);

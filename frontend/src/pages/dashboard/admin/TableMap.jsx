@@ -55,14 +55,21 @@ const TableMap = () => {
         }
     };
 
-    if (loading && !restaurant && selectedRestaurant) return <div className="animate-pulse text-gray-500">Loading Floor Plan...</div>;
+    if (loading && !restaurant && selectedRestaurant) return (
+        <div className="flex flex-col items-center justify-center h-64 theme-card rounded-3xl opacity-50 space-y-4">
+            <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="font-black uppercase tracking-widest text-[10px]">Mapping Floor Plan...</p>
+        </div>
+    );
 
     if (!selectedRestaurant) {
         return (
-            <div className="p-8">
-                <div className="mb-12">
-                    <h2 className="text-3xl font-bold text-white mb-2">Establishment Floor Plans</h2>
-                    <p className="text-gray-400">Select a restaurant to view and manage its real-time table occupancy</p>
+            <div className="space-y-10">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-amber-500/5 p-8 rounded-[2.5rem] border border-amber-500/10">
+                    <div>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter">Establishment Topography</h2>
+                        <p className="opacity-50 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Select logic unit to initialize spatial mapping</p>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -76,18 +83,18 @@ const TableMap = () => {
                                 setSelectedRestaurant(r);
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                             }}
-                            className="group relative bg-gray-900/40 border border-gray-800 rounded-3xl p-8 text-left hover:border-indigo-500/50 transition-all overflow-hidden"
+                            className="group relative theme-card rounded-[2rem] p-10 text-left hover:border-amber-500 transition-all overflow-hidden shadow-sm hover:shadow-2xl"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                             <div className="relative z-10">
-                                <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-2xl font-bold mb-6 shadow-lg shadow-indigo-600/20 group-hover:scale-110 transition-transform">
+                                <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-amber-400 text-white rounded-2xl flex items-center justify-center text-3xl font-black mb-8 shadow-xl shadow-amber-600/20 group-hover:scale-110 transition-transform">
                                     {r.name.charAt(0)}
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-2">{r.name}</h3>
-                                <p className="text-sm text-gray-500 mb-6">{r.cuisine} Cuisine • {r.tables?.length || 0} Tables</p>
+                                <h3 className="text-2xl font-black tracking-tighter mb-2">{r.name}</h3>
+                                <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-10">{r.cuisine} Architecture • {r.tables?.length || 0} Spatial Nodes</p>
 
-                                <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs uppercase tracking-widest pt-6 border-t border-gray-800">
-                                    View Live Map
+                                <div className="flex items-center gap-3 text-amber-600 dark:text-amber-400 font-black text-[10px] uppercase tracking-widest pt-8 border-t border-black/5">
+                                    Initialize live view
                                     <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                                 </div>
                             </div>
@@ -99,38 +106,37 @@ const TableMap = () => {
     }
 
     return (
-        <div className="p-4">
-            <div className="flex justify-between items-center mb-8">
+        <div className="space-y-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div>
-                    <h2 className="text-xl font-bold text-white">Main Dining Floor</h2>
-                    <p className="text-sm text-gray-400">Real-time table occupancy tracking</p>
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">Main Dining Spectrum</h2>
+                    <p className="opacity-50 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Spatial intelligence & occupancy matrix</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-6 p-4 theme-card-item rounded-2xl border border-black/5">
                     {['Available', 'Occupied', 'Reserved', 'Cleaning'].map(status => (
                         <div key={status} className="flex items-center gap-2">
-                            <div className={`w-3 h-3 rounded-full ${status === 'Available' ? 'bg-green-500' :
-                                status === 'Occupied' ? 'bg-indigo-500' :
+                            <div className={`w-3 h-3 rounded-full shadow-sm ${status === 'Available' ? 'bg-green-500' :
+                                status === 'Occupied' ? 'bg-amber-600' :
                                     status === 'Reserved' ? 'bg-yellow-500' : 'bg-red-500'
                                 }`} />
-                            <span className="text-xs text-gray-400">{status}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{status}</span>
                         </div>
                     ))}
                 </div>
             </div>
 
-            <div className="relative w-full h-[500px] bg-gray-900/30 rounded-3xl border border-white/5 overflow-hidden backdrop-blur-sm">
+            <div className="relative w-full h-[600px] rounded-[3rem] border border-black/5 overflow-hidden backdrop-blur-sm shadow-2xl relative" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
                 {/* Grid Pattern */}
-                <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, currentColor 1.5px, transparent 0)', backgroundSize: '50px 50px' }} />
 
                 {restaurant?.tables.map((table, idx) => {
-                    // Logic to handle 0,0 coordinates - spread them in a grid
                     let posX = table.x;
                     let posY = table.y;
 
                     if (posX === 0 && posY === 0) {
-                        const cols = 4;
-                        const spacing = 20;
-                        const margin = 10;
+                        const cols = 5;
+                        const spacing = 18;
+                        const margin = 8;
                         posX = margin + (idx % cols) * spacing;
                         posY = margin + Math.floor(idx / cols) * spacing;
                     }
@@ -140,51 +146,66 @@ const TableMap = () => {
                             key={table.number}
                             layoutId={`table-${table.number}`}
                             onClick={() => setSelectedTable(table)}
-                            whileHover={{ scale: 1.05 }}
+                            whileHover={{ scale: 1.05, zIndex: 20 }}
                             whileTap={{ scale: 0.95 }}
-                            className={`absolute w-32 h-32 rounded-2xl border-2 flex flex-col items-center justify-center gap-2 transition-colors duration-500 ${table.status === 'Available' ? 'bg-green-500/10 border-green-500/30 text-green-400' :
-                                table.status === 'Occupied' ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400' :
-                                    table.status === 'Reserved' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400' :
-                                        'bg-red-500/10 border-red-500/30 text-red-400'
+                            className={`absolute w-36 h-36 rounded-3xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-500 shadow-lg ${table.status === 'Available' ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400 hover:bg-green-500/20' :
+                                table.status === 'Occupied' ? 'bg-amber-600/10 border-amber-600/30 text-amber-700 dark:text-amber-400 hover:bg-amber-600/20' :
+                                    table.status === 'Reserved' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20' :
+                                        'bg-red-500/10 border-red-500/30 text-red-700 dark:text-red-400 hover:bg-red-500/20'
                                 }`}
                             style={{ left: `${posX}%`, top: `${posY}%` }}
                         >
-                            <span className="text-xs font-black opacity-50 uppercase tracking-widest">T-{table.number}</span>
-                            <div className="flex -space-x-1">
+                            <span className="text-[10px] font-black opacity-40 uppercase tracking-[0.3em]">NODE-{table.number}</span>
+                            <div className="flex -space-x-1.5">
                                 {[...Array(table.capacity)].map((_, i) => (
-                                    <div key={i} className={`w-2 h-2 rounded-full ${table.status === 'Available' ? 'bg-green-500/50' : 'bg-current/40'
+                                    <div key={i} className={`w-3 h-3 rounded-full border border-black/5 ${table.status === 'Available' ? 'bg-green-500/50' : 'bg-current opacity-40'
                                         }`} />
                                 ))}
                             </div>
-                            <span className="text-[10px] font-bold uppercase">{table.status}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">{table.status}</span>
                         </motion.button>
                     );
                 })}
 
                 {/* Legend / Overlay */}
-                <div className="absolute bottom-6 left-6 flex gap-3 text-[10px] font-black uppercase text-gray-600">
-                    <span className="flex items-center gap-1"><MapPinIcon className="w-3 h-3" /> Entrance</span>
-                    <span className="flex items-center gap-1"><FireIcon className="w-3 h-3" /> Kitchen</span>
+                <div className="absolute bottom-8 left-8 flex gap-6 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">
+                    <span className="flex items-center gap-2"><MapPinIcon className="w-4 h-4" /> Entry Point</span>
+                    <span className="flex items-center gap-2"><FireIcon className="w-4 h-4 ml-4" /> Thermal Source (Kitchen)</span>
                 </div>
             </div>
 
             {/* Selection Modal */}
             <AnimatePresence>
                 {selectedTable && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedTable(null)} className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative bg-gray-900 border border-white/10 p-8 rounded-3xl w-full max-w-md shadow-2xl">
-                            <h3 className="text-2xl font-bold text-white mb-2">Table {selectedTable.number}</h3>
-                            <p className="text-gray-400 text-sm mb-6 font-medium">Capacity: {selectedTable.capacity} Guests</p>
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedTable(null)} className="absolute inset-0 bg-black/80 backdrop-blur-md" />
+                        <motion.div initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 50, opacity: 0 }} className="relative theme-card p-10 rounded-[3rem] w-full max-w-md shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-black/5 overflow-hidden">
+                            <div className="absolute top-0 right-0 p-8">
+                                <button onClick={() => setSelectedTable(null)} className="opacity-20 hover:opacity-100 transition-opacity">
+                                    <XCircleIcon className="w-8 h-8" />
+                                </button>
+                            </div>
+                            <div className="flex items-center gap-6 mb-8">
+                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black ${selectedTable.status === 'Available' ? 'bg-green-500 text-white' :
+                                    selectedTable.status === 'Occupied' ? 'bg-amber-600 text-white' :
+                                        selectedTable.status === 'Reserved' ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white'
+                                    }`}>
+                                    {selectedTable.number}
+                                </div>
+                                <div>
+                                    <h3 className="text-3xl font-black uppercase tracking-tighter">Table Unit</h3>
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Capacity: {selectedTable.capacity} Maximum Occupancy</p>
+                                </div>
+                            </div>
 
-                            <div className="grid grid-cols-2 gap-3 mb-8">
+                            <div className="grid grid-cols-2 gap-4 mb-10">
                                 {['Available', 'Occupied', 'Reserved', 'Cleaning'].map((status) => (
                                     <button
                                         key={status}
                                         onClick={() => handleStatusChange(selectedTable.number, status)}
-                                        className={`p-4 rounded-xl border font-bold text-sm transition ${selectedTable.status === status
-                                            ? 'bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-600/20'
-                                            : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10'
+                                        className={`p-5 rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all ${selectedTable.status === status
+                                            ? 'bg-amber-600 border-amber-500 text-white shadow-xl shadow-amber-600/30 ring-4 ring-amber-600/10'
+                                            : 'theme-card-item opacity-40 border-black/5 hover:opacity-100 hover:border-amber-500/50'
                                             }`}
                                     >
                                         {status}
@@ -192,7 +213,7 @@ const TableMap = () => {
                                 ))}
                             </div>
 
-                            <button onClick={() => setSelectedTable(null)} className="w-full py-3 text-gray-500 font-bold uppercase tracking-widest text-xs hover:text-white transition">Close</button>
+                            <button onClick={() => setSelectedTable(null)} className="w-full py-4 text-[10px] font-black uppercase tracking-[0.3em] opacity-20 hover:opacity-100 transition-all">Dismiss Module</button>
                         </motion.div>
                     </div>
                 )}

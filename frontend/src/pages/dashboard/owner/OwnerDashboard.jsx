@@ -11,7 +11,10 @@ import Reservations from '../Reservations';
 import Analytics from '../admin/Analytics';
 import NotificationTray from '../NotificationTray';
 import AuthContext from '../../../context/AuthContext';
+import { useTheme } from '../../../context/ThemeContext';
 import {
+    SunIcon,
+    MoonIcon,
     HomeIcon,
     ClipboardDocumentListIcon,
     FireIcon,
@@ -34,6 +37,7 @@ import {
 
 const OwnerDashboard = () => {
     const { user, logout, selectedRestaurant } = useContext(AuthContext);
+    const { theme, toggleTheme } = useTheme();
     console.log("OwnerDashboard Render - User:", user?.name, "Role:", user?.role, "Selected Restaurant:", selectedRestaurant?.name || 'NONE');
 
     const [activeTab, setActiveTab] = useState('Overview');
@@ -93,20 +97,22 @@ const OwnerDashboard = () => {
     if (!selectedRestaurant) {
         if (!showOnboarding) {
             return (
-                <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center">
+                <div className="min-h-screen flex flex-col items-center justify-center p-8 text-center" style={{ background: 'var(--bg-primary)' }}>
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
                         className="max-w-md w-full"
                     >
-                        <div className="relative mb-8">
-                            <div className="w-24 h-24 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin mx-auto"></div>
+                        <div className="relative mb-10">
+                            <div className="w-28 h-28 border-4 border-amber-500/10 border-t-amber-500 rounded-full animate-spin mx-auto shadow-2xl"></div>
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-12 h-12 bg-indigo-600 rounded-2xl animate-pulse rotate-45"></div>
+                                <div className="w-14 h-14 bg-amber-600 rounded-3xl animate-pulse rotate-45 shadow-xl shadow-amber-600/40 flex items-center justify-center">
+                                    <SparklesIcon className="w-6 h-6 text-white -rotate-45" />
+                                </div>
                             </div>
                         </div>
-                        <h2 className="text-2xl font-bold text-white mb-2">Syncing your Dashboard...</h2>
-                        <p className="text-gray-400 mb-8">Please wait while we prepare your restaurant data.</p>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter mb-2">Syncing Spectrum</h2>
+                        <p className="opacity-50 text-[10px] font-black uppercase tracking-[0.2em]">Initializing AI Establishment Node...</p>
                     </motion.div>
                 </div>
             );
@@ -121,8 +127,8 @@ const OwnerDashboard = () => {
         { name: 'Kitchen', icon: UserGroupIcon, color: 'from-green-500 to-teal-500' },
         { name: 'Reservations', icon: CalendarIcon, color: 'from-yellow-500 to-amber-500' },
         { name: 'Performance', icon: ChartPieIcon, color: 'from-cyan-500 to-blue-500' },
-        { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-indigo-500' },
-        { name: 'Analytics', icon: ChartBarIcon, color: 'from-indigo-500 to-purple-500' },
+        { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-amber-500' },
+        { name: 'Analytics', icon: ChartBarIcon, color: 'from-amber-500 to-purple-500' },
         { name: 'Settings', icon: Cog6ToothIcon, color: 'from-gray-500 to-gray-600' },
     ];
 
@@ -154,112 +160,155 @@ const OwnerDashboard = () => {
     ];
 
     return (
-        <div className="flex h-screen bg-black text-white overflow-hidden">
+        <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
             {/* Sidebar */}
             <motion.aside
                 initial={{ x: -100 }}
                 animate={{ x: 0 }}
-                className="w-72 bg-gradient-to-b from-gray-900 to-black border-r border-gray-800/50 hidden md:flex flex-col"
+                className="w-72 border-r hidden md:flex flex-col"
+                style={{ background: 'var(--sidebar-bg)', borderColor: 'var(--border-color)' }}
             >
-                <div className="p-6 border-b border-gray-800/50">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center">
-                            <SparklesIcon className="w-5 h-5 text-white" />
+                <div className="p-6 border-b border-black/5 dark:border-white/5">
+                    <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-600/20 group cursor-pointer hover:rotate-12 transition-transform duration-300">
+                            <SparklesIcon className="w-6 h-6 text-white" />
                         </div>
-                        <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">RestoOwner</span>
+                        <div className="flex flex-col">
+                            <span className="text-xl font-black uppercase tracking-tighter leading-none">Dine Flow</span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500 mt-1">Owner Intel</span>
+                        </div>
                     </div>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-1">
+                <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
                     {navItems.map((item) => (
                         <button
                             key={item.name}
                             onClick={() => setActiveTab(item.name)}
-                            className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${activeTab === item.name ? 'bg-gray-800/50 text-white' : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                }`}
+                            className={`w-full flex items-center px-5 py-4 rounded-[1.25rem] transition-all duration-300 group ${activeTab === item.name 
+                                ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/20' 
+                                : 'opacity-50 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5 hover:translate-x-1'
+                            }`}
                         >
-                            <item.icon className={`h-6 w-6 mr-3 ${activeTab === item.name ? 'text-indigo-400' : 'text-gray-500'}`} />
-                            <span className="font-medium">{item.name}</span>
+                            <item.icon className={`h-5 w-5 mr-4 transition-transform group-hover:scale-110 ${activeTab === item.name ? 'text-white' : 'text-amber-500'}`} />
+                            <span className="text-xs font-black uppercase tracking-widest">{item.name}</span>
                         </button>
                     ))}
                 </nav>
 
-                <div className="p-4 border-t border-gray-800/50">
+                <div className="p-6 border-t border-black/5 dark:border-white/5 bg-amber-500/5">
                     <button
                         onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-800/50 transition relative"
+                        className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-all group relative"
                     >
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold">{user?.name?.charAt(0)}</div>
+                        <div className="w-12 h-12 rounded-2xl bg-amber-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-amber-600/20 group-hover:scale-110 transition-transform">
+                            {user?.name?.charAt(0)}
+                        </div>
                         <div className="flex-1 text-left min-w-0">
-                            <p className="text-sm font-medium truncate">{user?.name}</p>
-                            <p className="text-xs text-indigo-400">Owner</p>
+                            <p className="text-sm font-black uppercase tracking-tight truncate">{user?.name}</p>
+                            <div className="flex items-center gap-1.5 opacity-40">
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                                <p className="text-[10px] font-black uppercase tracking-widest leading-none">Verified Owner</p>
+                            </div>
                         </div>
                     </button>
-                    {isProfileMenuOpen && (
-                        <div className="mt-2 bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-                            <button onClick={logout} className="w-full flex items-center px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition">
-                                <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" /> Sign Out
-                            </button>
-                        </div>
-                    )}
+                    <AnimatePresence>
+                        {isProfileMenuOpen && (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: 10 }}
+                                className="mt-4 bg-white dark:bg-gray-900 rounded-2xl border border-black/5 dark:border-white/5 overflow-hidden shadow-2xl"
+                            >
+                                <button onClick={logout} className="w-full flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-500/5 transition-colors">
+                                    <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-3" /> Terminate Session
+                                </button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </motion.aside>
 
             {/* Main Content */}
             <main className="flex-1 relative overflow-y-auto">
-                <header className="sticky top-0 z-10 bg-black/80 backdrop-blur-xl border-b border-gray-800/50 px-8 py-4 flex items-center justify-between">
+                <header className="sticky top-0 z-10 backdrop-blur-3xl border-b px-10 py-6 flex items-center justify-between" style={{ background: 'var(--navbar-bg)', borderColor: 'var(--border-color)' }}>
                     <div>
-                        <h1 className="text-2xl font-bold">{activeTab}</h1>
-                        <p className="text-sm text-gray-400">{selectedRestaurant?.name}</p>
+                        <h1 className="text-3xl font-black uppercase tracking-tighter leading-none">{activeTab}</h1>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-2 opacity-40">{selectedRestaurant?.name}</p>
+                    </div>
+                    <div className="flex items-center gap-6">
+                        <NotificationTray />
+                        <div className="h-8 w-px bg-black/5 dark:bg-white/10 mx-2" />
+                        <button 
+                            onClick={toggleTheme} 
+                            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-amber-600/10 text-amber-600 dark:text-amber-400 hover:bg-amber-600 hover:text-white transition-all shadow-lg shadow-amber-600/5 group"
+                        >
+                            {theme === 'dark' ? <SunIcon className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" /> : <MoonIcon className="w-5 h-5 group-hover:-rotate-12 transition-transform duration-500" />}
+                        </button>
                     </div>
                 </header>
 
                 <div className="p-8">
                     {activeTab === 'Overview' && (
                         <>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
                                 {stats.map((stat, idx) => (
-                                    <div key={idx} className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-gray-800">
+                                    <div key={idx} className="theme-card rounded-[2rem] p-8 border border-black/5 shadow-sm hover:shadow-2xl transition-all group">
                                         <div className="flex items-start justify-between">
                                             <div>
-                                                <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
-                                                <p className="text-2xl font-bold">{stat.value}</p>
+                                                <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">{stat.label}</p>
+                                                <p className={`text-4xl font-black tracking-tighter ${stat.textColor}`}>{stat.value}</p>
                                             </div>
-                                            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} p-3`}><stat.icon className="w-6 h-6 text-white" /></div>
+                                            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.color} p-4 shadow-xl shadow-amber-600/20 group-hover:scale-110 transition-transform duration-500`}>
+                                                <stat.icon className="w-6 h-6 text-white" />
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
                             {/* AI Predictions */}
-                            <div className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-3xl p-8 mb-8">
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center">
-                                            <SparklesIcon className="w-6 h-6 text-white" />
+                            <div className="theme-card bg-gradient-to-br from-amber-500/5 via-transparent to-purple-500/5 rounded-[3rem] p-10 mb-10 border border-amber-500/10 shadow-2xl relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[100px] -mr-32 -mt-32"></div>
+                                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-6 relative z-10">
+                                    <div className="flex items-center gap-6">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-amber-400 rounded-2xl flex items-center justify-center shadow-xl shadow-amber-600/20">
+                                            <SparklesIcon className="w-8 h-8 text-white" />
                                         </div>
                                         <div>
-                                            <h2 className="text-xl font-bold">Smart Inventory Forecast</h2>
-                                            <p className="text-sm text-indigo-300">Powered by Gemini AI</p>
+                                            <h2 className="text-3xl font-black uppercase tracking-tighter">Inventory Forecast</h2>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">Intelligence Protocol: NVIDIA Neural Engine</p>
                                         </div>
                                     </div>
-                                    <button onClick={fetchAIPredictions} className="p-2 bg-white/5 rounded-xl"><ArrowPathIcon className={`w-5 h-5 ${isPredicting ? 'animate-spin' : ''}`} /></button>
+                                    <button 
+                                        onClick={fetchAIPredictions} 
+                                        className="flex items-center gap-3 px-6 py-4 bg-white/10 dark:bg-white/5 hover:bg-amber-600 hover:text-white rounded-2xl border border-black/5 transition-all group font-black text-[10px] uppercase tracking-widest shadow-lg"
+                                    >
+                                        <ArrowPathIcon className={`w-4 h-4 ${isPredicting ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-700'}`} />
+                                        Refresh Model
+                                    </button>
                                 </div>
                                 {predictions.length > 0 ? (
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                                         {predictions.map((p, idx) => (
-                                            <div key={idx} className="bg-black/40 border border-white/5 p-5 rounded-2xl">
-                                                <h4 className="font-bold mb-2">{p.name}</h4>
-                                                <p className="text-xs text-gray-400 mb-4">{p.reason}</p>
-                                                <div className="flex items-center gap-2 text-[10px] text-indigo-400 uppercase font-bold tracking-widest">
-                                                    <ExclamationTriangleIcon className="w-3 h-3" />
+                                            <div key={idx} className="theme-card-item p-6 rounded-[1.5rem] border border-amber-500/20 shadow-sm hover:shadow-xl transition-all group/item">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <h4 className="font-black text-lg tracking-tight leading-none">{p.name}</h4>
+                                                    <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shadow-lg shadow-amber-500/50"></div>
+                                                </div>
+                                                <p className="text-xs font-bold opacity-50 mb-6 leading-relaxed uppercase tracking-tight">{p.reason}</p>
+                                                <div className="flex items-center gap-3 text-[10px] text-amber-600 dark:text-amber-400 font-black uppercase tracking-widest bg-amber-500/10 p-4 rounded-xl border border-amber-500/10">
+                                                    <ExclamationTriangleIcon className="w-4 h-4 shrink-0" />
                                                     {p.recommendation}
                                                 </div>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="text-center py-8 opacity-50"><CheckCircleIcon className="w-10 h-10 mx-auto mb-2" /><p>Everything looks good!</p></div>
+                                    <div className="text-center py-12 theme-card-item rounded-3xl border border-black/5 border-dashed relative z-10">
+                                        <CheckCircleIcon className="w-16 h-16 mx-auto mb-4 opacity-10 text-green-500" />
+                                        <p className="text-[10px] font-black uppercase tracking-widest opacity-40">All inventory vectors stabilized</p>
+                                    </div>
                                 )}
                             </div>
                         </>
