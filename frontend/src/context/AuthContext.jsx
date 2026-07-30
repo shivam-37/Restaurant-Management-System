@@ -141,13 +141,13 @@ const AuthProvider = ({ children }) => {
         setSelectedRestaurant(null);
     };
 
-    const forgotPassword = async (email) => {
-        const { data } = await apiForgotPassword(email);
+    const forgotPassword = async (payload) => {
+        const { data } = await apiForgotPassword(payload);
         return data;
     };
 
-    const resetPassword = async (token, password) => {
-        const { data } = await apiResetPassword({ token, password });
+    const resetPassword = async (payload, maybePassword) => {
+        const { data } = await apiResetPassword(payload, maybePassword);
         return data;
     };
 

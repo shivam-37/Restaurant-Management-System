@@ -69,42 +69,42 @@ const UserDashboard = ({ user, logout }) => {
 
     const stats = [
         {
-            label: 'Manifest Value',
+            label: 'Total Spent',
             value: `₹${analytics.totalSales}`,
             icon: CurrencyDollarIcon,
             color: 'from-green-500 to-emerald-500'
         },
         {
-            label: 'Active Transactions',
+            label: 'Active Orders',
             value: analytics.activeOrders,
             icon: ClockIcon,
             color: 'from-blue-500 to-cyan-500'
         },
         {
-            label: 'Total Manifests',
+            label: 'Total Orders',
             value: analytics.totalOrders,
             icon: ShoppingBagIcon,
             color: 'from-purple-500 to-pink-500'
         },
         {
-            label: 'Neural Points',
+            label: 'Reward Points',
             value: analytics.loyaltyPoints || 0,
             icon: SparklesIcon,
-            color: 'from-amber-500 to-orange-500'
+            color: 'from-rose-500 to-orange-500'
         }
     ];
 
     return (
         <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
             <div className="fixed inset-0 overflow-hidden -z-10">
-                <div className="absolute top-0 -left-40 w-[500px] h-[500px] bg-amber-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+                <div className="absolute top-0 -left-40 w-[500px] h-[500px] bg-rose-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
                 <div className="absolute bottom-40 left-20 w-[500px] h-[500px] bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
             </div>
 
             <motion.aside initial={{ x: -100 }} animate={{ x: 0 }} className="fixed inset-y-0 left-0 w-72 z-20 hidden md:flex flex-col border-r border-black/5" style={{ background: 'var(--sidebar-bg)' }}>
                 <div className="p-8 border-b border-black/5">
                     <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-600/20">
+                        <div className="w-10 h-10 bg-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-600/20">
                             <SparklesIcon className="w-5 h-5 text-white" />
                         </div>
                         <span className="text-xl font-black uppercase tracking-tighter">Dine Guest</span>
@@ -119,7 +119,7 @@ const UserDashboard = ({ user, logout }) => {
                             className={`relative w-full flex items-center px-5 py-4 rounded-2xl transition-all group ${activeTab === item.name ? 'text-white' : 'opacity-40 hover:opacity-100'}`}
                         >
                             {activeTab === item.name && (
-                                <motion.div layoutId="userActiveTab" className="absolute inset-0 bg-amber-600 rounded-2xl shadow-xl shadow-amber-600/20" />
+                                <motion.div layoutId="userActiveTab" className="absolute inset-0 bg-rose-600 rounded-2xl shadow-xl shadow-rose-600/20" />
                             )}
                             <item.icon className="h-5 w-5 mr-4 relative z-10" />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] relative z-10">{item.name}</span>
@@ -129,10 +129,16 @@ const UserDashboard = ({ user, logout }) => {
 
                 <div className="p-6 border-t border-black/5 space-y-3">
                     <div className="flex items-center gap-4 px-3">
-                        <div className="w-10 h-10 rounded-xl bg-amber-600/10 flex items-center justify-center text-amber-600 font-black text-xs border border-amber-600/10 uppercase">{user?.name?.charAt(0)}</div>
+                        <div className="w-10 h-10 rounded-xl bg-rose-600/10 flex items-center justify-center text-rose-600 font-black text-xs border border-rose-600/10 uppercase overflow-hidden">
+                            {user?.avatar ? (
+                                <img src={user.avatar} alt={user?.name} className="w-full h-full object-cover" />
+                            ) : (
+                                user?.name?.charAt(0)
+                            )}
+                        </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-[10px] font-black uppercase tracking-widest truncate">{user?.name}</p>
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-30 mt-0.5">Guest Cluster</p>
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-30 mt-0.5">Guest Account</p>
                         </div>
                     </div>
                     <button onClick={logout} className="w-full flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-500/5 rounded-2xl transition-colors">
@@ -142,24 +148,24 @@ const UserDashboard = ({ user, logout }) => {
             </motion.aside>
 
             <main className="flex-1 md:ml-72 relative overflow-y-auto">
-                <header className="sticky top-0 z-10 backdrop-blur-xl border-b border-black/5 px-8 py-6 flex justify-between items-center" style={{ background: 'var(--navbar-bg)' }}>
+                <header className="sticky top-0 z-50 backdrop-blur-xl border-b border-black/5 px-8 py-6 flex justify-between items-center" style={{ background: 'var(--navbar-bg)' }}>
                     <div>
                         <h1 className="text-3xl font-black uppercase tracking-tighter">{activeTab}</h1>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">Guest Identification: {user?.name} {selectedRestaurant ? `// Connected to ${selectedRestaurant.name}` : ''}</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">Account Name: {user?.name} {selectedRestaurant ? ` Connected to ${selectedRestaurant.name}` : ''}</p>
                     </div>
                     <div className="flex items-center gap-6">
-                        <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-black/5 hover:border-amber-500/30 transition-all shadow-sm" title="Toggle theme">
-                            {theme === 'dark' ? <SunIcon className="w-4 h-4 text-amber-400" /> : <MoonIcon className="w-4 h-4 text-amber-600" />}
+                        <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-black/5 hover:border-rose-500/30 transition-all shadow-sm" title="Toggle theme">
+                            {theme === 'dark' ? <SunIcon className="w-4 h-4 text-rose-400" /> : <MoonIcon className="w-4 h-4 text-rose-600" />}
                         </button>
                         {selectedRestaurant && (
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => setSelectedRestaurant(null)}
-                                className="hidden md:flex items-center px-6 py-3 theme-card-item border border-black/5 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:border-amber-500/30 transition shadow-sm"
+                                className="hidden md:flex items-center px-6 py-3 theme-card-item border border-black/5 rounded-2xl text-[9px] font-black uppercase tracking-widest hover:border-rose-500/30 transition shadow-sm"
                             >
                                 <ArrowPathIcon className="w-4 h-4 mr-2.5 opacity-40" />
-                                Sever Connection
+                                Disconnect
                             </motion.button>
                         )}
                         <NotificationTray />
@@ -173,10 +179,10 @@ const UserDashboard = ({ user, logout }) => {
                                 <div className="space-y-10">
                                     <div className="flex items-end justify-between">
                                         <div>
-                                            <h2 className="text-4xl font-black uppercase tracking-tighter">Manifest Discovery</h2>
-                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">Available Restaurative Entities in your Sector</p>
+                                            <h2 className="text-4xl font-black uppercase tracking-tighter">Find Restaurants</h2>
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">Restaurants near you</p>
                                         </div>
-                                        <div className="hidden lg:block w-32 h-px bg-amber-600/20 mb-3"></div>
+                                        <div className="hidden lg:block w-32 h-px bg-rose-600/20 mb-3"></div>
                                     </div>
 
                                     {loadingRestaurants ? (
@@ -191,7 +197,7 @@ const UserDashboard = ({ user, logout }) => {
                                                 <motion.div
                                                     key={res._id}
                                                     whileHover={{ y: -10 }}
-                                                    className="group relative theme-card rounded-[2.5rem] border border-black/5 hover:border-amber-500/30 transition-all cursor-pointer overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-amber-600/10"
+                                                    className="group relative theme-card rounded-[2.5rem] border border-black/5 hover:border-rose-500/30 transition-all cursor-pointer overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-rose-600/10"
                                                     onClick={() => {
                                                         setSelectedRestaurant(res);
                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -206,28 +212,28 @@ const UserDashboard = ({ user, logout }) => {
                                                                 onError={e => e.target.style.display = 'none'}
                                                             />
                                                         ) : (
-                                                            <div className="w-full h-full bg-amber-600/[0.05] flex items-center justify-center">
-                                                                <span className="text-6xl font-black text-amber-600/10 uppercase tracking-tighter">{res.name.charAt(0)}</span>
+                                                            <div className="w-full h-full bg-rose-600/[0.05] flex items-center justify-center">
+                                                                <span className="text-6xl font-black text-rose-600/10 uppercase tracking-tighter">{res.name.charAt(0)}</span>
                                                             </div>
                                                         )}
                                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
                                                         <div className="absolute top-6 right-6">
-                                                            <div className="w-10 h-10 bg-amber-600 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 shadow-xl shadow-amber-600/40">
+                                                            <div className="w-10 h-10 bg-rose-600 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0 shadow-xl shadow-rose-600/40">
                                                                 <ArrowRightIcon className="w-5 h-5 text-white" />
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     <div className="p-8">
-                                                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-500 mb-2 block">{res.cuisine}</span>
+                                                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-rose-500 mb-2 block">{res.cuisine}</span>
                                                         <h3 className="text-2xl font-black uppercase tracking-tight mb-2">{res.name}</h3>
                                                         <p className="text-xs font-medium opacity-40 mb-6 line-clamp-2 leading-relaxed uppercase tracking-widest">{res.description || "Premium dining experience awaits you."}</p>
                                                         <div className="flex items-center justify-between pt-6 border-t border-black/5">
                                                             <div className="flex items-center gap-2">
                                                                 <MapPinIcon className="w-4 h-4 opacity-20" />
-                                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-60">Verified Sector</span>
+                                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-60">Location Verified</span>
                                                             </div>
-                                                            <div className="px-4 py-1.5 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-60">Active Status</div>
+                                                            <div className="px-4 py-1.5 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-60">Open Now</div>
                                                         </div>
                                                     </div>
                                                 </motion.div>
@@ -238,12 +244,12 @@ const UserDashboard = ({ user, logout }) => {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
                                     {stats.map((stat, idx) => (
-                                        <div key={idx} className="theme-card-item rounded-3xl p-8 border border-black/5 relative overflow-hidden group hover:border-amber-500/30 transition-all shadow-sm">
+                                        <div key={idx} className="theme-card-item rounded-3xl p-8 border border-black/5 relative overflow-hidden group hover:border-rose-500/30 transition-all shadow-sm">
                                             <div className="relative z-10">
                                                 <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mb-4">{stat.label}</p>
                                                 <p className="text-3xl font-black uppercase tracking-tight">{stat.value}</p>
-                                                <div className={`mt-6 inline-flex p-3 bg-amber-600/10 rounded-xl`}>
-                                                    <stat.icon className="w-5 h-5 text-amber-500" />
+                                                <div className={`mt-6 inline-flex p-3 bg-rose-600/10 rounded-xl`}>
+                                                    <stat.icon className="w-5 h-5 text-rose-500" />
                                                 </div>
                                             </div>
                                             <stat.icon className="absolute -right-6 -bottom-6 w-32 h-32 opacity-[0.03] group-hover:scale-110 transition-transform duration-700" />

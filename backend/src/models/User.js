@@ -17,6 +17,7 @@ const userSchema = mongoose.Schema({
         sparse: true,
         lowercase: true,
         trim: true,
+        set: (v) => (v === '' || v === null ? undefined : v),
         match: [
             /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
             'Please add a valid email',
@@ -26,7 +27,8 @@ const userSchema = mongoose.Schema({
         type: String,
         unique: true,
         sparse: true,
-        trim: true
+        trim: true,
+        set: (v) => (v === '' || v === null ? undefined : v)
     },
     password: {
         type: String,
@@ -37,7 +39,8 @@ const userSchema = mongoose.Schema({
     googleId: {
         type: String,
         unique: true,
-        sparse: true
+        sparse: true,
+        set: (v) => (v === '' || v === null ? undefined : v)
     },
     isEmailVerified: {
         type: Boolean,
@@ -87,6 +90,15 @@ const userSchema = mongoose.Schema({
 });
 
 userSchema.pre('save', async function () {
+    if (this.email === '' || this.email === null) {
+        this.email = undefined;
+    }
+    if (this.phone === '' || this.phone === null) {
+        this.phone = undefined;
+    }
+    if (this.googleId === '' || this.googleId === null) {
+        this.googleId = undefined;
+    }
     if (!this.isModified('password')) {
         return;
     }
@@ -98,4 +110,8 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+
+User.syncIndexes().catch(err => console.error('Index sync error:', err.message));
+
+module.exports = User;

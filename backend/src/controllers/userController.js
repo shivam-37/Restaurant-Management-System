@@ -9,13 +9,12 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
-        user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
+        if (req.body.name && req.body.name.trim()) user.name = req.body.name.trim();
+        if (req.body.email && req.body.email.trim()) user.email = req.body.email.trim().toLowerCase();
         if (req.body.avatar !== undefined) user.avatar = req.body.avatar;
 
         if (req.body.password) {
-            const salt = await bcrypt.genSalt(10);
-            user.password = await bcrypt.hash(req.body.password, salt);
+            user.password = req.body.password;
         }
 
         const updatedUser = await user.save();
@@ -24,6 +23,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             _id: updatedUser._id,
             name: updatedUser.name,
             email: updatedUser.email,
+            phone: updatedUser.phone,
             role: updatedUser.role,
             avatar: updatedUser.avatar || '',
             loyaltyPoints: updatedUser.loyaltyPoints,

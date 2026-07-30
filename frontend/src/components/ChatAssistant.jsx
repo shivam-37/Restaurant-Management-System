@@ -88,7 +88,7 @@ const ChatAssistant = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 50, scale: 0.9 }}
                         transition={{ type: "spring", bounce: 0.3 }}
-                        className="fixed bottom-8 right-8 z-50 w-[380px] h-[600px] max-h-[80vh] flex flex-col bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden"
+                        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-50 w-[calc(100vw-32px)] sm:w-[380px] h-[550px] sm:h-[600px] max-h-[80vh] flex flex-col bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-900 to-black border-b border-gray-800">

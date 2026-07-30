@@ -86,7 +86,7 @@ const Reservations = () => {
             >
                 <div>
                     <h1 className="text-3xl font-black uppercase tracking-tighter">
-                        {(user.role === 'admin' || user.role === 'owner') ? 'Reservations Desk' : 'My Bookings'}
+                        {(user.role === 'admin' || user.role === 'owner') ? 'Bookings' : 'My Bookings'}
                     </h1>
                     <p className="opacity-60 font-medium">
                         {(user.role === 'admin' || user.role === 'owner')
@@ -98,10 +98,10 @@ const Reservations = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsModalOpen(true)}
-                    className="flex items-center px-8 py-4 bg-amber-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-amber-600/30 hover:bg-amber-700 transition-all group"
+                    className="flex items-center px-8 py-4 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-600/30 hover:bg-rose-700 transition-all group"
                 >
                     <PlusIcon className="h-5 w-5 mr-3 group-hover:rotate-90 transition-transform duration-500" />
-                    Initialize Request
+                    New Reservation
                 </motion.button>
             </motion.div>
 
@@ -109,7 +109,7 @@ const Reservations = () => {
             {loading ? (
                 <div className="space-y-4">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="h-24 bg-amber-500/5 rounded-3xl animate-pulse" />
+                        <div key={i} className="h-24 bg-rose-500/5 rounded-3xl animate-pulse" />
                     ))}
                 </div>
             ) : reservations.length === 0 ? (
@@ -117,7 +117,7 @@ const Reservations = () => {
                     {...fadeInUp}
                     className="theme-card border-2 border-dashed border-black/5 rounded-3xl p-16 text-center"
                 >
-                    <CalendarIcon className="h-16 w-16 text-amber-500/20 mx-auto mb-4" />
+                    <CalendarIcon className="h-16 w-16 text-rose-500/20 mx-auto mb-4" />
                     <h3 className="text-xl font-bold mb-2">No Reservations Found</h3>
                     <p className="opacity-50 max-w-xs mx-auto mb-8">It looks like there are no bookings scheduled here yet.</p>
                 </motion.div>
@@ -131,11 +131,11 @@ const Reservations = () => {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
-                                className="group theme-card border border-black/5 hover:border-amber-500/30 rounded-3xl p-6 transition-all"
+                                className="group theme-card border border-black/5 hover:border-rose-500/30 rounded-3xl p-6 transition-all"
                             >
                                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                                     <div className="flex items-center gap-6 flex-1 w-full">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-purple-600 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-amber-600/20 text-white">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-rose-600 to-purple-600 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-rose-600/20 text-white">
                                             {res.name.charAt(0)}
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -143,13 +143,13 @@ const Reservations = () => {
                                                 <h3 className="text-lg font-bold truncate">{res.name}</h3>
                                                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em] ${res.status === 'Confirmed' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20' :
                                                     res.status === 'Cancelled' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20' :
-                                                        'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                                                        'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
                                                     }`}>
                                                     {res.status}
                                                 </span>
                                             </div>
                                             <div className="flex flex-wrap items-center gap-4 text-xs font-bold opacity-60 uppercase tracking-widest">
-                                                <div className="flex items-center gap-1.5 text-amber-500">
+                                                <div className="flex items-center gap-1.5 text-rose-500">
                                                     <CalendarIcon className="w-4 h-4" />
                                                     {new Date(res.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                                                 </div>
@@ -175,13 +175,13 @@ const Reservations = () => {
                                                 onClick={() => handleStatusUpdate(res._id, 'Confirmed')}
                                                 className="flex-1 md:flex-none px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-black text-[9px] uppercase tracking-widest shadow-xl shadow-emerald-600/20"
                                             >
-                                                Authorize
+                                                Confirm
                                             </button>
                                             <button
                                                 onClick={() => handleStatusUpdate(res._id, 'Cancelled')}
                                                 className="flex-1 md:flex-none px-6 py-3 theme-card-item border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all font-black text-[9px] uppercase tracking-widest"
                                             >
-                                                Erase
+                                                Cancel
                                             </button>
                                         </div>
                                     )}
@@ -209,10 +209,10 @@ const Reservations = () => {
                             className="theme-card rounded-[3rem] w-full max-w-lg overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-white/10"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="p-10 border-b border-black/5 flex justify-between items-center bg-amber-500/5">
+                            <div className="p-10 border-b border-black/5 flex justify-between items-center bg-rose-500/5">
                                 <div>
                                     <h2 className="text-2xl font-black uppercase tracking-tighter">Reserve Table</h2>
-                                    <p className="text-xs text-amber-500 font-bold uppercase tracking-widest">{selectedRestaurant?.name}</p>
+                                    <p className="text-xs text-rose-500 font-bold uppercase tracking-widest">{selectedRestaurant?.name}</p>
                                 </div>
                                 <button onClick={() => setIsModalOpen(false)} className="p-2 opacity-60 hover:opacity-100 theme-card-item rounded-xl transition">
                                     <XMarkIcon className="w-6 h-6" />
@@ -223,12 +223,12 @@ const Reservations = () => {
                                 <div className="space-y-5">
                                     <div>
                                         <div className="relative group">
-                                            <UserGroupIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 transition-transform group-focus-within:scale-110" />
+                                            <UserGroupIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-rose-500 transition-transform group-focus-within:scale-110" />
                                             <input
                                                 type="text"
                                                 required
-                                                placeholder="Registrant Name"
-                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
+                                                placeholder="Guest Name"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30"
                                                 value={formData.name}
                                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             />
@@ -236,12 +236,12 @@ const Reservations = () => {
                                     </div>
                                     <div>
                                         <div className="relative group">
-                                            <PhoneIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 transition-transform group-focus-within:scale-110" />
+                                            <PhoneIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-rose-500 transition-transform group-focus-within:scale-110" />
                                             <input
                                                 type="tel"
                                                 required
-                                                placeholder="Mobile Signal"
-                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
+                                                placeholder="Phone Number"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30"
                                                 value={formData.phone}
                                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                             />
@@ -249,36 +249,36 @@ const Reservations = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-5">
                                         <div className="relative group">
-                                            <CalendarIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 pointer-events-none transition-transform group-focus-within:scale-110" />
+                                            <CalendarIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-rose-500 pointer-events-none transition-transform group-focus-within:scale-110" />
                                             <input
                                                 type="date"
                                                 required
-                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold"
                                                 value={formData.date}
                                                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                                             />
                                         </div>
                                         <div className="relative group">
-                                            <ClockIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 pointer-events-none transition-transform group-focus-within:scale-110" />
+                                            <ClockIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-rose-500 pointer-events-none transition-transform group-focus-within:scale-110" />
                                             <input
                                                 type="time"
                                                 required
-                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold"
                                                 value={formData.time}
                                                 onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                                             />
                                         </div>
                                     </div>
                                     <div className="relative group">
-                                        <UserGroupIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500 transition-transform group-focus-within:scale-110" />
+                                        <UserGroupIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-rose-500 transition-transform group-focus-within:scale-110" />
                                         <select
-                                            className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all appearance-none font-bold"
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all appearance-none font-bold"
                                             value={formData.partySize}
                                             onChange={(e) => setFormData({ ...formData, partySize: e.target.value })}
                                         >
                                             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
                                                 <option key={n} value={n} className="theme-card-item text-black dark:text-white">
-                                                    {n} Individual{n > 1 ? 's' : ''}
+                                                    {n} Guest{n > 1 ? 's' : ''}
                                                 </option>
                                             ))}
                                         </select>
@@ -288,9 +288,9 @@ const Reservations = () => {
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     type="submit"
-                                    className="w-full py-6 bg-amber-600 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-amber-600/40 active:scale-95 transition-all"
+                                    className="w-full py-6 bg-rose-600 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-rose-600/40 active:scale-95 transition-all"
                                 >
-                                    Authorize Placement
+                                    Confirm Booking
                                 </motion.button>
                             </form>
                         </motion.div>

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5001/api',
+    baseURL: '/api',
 });
 
 // Request interceptor to add auth token
@@ -47,7 +47,9 @@ export const generateFullMenuItem = (prompt) => api.post('/ai/generate-full-item
 
 // Notification APIs
 export const getNotifications = () => api.get('/notifications');
+export const clearNotifications = () => api.delete('/notifications');
 export const markNotificationRead = (id) => api.put(`/notifications/${id}/read`);
+export const pushNotification = (data) => api.post('/notifications/push', data);
 
 // Restaurant APIs
 export const getRestaurants = () => api.get('/restaurant');
@@ -68,8 +70,14 @@ export const register = (userData) => api.post('/auth/register', userData);
 export const verifyOtp = (payload) => api.post('/auth/verify-otp', payload);
 export const sendOtp = (payload) => api.post('/auth/send-otp', payload);
 export const googleAuth = (payload) => api.post('/auth/google', payload);
-export const forgotPassword = (email) => api.post('/auth/forgot-password', { email });
-export const resetPassword = (data) => api.post('/auth/reset-password', data);
+export const forgotPassword = (payload) => api.post('/auth/forgot-password', typeof payload === 'object' ? payload : { identifier: payload });
+export const resetPassword = (payload, maybePassword) => {
+    let body = payload;
+    if (typeof payload === 'string') {
+        body = { token: payload, password: maybePassword };
+    }
+    return api.post('/auth/reset-password', body);
+};
 export const getMe = () => api.get('/auth/me');
 
 export default api;

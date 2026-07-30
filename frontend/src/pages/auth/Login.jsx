@@ -10,13 +10,12 @@ import { useTheme } from '../../context/ThemeContext';
 
 const Login = () => {
     const [formData, setFormData] = useState({
-        email: '',
+        identifier: '',
         countryCode: '+91',
-        phone: '',
         password: '',
     });
 
-    const { email, countryCode, phone, password } = formData;
+    const { identifier, countryCode, password } = formData;
     const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
@@ -60,15 +59,21 @@ const Login = () => {
         setError(null);
         setIsLoading(true);
 
-        if (!email && !phone) {
-            setError('Please provide either an email or phone number');
+        const cleanIdentifier = identifier.trim();
+
+        if (!cleanIdentifier) {
+            setError('Please enter your email address or phone number');
             setIsLoading(false);
             return;
         }
 
+        const isEmail = cleanIdentifier.includes('@');
+        const identifierToUse = isEmail 
+            ? cleanIdentifier 
+            : (cleanIdentifier.startsWith('+') ? cleanIdentifier : `${countryCode}${cleanIdentifier}`);
+
         try {
-            const identifierToUse = phone ? `${countryCode}${phone}` : email;
-            const result = await login(identifierToUse.trim(), password.trim());
+            const result = await login(identifierToUse, password.trim());
             if (result && result.requiresOtp) {
                 setOtpMethod(result.method);
                 setShowOtpModal(true);
@@ -86,9 +91,13 @@ const Login = () => {
     const handleVerifyOtp = async (otp) => {
         setIsOtpLoading(true);
         try {
+            const cleanIdentifier = identifier.trim();
+            const isEmail = cleanIdentifier.includes('@');
+            const formattedPhone = cleanIdentifier.startsWith('+') ? cleanIdentifier : `${countryCode}${cleanIdentifier}`;
+
             const payload = { otp };
-            if (otpMethod === 'email') payload.email = email;
-            else payload.phone = `${countryCode}${phone}`;
+            if (otpMethod === 'email' || isEmail) payload.email = cleanIdentifier;
+            else payload.phone = formattedPhone;
             
             await verifyUserOtp(payload);
             setShowOtpModal(false);
@@ -143,7 +152,7 @@ const Login = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-black/80"></div>
 
                 {/* Content Overlay */}
-                <div className="absolute inset-0 flex flex-col justify-between p-12 text-white z-10">
+                <div className="absolute inset-0 flex flex-col justify-between p-12 text-white z-10 dark-overlay-text">
                     {/* Logo */}
                     <motion.div 
                         initial={{ opacity: 0, y: -20 }}
@@ -152,12 +161,12 @@ const Login = () => {
                         className="flex items-center space-x-3"
                     >
                         <Link to="/" className="flex items-center space-x-3 group cursor-pointer">
-                            <div className="w-14 h-14 bg-amber-500/10 backdrop-blur-lg rounded-2xl flex items-center justify-center border border-amber-500/20 group-hover:bg-amber-500/20 transition-colors">
-                                <ChefHat className="w-7 h-7 text-amber-500" />
+                            <div className="w-14 h-14 bg-rose-500/10 backdrop-blur-lg rounded-2xl flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500/20 transition-colors">
+                                <ChefHat className="w-7 h-7 text-rose-500" />
                             </div>
                             <div>
-                                <span className="text-2xl font-light tracking-wider text-white">DINE FLOW</span>
-                                <span className="text-2xl font-bold text-amber-500 ml-2">AI</span>
+                                <span className="text-2xl font-light tracking-wider text-white">DINE</span>
+                                <span className="text-2xl font-bold text-rose-500 ml-2">FLOW</span>
                             </div>
                         </Link>
                     </motion.div>
@@ -172,7 +181,7 @@ const Login = () => {
                             <h1 className="text-7xl font-black mb-4 leading-none">
                                 WELCOME
                                 <br />
-                                <span className="text-amber-500">BACK</span>
+                                <span className="text-rose-500">BACK</span>
                             </h1>
                             <p className="text-xl text-gray-400 leading-relaxed">
                                 Sign in to manage your restaurant operations, track performance, and deliver exceptional dining experiences.
@@ -192,7 +201,7 @@ const Login = () => {
                                 { icon: <Star className="w-5 h-5" />, value: "4.9", label: "Rating" }
                             ].map((stat, idx) => (
                                 <div key={idx} className="text-center">
-                                    <div className="flex justify-center text-amber-500 mb-2">{stat.icon}</div>
+                                    <div className="flex justify-center text-rose-500 mb-2">{stat.icon}</div>
                                     <div className="text-white font-bold">{stat.value}</div>
                                     <div className="text-xs text-gray-500">{stat.label}</div>
                                 </div>
@@ -215,12 +224,12 @@ const Login = () => {
                     {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                 </button>
                 {/* Subtle Glow Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-transparent to-transparent"></div>
                 
                 {/* Animated Dots */}
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-20 right-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-20 left-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl"></div>
+                    <div className="absolute top-20 right-20 w-64 h-64 bg-rose-500/5 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-20 left-20 w-64 h-64 bg-rose-500/5 rounded-full blur-3xl"></div>
                 </div>
 
                 <motion.div 
@@ -232,11 +241,11 @@ const Login = () => {
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex justify-center mb-8">
                         <Link to="/" className="flex items-center space-x-2 group cursor-pointer">
-                            <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center border border-amber-500/20 group-hover:bg-amber-500/20 transition-colors">
-                                <ChefHat className="w-6 h-6 text-amber-500" />
+                            <div className="w-12 h-12 bg-rose-500/10 rounded-xl flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500/20 transition-colors">
+                                <ChefHat className="w-6 h-6 text-rose-500" />
                             </div>
-                            <span className="text-2xl font-light text-white">DINE FLOW</span>
-                            <span className="text-2xl font-bold text-amber-500">AI</span>
+                            <span className="text-2xl font-light text-gray-900 dark:text-white">DINE</span>
+                            <span className="text-2xl font-bold text-rose-500 ml-1">FLOW</span>
                         </Link>
                     </div>
 
@@ -246,16 +255,15 @@ const Login = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="text-4xl font-black uppercase tracking-tighter mb-2"
-                            style={{ color: 'var(--text-primary)' }}
+                            className="text-3xl font-bold mb-2 text-rose-500"
                         >
-                            SIGN IN
+                            Sign In
                         </motion.h2>
                         <motion.p 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30"
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300"
                         >
                             Access your restaurant dashboard
                         </motion.p>
@@ -266,13 +274,13 @@ const Login = () => {
                         <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6 relative group"
+                            className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-6 relative group"
                         >
-                            <div className="absolute inset-0 bg-amber-500/5 blur-xl opacity-50"></div>
-                            <p className="text-sm text-amber-500 text-center relative z-10">{successMessage}</p>
+                            <div className="absolute inset-0 bg-rose-500/5 blur-xl opacity-50"></div>
+                            <p className="text-sm text-rose-500 text-center relative z-10">{successMessage}</p>
                             <button 
                                 onClick={() => setSuccessMessage(null)}
-                                className="absolute top-2 right-2 text-amber-500/50 hover:text-amber-500 transition"
+                                className="absolute top-2 right-2 text-rose-500/50 hover:text-rose-500 transition"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -294,72 +302,34 @@ const Login = () => {
 
                     {/* Login Form */}
                     <form onSubmit={onSubmit} className="space-y-6">
-                        {/* Email Field - Hidden if phone is entered */}
-                        {!phone && (
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.3 }}
+                        {/* Unified Email or Phone Field */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            <label 
+                                htmlFor="identifier" 
+                                className={`text-sm font-bold mb-2 block transition-colors duration-300 ${
+                                    focusedField === 'identifier' ? 'text-rose-500' : 'text-gray-900 dark:text-gray-100'
+                                }`}
                             >
-                                <label 
-                                    htmlFor="email" 
-                                    className={`text-[10px] font-black uppercase tracking-[0.3em] mb-3 block transition-colors duration-300 ${
-                                        focusedField === 'email' ? 'text-amber-500' : 'opacity-40'
-                                    }`}
-                                >
-                                    Email Address
-                                </label>
-                                <div className="relative group">
-                                    <div className="relative">
-                                        <Mail className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
-                                            focusedField === 'email' ? 'text-amber-500' : 'opacity-20'
-                                        }`} />
-                                        <input
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                            autoComplete="username"
-                                            value={email}
-                                            onChange={onChange}
-                                            onFocus={() => setFocusedField('email')}
-                                            onBlur={() => setFocusedField(null)}
-                                            className="w-full theme-card-item border border-black/5 rounded-2xl py-5 pl-12 pr-6 text-[11px] font-black uppercase tracking-widest focus:outline-none focus:border-amber-500/30 transition-all"
-                                            placeholder="your@email.com"
-                                        />
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {/* Phone Field - Hidden if email is entered */}
-                        {!email && (
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.35 }}
-                            >
-                                <label 
-                                    htmlFor="phone" 
-                                    className={`text-[10px] font-black uppercase tracking-[0.3em] mb-3 block transition-colors duration-300 ${
-                                        focusedField === 'phone' ? 'text-amber-500' : 'opacity-40'
-                                    }`}
-                                >
-                                    Phone Number
-                                </label>
-                                <div className="relative group">
-                                        <div className={`relative flex items-center theme-card-item border border-black/5 rounded-2xl focus-within:border-amber-500/30 transition-all`}>
-                                            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
-                                                <Smartphone className={`w-4 h-4 transition-colors duration-300 ${
-                                                    focusedField === 'phone' ? 'text-amber-500' : 'opacity-20'
-                                                }`} />
-                                            </div>
+                                Email Address or Phone Number
+                            </label>
+                            <div className="relative group">
+                                <div className={`relative flex items-center theme-card-item border border-black/5 rounded-2xl focus-within:border-rose-500/30 transition-all overflow-hidden`}>
+                                    {!identifier.includes('@') ? (
+                                        <div className="flex items-center pl-4 border-r border-black/10 dark:border-white/10 shrink-0">
+                                            <Smartphone className={`w-4 h-4 mr-2 transition-colors duration-300 ${
+                                                focusedField === 'identifier' ? 'text-rose-500' : 'opacity-20'
+                                            }`} />
                                             <select
                                                 name="countryCode"
                                                 value={countryCode}
                                                 onChange={onChange}
-                                                onFocus={() => setFocusedField('phone')}
+                                                onFocus={() => setFocusedField('identifier')}
                                                 onBlur={() => setFocusedField(null)}
-                                                className="bg-transparent border-r border-black/10 text-[11px] font-black pl-12 pr-2 py-5 focus:outline-none focus:ring-0 cursor-pointer min-w-[120px] max-w-[150px]"
+                                                className="bg-transparent text-[11px] font-black py-5 pr-2 focus:outline-none cursor-pointer"
                                             >
                                                 {countries.map((c) => (
                                                     <option key={`${c.iso}-${c.code}`} value={c.code} className="bg-white text-black dark:bg-black dark:text-white">
@@ -367,25 +337,31 @@ const Login = () => {
                                                     </option>
                                                 ))}
                                             </select>
-                                            <input
-                                                id="phone"
-                                                name="phone"
-                                                type="tel"
-                                                autoComplete="username"
-                                                value={phone}
-                                                onChange={onChange}
-                                                onFocus={() => setFocusedField('phone')}
-                                                onBlur={() => setFocusedField(null)}
-                                                className="flex-1 bg-transparent py-5 pl-4 pr-4 text-[11px] font-black uppercase tracking-widest placeholder-gray-600 focus:outline-none transition-all"
-                                                placeholder="1234567890"
-                                            />
                                         </div>
-                                    </div>
-                                <p className="mt-1 text-xs text-gray-500">
-                                    Enter number without country code
-                                </p>
-                            </motion.div>
-                        )}
+                                    ) : (
+                                        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
+                                            <Mail className={`w-4 h-4 transition-colors duration-300 ${
+                                                focusedField === 'identifier' ? 'text-rose-500' : 'opacity-20'
+                                            }`} />
+                                        </div>
+                                    )}
+                                    <input
+                                        id="identifier"
+                                        name="identifier"
+                                        type="text"
+                                        autoComplete="username"
+                                        value={identifier}
+                                        onChange={onChange}
+                                        onFocus={() => setFocusedField('identifier')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className={`w-full bg-transparent py-4 text-sm font-medium focus:outline-none transition-all ${
+                                            identifier.includes('@') ? 'pl-12 pr-4' : 'pl-4 pr-4'
+                                        }`}
+                                        placeholder="your@email.com or 9876543210"
+                                    />
+                                </div>
+                            </div>
+                        </motion.div>
 
                         {/* Password Field */}
                         <motion.div
@@ -395,8 +371,8 @@ const Login = () => {
                         >
                                 <label 
                                     htmlFor="password" 
-                                    className={`text-[10px] font-black uppercase tracking-[0.3em] mb-3 block transition-colors duration-300 ${
-                                        focusedField === 'password' ? 'text-amber-500' : 'opacity-40'
+                                    className={`text-sm font-bold mb-2 block transition-colors duration-300 ${
+                                        focusedField === 'password' ? 'text-rose-500' : 'text-gray-900 dark:text-gray-100'
                                     }`}
                                 >
                                     Password
@@ -404,7 +380,7 @@ const Login = () => {
                                 <div className="relative group">
                                     <div className="relative">
                                         <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
-                                            focusedField === 'password' ? 'text-amber-500' : 'opacity-20'
+                                            focusedField === 'password' ? 'text-rose-500' : 'opacity-20'
                                         }`} />
                                         <input
                                             id="password"
@@ -416,7 +392,7 @@ const Login = () => {
                                             onChange={onChange}
                                             onFocus={() => setFocusedField('password')}
                                             onBlur={() => setFocusedField(null)}
-                                            className="w-full theme-card-item border border-black/5 rounded-2xl py-5 pl-12 pr-6 text-[11px] font-black uppercase tracking-widest focus:outline-none focus:border-amber-500/30 transition-all"
+                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
                                             placeholder="••••••••"
                                         />
                                     </div>
@@ -432,7 +408,7 @@ const Login = () => {
                         >
                             <Link
                                 to="/forgot-password"
-                                className="text-[10px] font-black uppercase tracking-widest opacity-40 hover:opacity-100 hover:text-amber-500 transition-all"
+                                className="text-xs font-semibold text-rose-500 hover:text-rose-600 transition-all"
                             >
                                 Forgot password?
                             </Link>
@@ -447,11 +423,9 @@ const Login = () => {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full py-5 bg-amber-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] shadow-xl shadow-amber-500/30 hover:bg-amber-600 transition-all flex items-center justify-center gap-4 disabled:opacity-50"
+                                    className="w-full py-4 bg-rose-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-rose-500/25 hover:bg-rose-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                                 >
-                                    {isLoading ? 'Decrypting Access...' : (
-                                        <>Access Portal <ArrowRight className="w-4 h-4 translate-y-[0.5px]" /></>
-                                    )}
+                                    {isLoading ? 'Signing In...' : 'Sign In'}
                                 </button>
                         </motion.div>
 
@@ -460,14 +434,14 @@ const Login = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.7 }}
-                            className="text-xs text-center text-gray-600 mt-6"
+                            className="text-xs text-center text-gray-500 mt-6"
                         >
                             By signing in, you agree to our{' '}
-                            <Link to="/terms" className="text-amber-500 hover:text-amber-400 underline underline-offset-2">
+                            <Link to="/terms" className="text-rose-500 hover:text-rose-600 font-semibold">
                                 Terms of Service
                             </Link>{' '}
                             and{' '}
-                            <Link to="/privacy" className="text-amber-500 hover:text-amber-400 underline underline-offset-2">
+                            <Link to="/privacy" className="text-rose-500 hover:text-rose-600 font-semibold">
                                 Privacy Policy
                             </Link>
                         </motion.p>
@@ -477,16 +451,15 @@ const Login = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.8 }}
-                            className="text-center pt-8"
+                            className="text-center pt-6"
                         >
-                            <p className="text-[10px] font-black uppercase tracking-widest opacity-30">
+                            <p className="text-sm text-gray-700 dark:text-gray-400">
                                 Don't have an account?{' '}
                                 <Link
                                     to="/register"
-                                    className="text-amber-500 hover:text-amber-600 font-black inline-flex items-center group ml-2"
+                                    className="text-rose-500 hover:text-rose-600 font-bold ml-1"
                                 >
-                                    CREATE ACCOUNT
-                                    <ArrowRight className="ml-1 w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                                    Create Account
                                 </Link>
                             </p>
                         </motion.div>
@@ -499,10 +472,10 @@ const Login = () => {
                         >
                             <div className="relative my-6">
                                 <div className="absolute inset-0 flex items-center">
-                                    <div className="w-full border-t border-gray-800"></div>
+                                    <div className="w-full border-t border-black/10 dark:border-white/10"></div>
                                 </div>
                                 <div className="relative flex justify-center text-sm">
-                                    <span className="px-2 bg-black text-gray-500">Or continue with</span>
+                                    <span className="px-3 theme-bg text-gray-700 dark:text-gray-300 font-semibold">Or continue with</span>
                                 </div>
                             </div>
                             <button
@@ -517,7 +490,7 @@ const Login = () => {
                                     <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
                                     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                                 </svg>
-                                <span style={{ color: 'var(--text-primary)' }}>Integrate Google Node</span>
+                                <span style={{ color: 'var(--text-primary)' }}>Continue with Google</span>
                             </button>
                         </motion.div>
                     </form>
@@ -530,12 +503,12 @@ const Login = () => {
                         className="flex justify-center space-x-6 mt-8"
                     >
                         {[
-                            { icon: <Coffee className="w-4 h-4" />, text: "Fine Dining" },
-                            { icon: <Sparkles className="w-4 h-4" />, text: "Premium" },
-                            { icon: <Star className="w-4 h-4" />, text: "5-Star" }
+                            { icon: <Coffee className="w-4 h-4 text-rose-500" />, text: "Fine Dining" },
+                            { icon: <Sparkles className="w-4 h-4 text-rose-500" />, text: "Premium" },
+                            { icon: <Star className="w-4 h-4 text-rose-500" />, text: "5-Star" }
                         ].map((feature, idx) => (
-                            <div key={idx} className="flex items-center space-x-2 text-xs text-gray-600">
-                                <span className="text-amber-500">{feature.icon}</span>
+                            <div key={idx} className="flex items-center space-x-2 text-xs font-semibold text-gray-700 dark:text-gray-300">
+                                <span className="text-rose-500">{feature.icon}</span>
                                 <span>{feature.text}</span>
                             </div>
                         ))}
@@ -547,9 +520,9 @@ const Login = () => {
                 isOpen={showOtpModal}
                 onClose={() => setShowOtpModal(false)}
                 onVerify={handleVerifyOtp}
-                email={otpMethod === 'email' ? email : ''}
-                phone={otpMethod === 'phone' ? `${countryCode}${phone}` : ''}
-                method={otpMethod}
+                email={identifier.includes('@') ? identifier.trim() : ''}
+                phone={!identifier.includes('@') ? (identifier.trim().startsWith('+') ? identifier.trim() : `${countryCode}${identifier.trim()}`) : ''}
+                method={otpMethod || (identifier.includes('@') ? 'email' : 'phone')}
                 isLoading={isOtpLoading}
             />
         </div>

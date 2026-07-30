@@ -57,18 +57,18 @@ const TableMap = () => {
 
     if (loading && !restaurant && selectedRestaurant) return (
         <div className="flex flex-col items-center justify-center h-64 theme-card rounded-3xl opacity-50 space-y-4">
-            <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="font-black uppercase tracking-widest text-[10px]">Mapping Floor Plan...</p>
+            <div className="w-8 h-8 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="font-black uppercase tracking-widest text-[10px]">Loading Table Map...</p>
         </div>
     );
 
     if (!selectedRestaurant) {
         return (
             <div className="space-y-10">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-amber-500/5 p-8 rounded-[2.5rem] border border-amber-500/10">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-rose-500/5 p-8 rounded-[2.5rem] border border-rose-500/10">
                     <div>
-                        <h2 className="text-3xl font-black uppercase tracking-tighter">Establishment Topography</h2>
-                        <p className="opacity-50 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Select logic unit to initialize spatial mapping</p>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter">Table Layout</h2>
+                        <p className="opacity-50 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Select a restaurant to view the table map</p>
                     </div>
                 </div>
 
@@ -83,18 +83,18 @@ const TableMap = () => {
                                 setSelectedRestaurant(r);
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                             }}
-                            className="group relative theme-card rounded-[2rem] p-10 text-left hover:border-amber-500 transition-all overflow-hidden shadow-sm hover:shadow-2xl"
+                            className="group relative theme-card rounded-[2rem] p-10 text-left hover:border-rose-500 transition-all overflow-hidden shadow-sm hover:shadow-2xl"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                             <div className="relative z-10">
-                                <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-amber-400 text-white rounded-2xl flex items-center justify-center text-3xl font-black mb-8 shadow-xl shadow-amber-600/20 group-hover:scale-110 transition-transform">
+                                <div className="w-16 h-16 bg-gradient-to-br from-rose-600 to-rose-400 text-white rounded-2xl flex items-center justify-center text-3xl font-black mb-8 shadow-xl shadow-rose-600/20 group-hover:scale-110 transition-transform">
                                     {r.name.charAt(0)}
                                 </div>
                                 <h3 className="text-2xl font-black tracking-tighter mb-2">{r.name}</h3>
-                                <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-10">{r.cuisine} Architecture • {r.tables?.length || 0} Spatial Nodes</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-10">{r.cuisine} Style • {r.tables?.length || 0} Tables</p>
 
-                                <div className="flex items-center gap-3 text-amber-600 dark:text-amber-400 font-black text-[10px] uppercase tracking-widest pt-8 border-t border-black/5">
-                                    Initialize live view
+                                <div className="flex items-center gap-3 text-rose-600 dark:text-rose-400 font-black text-[10px] uppercase tracking-widest pt-8 border-t border-black/5">
+                                    View Tables
                                     <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                                 </div>
                             </div>
@@ -109,14 +109,14 @@ const TableMap = () => {
         <div className="space-y-8">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div>
-                    <h2 className="text-3xl font-black uppercase tracking-tighter">Main Dining Spectrum</h2>
-                    <p className="opacity-50 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Spatial intelligence & occupancy matrix</p>
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">Dining Area</h2>
+                    <p className="opacity-50 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Table status and availability</p>
                 </div>
                 <div className="flex flex-wrap gap-6 p-4 theme-card-item rounded-2xl border border-black/5">
                     {['Available', 'Occupied', 'Reserved', 'Cleaning'].map(status => (
                         <div key={status} className="flex items-center gap-2">
                             <div className={`w-3 h-3 rounded-full shadow-sm ${status === 'Available' ? 'bg-green-500' :
-                                status === 'Occupied' ? 'bg-amber-600' :
+                                status === 'Occupied' ? 'bg-rose-600' :
                                     status === 'Reserved' ? 'bg-yellow-500' : 'bg-red-500'
                                 }`} />
                             <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{status}</span>
@@ -149,13 +149,13 @@ const TableMap = () => {
                             whileHover={{ scale: 1.05, zIndex: 20 }}
                             whileTap={{ scale: 0.95 }}
                             className={`absolute w-36 h-36 rounded-3xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-500 shadow-lg ${table.status === 'Available' ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400 hover:bg-green-500/20' :
-                                table.status === 'Occupied' ? 'bg-amber-600/10 border-amber-600/30 text-amber-700 dark:text-amber-400 hover:bg-amber-600/20' :
+                                table.status === 'Occupied' ? 'bg-rose-600/10 border-rose-600/30 text-rose-700 dark:text-rose-400 hover:bg-rose-600/20' :
                                     table.status === 'Reserved' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20' :
                                         'bg-red-500/10 border-red-500/30 text-red-700 dark:text-red-400 hover:bg-red-500/20'
                                 }`}
                             style={{ left: `${posX}%`, top: `${posY}%` }}
                         >
-                            <span className="text-[10px] font-black opacity-40 uppercase tracking-[0.3em]">NODE-{table.number}</span>
+                            <span className="text-[10px] font-black opacity-40 uppercase tracking-[0.3em]">TABLE-{table.number}</span>
                             <div className="flex -space-x-1.5">
                                 {[...Array(table.capacity)].map((_, i) => (
                                     <div key={i} className={`w-3 h-3 rounded-full border border-black/5 ${table.status === 'Available' ? 'bg-green-500/50' : 'bg-current opacity-40'
@@ -170,7 +170,7 @@ const TableMap = () => {
                 {/* Legend / Overlay */}
                 <div className="absolute bottom-8 left-8 flex gap-6 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">
                     <span className="flex items-center gap-2"><MapPinIcon className="w-4 h-4" /> Entry Point</span>
-                    <span className="flex items-center gap-2"><FireIcon className="w-4 h-4 ml-4" /> Thermal Source (Kitchen)</span>
+                    <span className="flex items-center gap-2"><FireIcon className="w-4 h-4 ml-4" /> Kitchen</span>
                 </div>
             </div>
 
@@ -187,14 +187,14 @@ const TableMap = () => {
                             </div>
                             <div className="flex items-center gap-6 mb-8">
                                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black ${selectedTable.status === 'Available' ? 'bg-green-500 text-white' :
-                                    selectedTable.status === 'Occupied' ? 'bg-amber-600 text-white' :
+                                    selectedTable.status === 'Occupied' ? 'bg-rose-600 text-white' :
                                         selectedTable.status === 'Reserved' ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white'
                                     }`}>
                                     {selectedTable.number}
                                 </div>
                                 <div>
-                                    <h3 className="text-3xl font-black uppercase tracking-tighter">Table Unit</h3>
-                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Capacity: {selectedTable.capacity} Maximum Occupancy</p>
+                                    <h3 className="text-3xl font-black uppercase tracking-tighter">Table Details</h3>
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40">Capacity: {selectedTable.capacity} Guests</p>
                                 </div>
                             </div>
 
@@ -204,8 +204,8 @@ const TableMap = () => {
                                         key={status}
                                         onClick={() => handleStatusChange(selectedTable.number, status)}
                                         className={`p-5 rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all ${selectedTable.status === status
-                                            ? 'bg-amber-600 border-amber-500 text-white shadow-xl shadow-amber-600/30 ring-4 ring-amber-600/10'
-                                            : 'theme-card-item opacity-40 border-black/5 hover:opacity-100 hover:border-amber-500/50'
+                                            ? 'bg-rose-600 border-rose-500 text-white shadow-xl shadow-rose-600/30 ring-4 ring-rose-600/10'
+                                            : 'theme-card-item opacity-40 border-black/5 hover:opacity-100 hover:border-rose-500/50'
                                             }`}
                                     >
                                         {status}
@@ -213,7 +213,7 @@ const TableMap = () => {
                                 ))}
                             </div>
 
-                            <button onClick={() => setSelectedTable(null)} className="w-full py-4 text-[10px] font-black uppercase tracking-[0.3em] opacity-20 hover:opacity-100 transition-all">Dismiss Module</button>
+                            <button onClick={() => setSelectedTable(null)} className="w-full py-4 text-[10px] font-black uppercase tracking-[0.3em] opacity-20 hover:opacity-100 transition-all">Close</button>
                         </motion.div>
                     </div>
                 )}

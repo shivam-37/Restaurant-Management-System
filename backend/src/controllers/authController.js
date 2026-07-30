@@ -20,10 +20,21 @@ const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString()
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-    let { name, email, phone, password, role } = req.body;
+    let { name, email, phone, identifier, password, role } = req.body;
+
+    if (!email && !phone && identifier) {
+        const cleanIdent = identifier.trim();
+        if (cleanIdent.includes('@')) {
+            email = cleanIdent;
+        } else {
+            phone = cleanIdent;
+        }
+    }
 
     if (email) email = email.toLowerCase().trim();
     if (phone) phone = phone.trim();
+    if (!email) email = undefined;
+    if (!phone) phone = undefined;
 
     if (!name || (!email && !phone) || !password) {
         res.status(400);
@@ -70,13 +81,13 @@ const registerUser = asyncHandler(async (req, res) => {
     if (user) {
         // Send OTP asynchronously
         if (email) {
-            sendEmail({
+            await sendEmail({
                 email: user.email,
                 subject: 'Verify your account',
                 message: `Your verification OTP is: ${otp}`
             }).catch(err => console.error('Background Email Sending Failed:', err));
         } else if (phone) {
-            sendSms({
+            await sendSms({
                 phone: user.phone,
                 message: `Your verification OTP is: ${otp}`
             }).catch(err => console.error('Background SMS Sending Failed:', err));
@@ -102,6 +113,8 @@ const verifyOtp = asyncHandler(async (req, res) => {
 
     if (email) email = email.toLowerCase().trim();
     if (phone) phone = phone.trim();
+    if (!email) email = undefined;
+    if (!phone) phone = undefined;
 
     if ((!email && !phone) || !otp) {
         res.status(400);
@@ -160,17 +173,17 @@ const loginUser = asyncHandler(async (req, res) => {
     }
     
     identifier = identifier.toLowerCase().trim();
+    const cleanDigits = identifier.replace(/\D/g, '');
 
     const searchConditions = [
         { email: identifier },
         { phone: identifier }
     ];
 
-    // If identifier is a sequence of at least 7 digits (no country code '+'),
-    // we search for a phone number in the DB that ends with exactly these digits.
-    if (/^\d{7,}$/.test(identifier)) {
+    // Search for phone matching either exact identifier or ending digits
+    if (cleanDigits.length >= 7) {
         searchConditions.push({ 
-            phone: { $regex: new RegExp(identifier + '$') } 
+            phone: { $regex: new RegExp(cleanDigits + '$') } 
         });
     }
 
@@ -189,7 +202,7 @@ const loginUser = asyncHandler(async (req, res) => {
             user.emailOtp = otp;
             user.emailOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
             await user.save();
-            sendEmail({
+            await sendEmail({
                 email: user.email,
                 subject: 'Login Verification Code',
                 message: `Your login verification OTP is: ${otp}`
@@ -202,7 +215,7 @@ const loginUser = asyncHandler(async (req, res) => {
             user.phoneOtp = otp;
             user.phoneOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
             await user.save();
-            sendSms({
+            await sendSms({
                 phone: user.phone,
                 message: `Your login verification OTP is: ${otp}`
             }).catch(err => console.error('Background SMS Sending Failed:', err));
@@ -235,98 +248,241 @@ const googleAuth = asyncHandler(async (req, res) => {
         throw new Error('Google token not provided');
     }
 
+    let payload;
+
     try {
+        // Try verifying as ID token (JWT)
         const ticket = await googleClient.verifyIdToken({
             idToken: token,
             audience: process.env.GOOGLE_CLIENT_ID,
         });
-        const payload = ticket.getPayload();
-
-        let user = await User.findOne({ email: payload.email }).populate('restaurant');
-
-        if (!user) {
-            // Register new user
-            user = await User.create({
-                name: payload.name,
-                email: payload.email,
-                googleId: payload.sub,
-                authProvider: 'google',
-                isEmailVerified: true,
-                role: role ? role.toLowerCase() : 'user'
+        payload = ticket.getPayload();
+    } catch (idTokenError) {
+        // Fallback: Verify as OAuth2 Access Token by fetching userinfo from Google
+        try {
+            const googleRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: `Bearer ${token}` }
             });
-        } else if (!user.googleId) {
-            // Link existing account to Google
-            user.googleId = payload.sub;
-            user.authProvider = 'google';
-            user.isEmailVerified = true;
-            await user.save();
+            if (googleRes.ok) {
+                payload = await googleRes.json();
+            } else {
+                throw new Error('Google UserInfo API error');
+            }
+        } catch (accessTokenError) {
+            console.error('Google Auth Verification Error:', idTokenError?.message, accessTokenError?.message);
+            res.status(401);
+            throw new Error('Invalid Google token');
         }
-
-        res.json({
-            _id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            restaurant: user.restaurant,
-            token: generateToken(user._id),
-        });
-    } catch (error) {
-        console.error('Google Auth Error:', error);
-        res.status(401);
-        throw new Error('Invalid Google token');
     }
+
+    if (!payload || !payload.email) {
+        res.status(401);
+        throw new Error('Could not retrieve user details from Google');
+    }
+
+    let user = await User.findOne({ email: payload.email }).populate('restaurant');
+
+    if (!user) {
+        // Register new user
+        user = await User.create({
+            name: payload.name || payload.email.split('@')[0],
+            email: payload.email,
+            googleId: payload.sub,
+            authProvider: 'google',
+            isEmailVerified: true,
+            role: role ? role.toLowerCase() : 'user'
+        });
+    } else if (!user.googleId) {
+        // Link existing account to Google
+        user.googleId = payload.sub;
+        user.authProvider = 'google';
+        user.isEmailVerified = true;
+        await user.save();
+    }
+
+    res.json({
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        restaurant: user.restaurant,
+        token: generateToken(user._id),
+    });
 });
 
-// @desc    Forgot password
+// @desc    Forgot password - Send OTP to email and/or phone
 // @route   POST /api/auth/forgot-password
 const forgotPassword = asyncHandler(async (req, res) => {
-    let { email } = req.body;
-    if (email) email = email.toLowerCase().trim();
+    let { identifier, email, phone } = req.body;
+    let target = identifier || email || phone;
 
-    const user = await User.findOne({ email });
+    if (!target) {
+        res.status(400);
+        throw new Error('Please provide an email address or phone number');
+    }
+
+    target = target.trim();
+    const isEmail = target.includes('@');
+    const cleanEmail = isEmail ? target.toLowerCase() : undefined;
+    const cleanPhone = !isEmail ? target : undefined;
+
+    const query = [];
+    if (cleanEmail) query.push({ email: cleanEmail });
+    if (cleanPhone) {
+        query.push({ phone: cleanPhone });
+        const cleanDigits = cleanPhone.replace(/\D/g, '');
+        if (cleanDigits.length >= 7) {
+            query.push({ phone: { $regex: new RegExp(cleanDigits + '$') } });
+        }
+    }
+
+    const user = await User.findOne({ $or: query });
 
     if (!user) {
         res.status(404);
-        throw new Error('User not found with this email');
+        throw new Error('No user found with this email address or phone number');
     }
 
-    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '1h',
-    });
+    const otp = generateOtp();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+    user.emailOtp = otp;
+    user.emailOtpExpiry = otpExpiry;
+    user.phoneOtp = otp;
+    user.phoneOtpExpiry = otpExpiry;
+    await user.save();
+
+    console.log(`\n========================================`);
+    console.log(`🔑 [FORGOT PASSWORD OTP] Target User: ${user.name} (${user.email || 'No Email'}, ${user.phone || 'No Phone'}) | OTP Code: ${otp}`);
+    console.log(`========================================\n`);
+
+    // Send Email if account has email
+    if (user.email) {
+        await sendEmail({
+            email: user.email,
+            subject: 'Password Reset OTP - DineFlow',
+            message: `Your password reset OTP code is: ${otp}\nThis code is valid for 10 minutes.`
+        }).catch(err => console.error('Forgot Password Email Error:', err));
+    }
+
+    // Send SMS if account has phone number
+    if (user.phone) {
+        await sendSms({
+            phone: user.phone,
+            message: `Your password reset OTP code is: ${otp}`
+        }).catch(err => console.error('Forgot Password SMS Error:', err));
+    }
+
+    const deliveryMethod = user.email ? 'email' : 'phone';
+    const displayTarget = user.email ? user.email : user.phone;
 
     res.json({
-        message: 'Password reset instructions sent to email (Simulated)',
-        resetLink: `http://localhost:5173/reset-password?token=${resetToken}`
+        message: `OTP verification code sent to ${displayTarget}`,
+        method: deliveryMethod,
+        target: displayTarget,
+        userId: user._id,
+        devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined
     });
 });
 
-// @desc    Reset password
+// @desc    Reset password using OTP or Token
 // @route   POST /api/auth/reset-password
 const resetPassword = asyncHandler(async (req, res) => {
-    const { token, password } = req.body;
+    let { identifier, email, phone, token, otp, password } = req.body;
 
-    if (!token || !password) {
+    console.log('\n========================================');
+    console.log('🔑 [RESET PASSWORD REQUEST RECEIVED]');
+    console.log('Payload:', { identifier, email, phone, token, otp, password: password ? '******' : undefined });
+    console.log('========================================\n');
+
+    if (!password) {
         res.status(400);
-        throw new Error('Please provide token and new password');
+        throw new Error('Please enter a new password');
     }
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findById(decoded.id);
+    // Token-based fallback reset
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const user = await User.findById(decoded.id);
 
-        if (!user) {
-            res.status(404);
-            throw new Error('User not found');
+            if (!user) {
+                res.status(404);
+                throw new Error('User not found');
+            }
+
+            user.password = password.trim();
+            await user.save();
+
+            return res.json({ message: 'Password reset successfully! You can now log in.' });
+        } catch (error) {
+            res.status(400);
+            throw new Error('Invalid or expired reset token');
         }
-
-        user.password = password;
-        await user.save();
-
-        res.json({ message: 'Password reset successful' });
-    } catch (error) {
-        res.status(400);
-        throw new Error('Invalid or expired reset token');
     }
+
+    // OTP-based reset
+    if (!otp) {
+        res.status(400);
+        throw new Error('Please enter your 6-digit OTP verification code');
+    }
+
+    let user = null;
+    let target = identifier || email || phone;
+    if (target) {
+        target = target.trim();
+        const isEmail = target.includes('@');
+        const cleanEmail = isEmail ? target.toLowerCase() : undefined;
+        const cleanPhone = !isEmail ? target : undefined;
+
+        const query = [];
+        if (cleanEmail) query.push({ email: cleanEmail });
+        if (cleanPhone) {
+            query.push({ phone: cleanPhone });
+            const cleanDigits = cleanPhone.replace(/\D/g, '');
+            if (cleanDigits.length >= 7) {
+                query.push({ phone: { $regex: new RegExp(cleanDigits + '$') } });
+            }
+        }
+        user = await User.findOne({ $or: query });
+    }
+
+    // Fallback: Match user directly by active unexpired OTP code
+    if (!user) {
+        user = await User.findOne({
+            $or: [
+                { emailOtp: otp, emailOtpExpiry: { $gte: new Date() } },
+                { phoneOtp: otp, phoneOtpExpiry: { $gte: new Date() } }
+            ]
+        });
+    }
+
+    if (!user) {
+        res.status(400);
+        throw new Error('User not found or invalid reset request');
+    }
+
+    // Verify OTP code
+    let isValidOtp = false;
+    if (user.emailOtp === otp && user.emailOtpExpiry >= Date.now()) {
+        isValidOtp = true;
+        user.emailOtp = undefined;
+        user.emailOtpExpiry = undefined;
+    } else if (user.phoneOtp === otp && user.phoneOtpExpiry >= Date.now()) {
+        isValidOtp = true;
+        user.phoneOtp = undefined;
+        user.phoneOtpExpiry = undefined;
+    }
+
+    if (!isValidOtp) {
+        res.status(400);
+        throw new Error('Invalid or expired 6-digit OTP code');
+    }
+
+    user.password = password.trim();
+    await user.save();
+
+    res.json({ message: 'Password reset successfully! You can now log in.' });
 });
 
 // @desc    Get user data
@@ -346,18 +502,35 @@ const sendOtp = asyncHandler(async (req, res) => {
 
     if (email) email = email.toLowerCase().trim();
     if (phone) phone = phone.trim();
+    if (!email) email = undefined;
+    if (!phone) phone = undefined;
+
+    const query = email ? { email } : { phone };
+    const user = await User.findOne(query);
 
     const otp = generateOtp();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+    if (user) {
+        if (email) {
+            user.emailOtp = otp;
+            user.emailOtpExpiry = otpExpiry;
+        } else if (phone) {
+            user.phoneOtp = otp;
+            user.phoneOtpExpiry = otpExpiry;
+        }
+        await user.save();
+    }
 
     if (email) {
-        sendEmail({
+        await sendEmail({
             email,
             subject: 'Your Verification Code',
             message: `Your verification OTP is: ${otp}`
         }).catch(err => console.error('Background Email Sending Failed:', err));
         res.status(200).json({ message: 'OTP sent to email', method: 'email' });
     } else if (phone) {
-        sendSms({
+        await sendSms({
             phone,
             message: `Your verification OTP is: ${otp}`
         }).catch(err => console.error('Background SMS Sending Failed:', err));

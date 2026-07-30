@@ -292,13 +292,13 @@ const Menu = () => {
                 <div>
                     <h1 className="text-3xl font-black uppercase tracking-tighter">
                         {(user?.role === 'admin' || user?.role === 'owner')
-                            ? `Menu Management`
-                            : `Restaurant Menu`}
+                            ? `Manage Menu`
+                            : `Menu`}
                     </h1>
                     <p className="opacity-60 text-sm font-medium mt-1 uppercase tracking-widest">
                         {(user?.role === 'admin' || user?.role === 'owner')
                             ? `Restaurant: ${selectedRestaurant?.name || 'Central Unit'}`
-                            : `Menu for: ${selectedRestaurant?.name || 'Local Kitchen'}`}
+                            : `Restaurant: ${selectedRestaurant?.name || 'Local Kitchen'}`}
                     </p>
                 </div>
 
@@ -307,19 +307,19 @@ const Menu = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleOpenModal()}
-                        className="flex items-center px-8 py-4 bg-amber-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-amber-600/30 hover:bg-amber-700 transition-all group"
+                        className="flex items-center px-8 py-4 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-600/30 hover:bg-rose-700 transition-all group"
                     >
                         <PlusIcon className="h-5 w-5 mr-3 group-hover:rotate-90 transition-transform duration-500" />
-                        Add Menu Item
+                        Add Item
                     </motion.button>
                 ) : (
                     <button
                         onClick={() => setIsCartOpen(true)}
-                        className="relative p-4 theme-card rounded-2xl hover:border-amber-500 transition-all group shadow-lg"
+                        className="relative p-4 theme-card rounded-2xl hover:border-rose-500 transition-all group shadow-lg"
                     >
-                        <ShoppingCartIcon className="w-6 h-6 text-amber-500 group-hover:scale-110 transition-transform" />
+                        <ShoppingCartIcon className="w-6 h-6 text-rose-500 group-hover:scale-110 transition-transform" />
                         {cart.length > 0 && (
-                            <span className="absolute -top-2 -right-2 w-6 h-6 bg-amber-600 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white/10 font-black shadow-lg">
+                            <span className="absolute -top-2 -right-2 w-6 h-6 bg-rose-600 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white/10 font-black shadow-lg">
                                 {cart.length}
                             </span>
                         )}
@@ -331,9 +331,9 @@ const Menu = () => {
             {isLoading && !menuItems.length ? (
                 <div className="flex items-center justify-center h-64">
                     <div className="relative">
-                        <div className="w-16 h-16 border-4 border-gray-800 border-t-amber-600 rounded-full animate-spin"></div>
+                        <div className="w-16 h-16 border-4 border-gray-800 border-t-rose-600 rounded-full animate-spin"></div>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-8 h-8 bg-gradient-to-r from-amber-600 to-purple-600 rounded-full animate-pulse"></div>
+                            <div className="w-8 h-8 bg-gradient-to-r from-rose-600 to-purple-600 rounded-full animate-pulse"></div>
                         </div>
                     </div>
                 </div>
@@ -344,18 +344,18 @@ const Menu = () => {
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="theme-card border border-amber-500/10 rounded-[2.5rem] p-8 mb-10 overflow-hidden relative"
+                            className="theme-card border border-rose-500/10 rounded-[2.5rem] p-8 mb-10 overflow-hidden relative"
                         >
                             <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12">
-                                <SparklesIcon className="w-32 h-32 text-amber-500" />
+                                <SparklesIcon className="w-32 h-32 text-rose-500" />
                             </div>
                             <div className="flex items-center gap-3 mb-6 relative z-10">
-                                <SparklesIcon className="w-5 h-5 text-amber-500" />
-                                <h2 className="text-sm font-black uppercase tracking-[0.3em] text-amber-600/80">Autonomous Suggestions</h2>
+                                <SparklesIcon className="w-5 h-5 text-rose-500" />
+                                <h2 className="text-sm font-black uppercase tracking-[0.3em] text-rose-600/80">AI Recommendations</h2>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
                                 {recommendations.map((item) => (
-                                    <div key={item._id} className="theme-card-item rounded-2xl p-5 flex gap-5 group border border-transparent hover:border-amber-500/20 transition-all cursor-pointer">
+                                    <div key={item._id} className="theme-card-item rounded-2xl p-5 flex gap-5 group border border-transparent hover:border-rose-500/20 transition-all cursor-pointer">
                                         <div className="w-16 h-16 rounded-xl overflow-hidden shadow-lg border border-white/10">
                                             <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                         </div>
@@ -364,9 +364,9 @@ const Menu = () => {
                                             <p className="text-[10px] font-bold opacity-40 uppercase tracking-widest mt-1">{item.category}</p>
                                             <button
                                                 onClick={() => addToCart(item)}
-                                                className="text-[10px] font-black text-amber-500 hover:text-amber-600 uppercase tracking-widest mt-3 flex items-center gap-1 transition-colors"
+                                                className="text-[10px] font-black text-rose-500 hover:text-rose-600 uppercase tracking-widest mt-3 flex items-center gap-1 transition-colors"
                                             >
-                                                Authorize <PlusIcon className="w-3 h-3" />
+                                                Add <PlusIcon className="w-3 h-3" />
                                             </button>
                                         </div>
                                     </div>
@@ -394,13 +394,13 @@ const Menu = () => {
                             animate={{ opacity: 1 }}
                             className="theme-card rounded-2xl p-12 text-center"
                         >
-                            <div className="w-20 h-20 mx-auto mb-4 bg-amber-500/10 rounded-2xl flex items-center justify-center">
-                                <PhotoIcon className="w-10 h-10 text-amber-500" />
+                            <div className="w-20 h-20 mx-auto mb-4 bg-rose-500/10 rounded-2xl flex items-center justify-center">
+                                <PhotoIcon className="w-10 h-10 text-rose-500" />
                             </div>
                             <h3 className="text-xl font-semibold mb-2">
                                 {(user?.role === 'admin' || user?.role === 'owner')
                                     ? 'No Menu Items Yet'
-                                    : 'Menu Coming Soon'}
+                                    : 'No Menu Items Available'}
                             </h3>
                             <p className="opacity-60 mb-6">
                                 {(user?.role === 'admin' || user?.role === 'owner')
@@ -412,7 +412,7 @@ const Menu = () => {
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => handleOpenModal()}
-                                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-600 to-purple-600 text-white rounded-xl font-medium"
+                                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-rose-600 to-purple-600 text-white rounded-xl font-medium"
                                 >
                                     <PlusIcon className="h-5 w-5 mr-2" />
                                     Add Your First Item
@@ -437,7 +437,7 @@ const Menu = () => {
                                             layout
                                             exit={{ opacity: 0, scale: 0.9 }}
                                             whileHover={{ y: -8 }}
-                                            className="group relative theme-card rounded-2xl overflow-hidden hover:border-amber-500/50 transition-all duration-300"
+                                            className="group relative theme-card rounded-2xl overflow-hidden hover:border-rose-500/50 transition-all duration-300"
                                         >
                                             {/* Image */}
                                             <div className="relative h-48 overflow-hidden">
@@ -469,10 +469,10 @@ const Menu = () => {
                                             {/* Content */}
                                             <div className="p-5">
                                                 <div className="flex justify-between items-start mb-3">
-                                                    <h3 className="text-lg font-bold group-hover:text-amber-500 transition">
+                                                    <h3 className="text-lg font-bold group-hover:text-rose-500 transition">
                                                         {item.name}
                                                     </h3>
-                                                    <div className="flex items-center bg-amber-600 px-3 py-1 rounded-full">
+                                                    <div className="flex items-center bg-rose-600 px-3 py-1 rounded-full">
                                                         <span className="text-white font-bold text-sm">₹{item.price}</span>
                                                     </div>
                                                 </div>
@@ -488,7 +488,7 @@ const Menu = () => {
                                                             whileHover={{ scale: 1.1, rotate: -5 }}
                                                             whileTap={{ scale: 0.9 }}
                                                             onClick={() => handleOpenModal(item)}
-                                                            className="p-3 theme-card-item rounded-xl text-amber-500 hover:bg-amber-600 hover:text-white transition-all shadow-md"
+                                                            className="p-3 theme-card-item rounded-xl text-rose-500 hover:bg-rose-600 hover:text-white transition-all shadow-md"
                                                         >
                                                             <PencilIcon className="h-5 w-5" />
                                                         </motion.button>
@@ -506,9 +506,9 @@ const Menu = () => {
                                                         <button
                                                             onClick={() => addToCart(item)}
                                                             disabled={item.stock === 0}
-                                                            className="w-full py-4 bg-amber-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-amber-600/20 active:scale-95 transition-all disabled:opacity-50"
+                                                            className="w-full py-4 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-600/20 active:scale-95 transition-all disabled:opacity-50"
                                                         >
-                                                            {item.stock > 0 ? 'Add To Cart' : 'Out of Stock'}
+                                                            {item.stock > 0 ? 'Add to Cart' : 'Sold Out'}
                                                         </button>
                                                     </div>
                                                 )}
@@ -537,7 +537,7 @@ const Menu = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
                             transition={{ type: "spring", duration: 0.3 }}
-                            className="theme-card rounded-2xl w-full max-w-md shadow-2xl overflow-hidden"
+                            className="theme-card rounded-2xl w-full max-w-md shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* Modal Header */}
@@ -558,19 +558,19 @@ const Menu = () => {
                             {/* AI Magic Generator */}
                             {!currentItem && (
                                 <div className="px-8 pt-8 pb-0">
-                                    <div className="theme-card border border-amber-500/20 rounded-[2rem] p-6 flex flex-col gap-4 relative overflow-hidden bg-amber-500/5">
+                                    <div className="theme-card border border-rose-500/20 rounded-[2rem] p-6 flex flex-col gap-4 relative overflow-hidden bg-rose-500/5">
                                         <div className="absolute top-0 right-0 p-6 opacity-[0.05]">
-                                            <SparklesOutline className="w-20 h-20 text-amber-500" />
+                                            <SparklesOutline className="w-20 h-20 text-rose-500" />
                                         </div>
                                         <div className="relative z-10">
-                                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600 flex items-center gap-2 mb-3">
-                                                <SparklesIcon className="w-4 h-4" /> Neural Synthesis
+                                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-rose-600 flex items-center gap-2 mb-3">
+                                                <SparklesIcon className="w-4 h-4" /> AI Help
                                             </h3>
                                             <div className="flex gap-2">
                                                 <input
                                                     type="text"
-                                                    className="flex-1 theme-card-item border border-black/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 font-bold placeholder:opacity-30"
-                                                    placeholder="Describe culinary vision..."
+                                                    className="flex-1 theme-card-item border border-black/5 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-rose-500 font-bold placeholder:opacity-30"
+                                                    placeholder="Describe the dish..."
                                                     value={aiDishPrompt}
                                                     onChange={(e) => setAiDishPrompt(e.target.value)}
                                                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAiFullGenerate())}
@@ -579,26 +579,26 @@ const Menu = () => {
                                                     type="button"
                                                     onClick={handleAiFullGenerate}
                                                     disabled={isAiFullGenerating}
-                                                    className="px-6 py-3 bg-amber-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-2 shadow-xl shadow-amber-600/30"
+                                                    className="px-6 py-3 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 flex items-center gap-2 shadow-xl shadow-rose-600/30"
                                                 >
                                                     {isAiFullGenerating ? (
                                                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                    ) : "Synthesize"}
+                                                    ) : "Create"}
                                                 </button>
                                             </div>
-                                            <p className="text-[10px] font-bold opacity-40 mt-3 uppercase tracking-wider">Automates description, categorization, and visual mapping.</p>
+                                            <p className="text-[10px] font-bold opacity-40 mt-3 uppercase tracking-wider">AI will automatically fill in the details.</p>
                                         </div>
                                     </div>
                                 </div>
-                            )}                            {/* Modal Form */}
-                            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                            )}                            {/* Modal Form — scrollable */}
+                            <form onSubmit={handleSubmit} className="p-8 space-y-6 overflow-y-auto flex-1 min-h-0">
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Item Designation</label>
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Item Name</label>
                                         <input
                                             type="text"
                                             required
-                                            className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30"
                                             placeholder="e.g., SEARING SALMON"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -606,40 +606,40 @@ const Menu = () => {
                                     </div>
                                     <div className="relative">
                                         <div className="flex justify-between items-center mb-2">
-                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">Technical Description</label>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">Description</label>
                                             <button
                                                 type="button"
                                                 onClick={handleAiGenerate}
                                                 disabled={isAiGenerating}
-                                                className="flex items-center text-[9px] font-black uppercase tracking-widest text-amber-500 hover:text-amber-600 transition-colors disabled:opacity-50"
+                                                className="flex items-center text-[9px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-600 transition-colors disabled:opacity-50"
                                             >
                                                 {isAiGenerating ? (
-                                                    <div className="w-3 h-3 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mr-1.5"></div>
+                                                    <div className="w-3 h-3 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mr-1.5"></div>
                                                 ) : (
                                                     <SparklesIcon className="w-3 h-3 mr-1.5" />
                                                 )}
-                                                Synthesis
+                                                AI Write
                                             </button>
                                         </div>
                                         <textarea
                                             required
                                             rows="4"
-                                            className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30 resize-none"
-                                            placeholder="Elucidate the item characteristics..."
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30 resize-none"
+                                            placeholder="Describe the dish..."
                                             value={formData.description}
                                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Value Units (₹)</label>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Price (₹)</label>
                                             <div className="relative">
                                                 <CurrencyDollarIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" />
                                                 <input
                                                     type="number"
                                                     required
                                                     step="0.01"
-                                                    className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
+                                                    className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30"
                                                     placeholder="999"
                                                     value={formData.price}
                                                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -647,13 +647,13 @@ const Menu = () => {
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Inventory Count</label>
+                                            <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">In Stock</label>
                                             <div className="relative">
                                                 <CubeIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" />
                                                 <input
                                                     type="number"
                                                     required
-                                                    className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
+                                                    className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30"
                                                     placeholder="50"
                                                     value={formData.stock}
                                                     onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
@@ -662,11 +662,11 @@ const Menu = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Classification</label>
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Category</label>
                                         <div className="relative">
                                             <TagIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" />
                                             <select
-                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold appearance-none cursor-pointer"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold appearance-none cursor-pointer"
                                                 value={formData.category}
                                                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                             >
@@ -677,16 +677,69 @@ const Menu = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Visual Mapping (URL)</label>
-                                        <div className="relative">
-                                            <PhotoIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" />
-                                            <input
-                                                type="text"
-                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
-                                                placeholder="https://..."
-                                                value={formData.image}
-                                                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                                            />
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Dish Photo (Upload from device or enter URL)</label>
+                                        <div className="space-y-3">
+                                            <div className="flex flex-col sm:flex-row gap-3">
+                                                <label className="flex items-center justify-center gap-2 px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-2xl border border-rose-500/20 text-xs font-bold cursor-pointer transition shrink-0">
+                                                    <PhotoIcon className="w-4 h-4" />
+                                                    <span>Upload from Device</span>
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        onChange={async (e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                const reader = new FileReader();
+                                                                reader.onload = (event) => {
+                                                                    const img = new window.Image();
+                                                                    img.onload = () => {
+                                                                        const canvas = document.createElement('canvas');
+                                                                        let width = img.width;
+                                                                        let height = img.height;
+                                                                        const maxWidth = 1000;
+                                                                        if (width > maxWidth) {
+                                                                            height = Math.round((height * maxWidth) / width);
+                                                                            width = maxWidth;
+                                                                        }
+                                                                        canvas.width = width;
+                                                                        canvas.height = height;
+                                                                        const ctx = canvas.getContext('2d');
+                                                                        ctx.drawImage(img, 0, 0, width, height);
+                                                                        setFormData((prev) => ({ ...prev, image: canvas.toDataURL('image/jpeg', 0.8) }));
+                                                                    };
+                                                                    img.src = event.target.result;
+                                                                };
+                                                                reader.readAsDataURL(file);
+                                                            }
+                                                        }}
+                                                    />
+                                                </label>
+                                                <div className="relative flex-1">
+                                                    <PhotoIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 opacity-20" />
+                                                    <input
+                                                        type="text"
+                                                        className="w-full theme-card-item border border-black/5 rounded-2xl pl-12 pr-5 py-3 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30 text-xs"
+                                                        placeholder="Or paste image URL..."
+                                                        value={formData.image}
+                                                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {formData.image && (
+                                                <div className="relative w-full h-32 rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 group">
+                                                    <img src={formData.image} alt="Dish Preview" className="w-full h-full object-cover" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setFormData({ ...formData, image: '' })}
+                                                        className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-red-600 text-white rounded-xl transition cursor-pointer text-xs"
+                                                        title="Remove Photo"
+                                                    >
+                                                        ✕
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -701,9 +754,9 @@ const Menu = () => {
                                     <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="flex-[2] py-4 bg-amber-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl shadow-amber-600/40 hover:bg-amber-700 transition-all active:scale-95 disabled:opacity-50"
+                                        className="flex-[2] py-4 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-2xl shadow-rose-600/40 hover:bg-rose-700 transition-all active:scale-95 disabled:opacity-50"
                                     >
-                                        {isLoading ? 'Processing...' : (currentItem ? 'Authorize Mutation' : 'Authorize Insertion')}
+                                        {isLoading ? 'Processing...' : (currentItem ? 'Save Changes' : 'Add Item')}
                                     </button>
                                 </div>
                             </form>
@@ -731,12 +784,12 @@ const Menu = () => {
                         >
                             <div className="p-8 border-b border-black/5 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                    <div className="p-3 bg-amber-600/10 rounded-xl">
-                                        <ShoppingCartIcon className="w-6 h-6 text-amber-500" />
+                                    <div className="p-3 bg-rose-600/10 rounded-xl">
+                                        <ShoppingCartIcon className="w-6 h-6 text-rose-500" />
                                     </div>
                                     <div>
-                                        <h2 className="text-xl font-black uppercase tracking-tighter">Order Cartage</h2>
-                                        <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{cart.length} Manifest Items</p>
+                                        <h2 className="text-xl font-black uppercase tracking-tighter">Your Order</h2>
+                                        <p className="text-[10px] font-black uppercase tracking-widest opacity-40">{cart.length} Items</p>
                                     </div>
                                 </div>
                                 <button
@@ -751,7 +804,7 @@ const Menu = () => {
                                 {cart.length === 0 ? (
                                     <div className="h-full flex flex-col items-center justify-center opacity-30">
                                         <ShoppingCartIcon className="w-16 h-16 mb-4" />
-                                        <p className="font-black uppercase tracking-widest text-[10px]">Manifest Empty</p>
+                                        <p className="font-black uppercase tracking-widest text-[10px]">Your cart is empty</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
@@ -763,13 +816,13 @@ const Menu = () => {
                                                 <div className="flex-1">
                                                     <h4 className="font-black uppercase tracking-tight text-sm mb-1">{item.name}</h4>
                                                     <div className="flex items-center gap-3">
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-600">₹{item.price}</span>
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-rose-600">₹{item.price}</span>
                                                         <div className="flex items-center gap-3 theme-card-item rounded-lg px-2 py-1">
                                                             <button onClick={() => removeFromCart(item._id)} className="p-1 hover:text-red-500 transition-colors">
                                                                 <MinusIcon className="w-3 h-3" />
                                                             </button>
                                                             <span className="text-xs font-black">{item.quantity}</span>
-                                                            <button onClick={() => addToCart(item)} className="p-1 hover:text-amber-500 transition-colors">
+                                                            <button onClick={() => addToCart(item)} className="p-1 hover:text-rose-500 transition-colors">
                                                                 <PlusIcon className="w-3 h-3" />
                                                             </button>
                                                         </div>
@@ -780,13 +833,13 @@ const Menu = () => {
 
                                         <div className="mt-8 space-y-6">
                                             <div>
-                                                <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Service Protocol</label>
+                                                <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Order Type</label>
                                                 <div className="grid grid-cols-2 gap-3">
                                                     {['Dine-In', 'Home Delivery'].map(type => (
                                                         <button
                                                             key={type}
                                                             onClick={() => setOrderType(type)}
-                                                            className={`py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all ${orderType === type ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/20' : 'theme-card-item border border-black/5 opacity-50 hover:opacity-100'}`}
+                                                            className={`py-3 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all ${orderType === type ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/20' : 'theme-card-item border border-black/5 opacity-50 hover:opacity-100'}`}
                                                         >
                                                             {type}
                                                         </button>
@@ -796,7 +849,7 @@ const Menu = () => {
 
                                             {orderType === 'Dine-In' ? (
                                                 <div>
-                                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Table Allocation</label>
+                                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Table Number</label>
                                                     <input
                                                         type="number"
                                                         placeholder="Table Number"
@@ -807,9 +860,9 @@ const Menu = () => {
                                                 </div>
                                             ) : (
                                                 <div>
-                                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Delivery Coordinates</label>
+                                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Delivery Address</label>
                                                     <textarea
-                                                        placeholder="Address Protocol"
+                                                        placeholder="Full Address"
                                                         value={deliveryAddress}
                                                         onChange={(e) => setDeliveryAddress(e.target.value)}
                                                         className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 text-sm font-bold placeholder:opacity-30 h-24 resize-none"
@@ -818,7 +871,7 @@ const Menu = () => {
                                             )}
 
                                             <div>
-                                                <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Settlement Method</label>
+                                                <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Payment Method</label>
                                                 <div className="grid grid-cols-3 gap-2">
                                                     {['Cash', 'Card', 'UPI'].map(method => (
                                                         <button
@@ -834,14 +887,14 @@ const Menu = () => {
 
                                             <div className="relative">
                                                 <div className="flex justify-between items-center mb-2">
-                                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1">Preparation Directives</label>
+                                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1">Cook Instructions</label>
                                                     <button
                                                         onClick={handleAiGenerateInstructions}
                                                         disabled={isAiGeneratingInstructions}
-                                                        className="flex items-center text-[9px] font-black uppercase tracking-widest text-amber-500 hover:text-amber-600"
+                                                        className="flex items-center text-[9px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-600"
                                                     >
                                                         <SparklesIcon className={`w-3 h-3 mr-1 ${isAiGeneratingInstructions ? 'animate-spin' : ''}`} />
-                                                        AI Polish
+                                                        AI Fix
                                                     </button>
                                                 </div>
                                                 <textarea
@@ -859,16 +912,16 @@ const Menu = () => {
                             {cart.length > 0 && (
                                 <div className="p-8 theme-card-item border-t border-black/5 space-y-6 bg-black/[0.02]">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Total Quantum</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40">Total Price</span>
                                         <span className="text-2xl font-black uppercase tracking-tighter">₹{cart.reduce((sum, item) => sum + item.price * item.quantity, 0)}</span>
                                     </div>
 
                                     <button
                                         onClick={handlePlaceOrder}
                                         disabled={isLoading}
-                                        className="w-full py-5 bg-amber-600 text-white rounded-[2.5rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-amber-600/40 hover:bg-amber-700 transition-all active:scale-95 disabled:opacity-50"
+                                        className="w-full py-5 bg-rose-600 text-white rounded-[2.5rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-rose-600/40 hover:bg-rose-700 transition-all active:scale-95 disabled:opacity-50"
                                     >
-                                        {isLoading ? 'Transmitting...' : 'Authorize Transaction'}
+                                        {isLoading ? 'Sending...' : 'Place Order'}
                                     </button>
                                 </div>
                             )}

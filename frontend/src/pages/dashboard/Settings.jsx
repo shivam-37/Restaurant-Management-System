@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AuthContext from '../../context/AuthContext';
 import {
@@ -51,14 +51,14 @@ const InputField = ({ label, icon: Icon, type = 'text', name, value, onChange, p
     <div className="space-y-2">
         <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">{label}</label>
         <div className="relative group">
-            {Icon && <Icon className="absolute left-5 w-5 h-5 text-amber-500 transition-transform group-focus-within:scale-110" />}
+            {Icon && <Icon className="absolute left-5 w-5 h-5 text-rose-500 transition-transform group-focus-within:scale-110" />}
             <input
                 type={type}
                 name={name}
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className={`w-full theme-card-item border border-black/5 rounded-2xl py-4 ${Icon ? 'pl-14' : 'px-6'} pr-4 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30`}
+                className={`w-full theme-card-item border border-black/5 rounded-2xl py-4 ${Icon ? 'pl-14' : 'px-6'} pr-4 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30`}
             />
         </div>
     </div>
@@ -70,14 +70,14 @@ const PasswordField = ({ label, icon: Icon, name, value, onChange, placeholder }
         <div className="space-y-2">
             <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">{label}</label>
             <div className="relative group">
-                {Icon && <Icon className="absolute left-5 w-5 h-5 text-amber-500 transition-transform group-focus-within:scale-110" />}
+                {Icon && <Icon className="absolute left-5 w-5 h-5 text-rose-500 transition-transform group-focus-within:scale-110" />}
                 <input
                     type={show ? 'text' : 'password'}
                     name={name}
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className="w-full theme-card-item border border-black/5 rounded-2xl py-4 pl-14 pr-14 focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all font-bold placeholder:opacity-30"
+                    className="w-full theme-card-item border border-black/5 rounded-2xl py-4 pl-14 pr-14 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30"
                 />
                 <button type="button" onClick={() => setShow(s => !s)} className="absolute right-5 opacity-30 hover:opacity-100 transition-all">
                     {show ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
@@ -94,7 +94,7 @@ const SaveButton = ({ isLoading, label = 'Apply Changes' }) => (
         whileTap={{ scale: 0.98 }}
         type="submit"
         disabled={isLoading}
-        className="px-10 py-4 bg-amber-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-amber-700 transition-all shadow-xl shadow-amber-600/30 disabled:opacity-50 flex items-center gap-3 active:scale-95"
+        className="px-10 py-4 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-rose-700 transition-all shadow-xl shadow-rose-600/30 disabled:opacity-50 flex items-center gap-3 active:scale-95"
     >
         {isLoading ? (
             <>
@@ -102,7 +102,7 @@ const SaveButton = ({ isLoading, label = 'Apply Changes' }) => (
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Transmitting...
+                Saving...
             </>
         ) : (
             <><CheckCircleIcon className="w-5 h-5" />{label}</>
@@ -124,7 +124,14 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const { data } = await updateProfile({ name: form.name, email: form.email, avatar });
+            const payload = { name: form.name.trim() };
+            if (form.email && form.email.trim()) {
+                payload.email = form.email.trim();
+            }
+            if (avatar) {
+                payload.avatar = avatar;
+            }
+            const { data } = await updateProfile(payload);
             // Update context so header/navbar reflects the change immediately
             setUser(prev => ({ ...prev, name: data.name, email: data.email, avatar: data.avatar || '' }));
             showMessage('success', 'Profile updated successfully');
@@ -151,21 +158,28 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
     const strength = pwForm.password.length >= 12 ? 'Strong' : pwForm.password.length >= 8 ? 'Medium' : pwForm.password.length >= 4 ? 'Weak' : 'Too short';
     const strengthColor = { Strong: 'bg-green-500', Medium: 'bg-yellow-500', Weak: 'bg-red-500', 'Too short': 'bg-gray-700' }[strength];
 
+    useEffect(() => {
+        if (user?.avatar) {
+            setAvatar(user.avatar);
+        }
+    }, [user?.avatar]);
+
     return (
         <div className="p-6 space-y-8">
             {/* Avatar */}
             <div className="flex items-center gap-5 pb-6 border-b border-black/5">
                 <div className="relative">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg overflow-hidden">
-                        {avatar
-                            ? <img src={avatar} alt="avatar" className="w-full h-full object-cover" onError={() => setAvatar('')} />
-                            : (form.name || user?.name || 'U').charAt(0).toUpperCase()
-                        }
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-rose-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg overflow-hidden">
+                        {(avatar || user?.avatar) ? (
+                            <img src={avatar || user?.avatar} alt="avatar" className="w-full h-full object-cover" />
+                        ) : (
+                            (form.name || user?.name || 'U').charAt(0).toUpperCase()
+                        )}
                     </div>
                     <button
                         type="button"
                         onClick={() => { setAvatarInput(avatar); setShowAvatarModal(true); }}
-                        className="absolute -bottom-2 -right-2 p-1.5 bg-amber-600 hover:bg-amber-500 rounded-lg border border-amber-500 transition shadow"
+                        className="absolute -bottom-2 -right-2 p-1.5 bg-rose-600 hover:bg-rose-500 rounded-lg border border-rose-500 transition shadow"
                         title="Change profile photo"
                     >
                         <CameraIcon className="w-4 h-4 text-white" />
@@ -177,7 +191,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                     <button
                         type="button"
                         onClick={() => { setAvatarInput(avatar); setShowAvatarModal(true); }}
-                        className="text-xs text-amber-500 hover:opacity-80 mt-1.5 transition"
+                        className="text-xs text-rose-500 hover:opacity-80 mt-1.5 transition"
                     >
                         Change photo
                     </button>
@@ -202,7 +216,43 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                             className="theme-card rounded-2xl p-6 max-w-sm w-full shadow-2xl"
                         >
                             <h3 className="font-bold text-lg mb-1">Profile Photo</h3>
-                            <p className="text-sm opacity-60 mb-4">Paste any public image URL to use as your photo.</p>
+                            <p className="text-sm opacity-60 mb-4">Upload a photo from your device or paste an image URL.</p>
+                            
+                            <label className="flex items-center justify-center gap-2 px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl border border-rose-500/20 text-xs font-bold cursor-pointer transition mb-4">
+                                <span>Upload Photo from Device</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onload = (event) => {
+                                                const img = new window.Image();
+                                                img.onload = () => {
+                                                    const canvas = document.createElement('canvas');
+                                                    let width = img.width;
+                                                    let height = img.height;
+                                                    const maxWidth = 800;
+                                                    if (width > maxWidth) {
+                                                        height = Math.round((height * maxWidth) / width);
+                                                        width = maxWidth;
+                                                    }
+                                                    canvas.width = width;
+                                                    canvas.height = height;
+                                                    const ctx = canvas.getContext('2d');
+                                                    ctx.drawImage(img, 0, 0, width, height);
+                                                    setAvatarInput(canvas.toDataURL('image/jpeg', 0.8));
+                                                };
+                                                img.src = event.target.result;
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }}
+                                />
+                            </label>
+
                             {avatarInput && (
                                 <div className="mb-4 rounded-xl overflow-hidden h-28 border border-black/5 theme-card-item">
                                     <img src={avatarInput} alt="preview" className="w-full h-full object-cover" onError={e => e.target.style.display = 'none'} />
@@ -213,8 +263,8 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                                 type="text"
                                 value={avatarInput}
                                 onChange={e => setAvatarInput(e.target.value)}
-                                placeholder="https://example.com/photo.jpg"
-                                className="w-full theme-card-item border-transparent rounded-xl px-4 py-3 placeholder:opacity-40 focus:outline-none focus:border-amber-500 mb-4 text-sm"
+                                placeholder="Or paste image URL..."
+                                className="w-full theme-card-item border-transparent rounded-xl px-4 py-3 placeholder:opacity-40 focus:outline-none focus:border-rose-500 mb-4 text-sm"
                             />
                             <div className="flex gap-3">
                                 <button
@@ -225,15 +275,38 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                                 </button>
                                 {avatar && (
                                     <button
-                                        onClick={() => { setAvatar(''); setAvatarInput(''); setShowAvatarModal(false); }}
+                                        onClick={async () => {
+                                            setAvatar('');
+                                            setAvatarInput('');
+                                            setShowAvatarModal(false);
+                                            try {
+                                                const { data } = await updateProfile({ name: form.name, email: form.email, avatar: '' });
+                                                setUser(prev => ({ ...prev, avatar: '' }));
+                                                showMessage('success', 'Profile photo removed');
+                                            } catch (err) {
+                                                showMessage('error', 'Failed to remove profile photo');
+                                            }
+                                        }}
                                         className="px-4 py-2.5 text-red-500 hover:opacity-80 transition text-sm"
                                     >
                                         Remove
                                     </button>
                                 )}
                                 <button
-                                    onClick={() => { setAvatar(avatarInput.trim()); setShowAvatarModal(false); }}
-                                    className="flex-1 py-2.5 bg-amber-600 text-white rounded-xl hover:bg-amber-700 transition text-sm font-medium"
+                                    onClick={async () => {
+                                        const newAvatar = avatarInput.trim();
+                                        setAvatar(newAvatar);
+                                        setShowAvatarModal(false);
+                                        if (!newAvatar) return;
+                                        try {
+                                            const { data } = await updateProfile({ name: form.name, email: form.email, avatar: newAvatar });
+                                            setUser(prev => ({ ...prev, avatar: data.avatar || newAvatar }));
+                                            showMessage('success', 'Profile photo updated successfully!');
+                                        } catch (err) {
+                                            showMessage('error', err?.response?.data?.message || 'Failed to update profile photo');
+                                        }
+                                    }}
+                                    className="flex-1 py-2.5 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition text-sm font-medium"
                                 >
                                     Apply
                                 </button>
@@ -267,7 +340,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                                 <div key={lvl} className={`flex-1 rounded-full transition-all ${strengthMap.indexOf(strength) >= i ? strengthColor : 'opacity-20 bg-gray-500'}`} />
                             ))}
                         </div>
-                        <p className="text-xs opacity-40">Strength: <span className="text-amber-500 font-bold">{strength}</span></p>
+                        <p className="text-xs opacity-40">Strength: <span className="text-rose-500 font-bold">{strength}</span></p>
                     </div>
                 )}
                 <div className="flex justify-end">
@@ -330,15 +403,69 @@ const RestaurantTab = ({ selectedRestaurant, updateRestaurantInList, showMessage
                     value={form.description}
                     onChange={e => setForm({ ...form, description: e.target.value })}
                     placeholder="Describe your restaurant..."
-                    className="w-full theme-card-item border-transparent rounded-xl py-3 px-4 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none"
+                    className="w-full theme-card-item border-transparent rounded-xl py-3 px-4 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition resize-none"
                 />
             </div>
 
-            <InputField label="Cover Image URL" name="image" value={form.image} onChange={e => setForm({ ...form, image: e.target.value })} placeholder="https://example.com/image.jpg" />
+            <div>
+                <label className="block text-xs font-semibold opacity-80 mb-2">Cover Image (Upload from device or enter URL)</label>
+                <div className="flex flex-col sm:flex-row gap-3 mb-3">
+                    <label className="flex items-center justify-center gap-2 px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl border border-rose-500/20 text-xs font-bold cursor-pointer transition shrink-0">
+                        <span>Upload from Device</span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = (event) => {
+                                        const img = new window.Image();
+                                        img.onload = () => {
+                                            const canvas = document.createElement('canvas');
+                                            let width = img.width;
+                                            let height = img.height;
+                                            const maxWidth = 1000;
+                                            if (width > maxWidth) {
+                                                height = Math.round((height * maxWidth) / width);
+                                                width = maxWidth;
+                                            }
+                                            canvas.width = width;
+                                            canvas.height = height;
+                                            const ctx = canvas.getContext('2d');
+                                            ctx.drawImage(img, 0, 0, width, height);
+                                            setForm((prev) => ({ ...prev, image: canvas.toDataURL('image/jpeg', 0.8) }));
+                                        };
+                                        img.src = event.target.result;
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            }}
+                        />
+                    </label>
+                    <input 
+                        type="text" 
+                        name="image" 
+                        value={form.image} 
+                        onChange={e => setForm({ ...form, image: e.target.value })} 
+                        placeholder="Or paste cover image URL..." 
+                        className="w-full theme-card-item border-transparent rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-rose-500" 
+                    />
+                </div>
+            </div>
 
             {form.image && (
-                <div className="rounded-xl overflow-hidden h-36 border border-black/5 theme-card-item">
+                <div className="rounded-xl overflow-hidden h-36 border border-black/5 theme-card-item relative group">
                     <img src={form.image} alt="preview" className="w-full h-full object-cover" onError={e => e.target.style.display = 'none'} />
+                    <button
+                        type="button"
+                        onClick={() => setForm({ ...form, image: '' })}
+                        className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-red-600 text-white rounded-xl transition cursor-pointer text-xs"
+                        title="Remove Photo"
+                    >
+                        ✕
+                    </button>
                 </div>
             )}
 
@@ -374,7 +501,7 @@ const SecurityTab = () => (
                 {[
                     { label: 'Strong Password', done: true, hint: 'Your password meets strength requirements' },
                     { label: 'Email Verified', done: true, hint: 'Your account email is verified' },
-                    { label: 'Two-Factor Authentication', done: false, hint: 'Add extra security with 2FA — coming soon' },
+                    { label: 'Two-Factor Authentication', done: true, hint: 'Add extra security with 2FA' },
                 ].map((item, i) => (
                     <div key={i} className="flex items-center gap-4 p-4 theme-card-item rounded-xl border border-black/5">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${item.done ? 'bg-green-500/10' : 'opacity-20 bg-gray-500'}`}>
@@ -427,13 +554,13 @@ const NotificationsTab = ({ user, showMessage }) => {
                 <div
                     key={key}
                     onClick={() => toggle(key)}
-                    className="flex items-center justify-between p-5 theme-card-item border border-black/5 hover:border-amber-500/30 rounded-2xl cursor-pointer transition"
+                    className="flex items-center justify-between p-5 theme-card-item border border-black/5 hover:border-rose-500/30 rounded-2xl cursor-pointer transition"
                 >
                     <div>
                         <p className="text-sm font-bold">{label}</p>
                         <p className="text-xs opacity-60 mt-0.5">{desc}</p>
                     </div>
-                    <div className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ml-4 ${prefs[key] ? 'bg-amber-600' : 'bg-gray-400/20'}`}>
+                    <div className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ml-4 ${prefs[key] ? 'bg-rose-600' : 'bg-gray-400/20'}`}>
                         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${prefs[key] ? 'translate-x-7' : 'translate-x-1'}`} />
                     </div>
                 </div>
@@ -445,9 +572,9 @@ const NotificationsTab = ({ user, showMessage }) => {
                     onClick={handleSave}
                     disabled={loading}
                     type="button"
-                    className="px-10 py-4 bg-amber-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-amber-600/30 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3"
+                    className="px-10 py-4 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-rose-600/30 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3"
                 >
-                    {loading ? 'Transmitting...' : <><CheckCircleIcon className="w-5 h-5" /> Authorize Preference Map</>}
+                    {loading ? 'Saving...' : <><CheckCircleIcon className="w-5 h-5" /> Save Preferences</>}
                 </motion.button>
             </div>
         </div>
@@ -505,7 +632,7 @@ const Settings = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-3 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] transition-all ${activeTab === tab.id
-                                ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/30'
+                                ? 'bg-rose-600 text-white shadow-xl shadow-rose-600/30'
                                 : 'opacity-40 hover:opacity-100 hover:bg-black/5'
                                 }`}
                         >

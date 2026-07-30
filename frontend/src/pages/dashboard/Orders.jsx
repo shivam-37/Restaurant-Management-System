@@ -24,9 +24,9 @@ const ReviewForm = ({ orderId, onReviewSubmitted }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="mt-8 p-6 theme-card-item rounded-2xl border border-amber-500/10 shadow-lg">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-500 mb-4 flex items-center gap-2">
-                <StarIcon className="w-4 h-4" /> Hospitality Feedback
+        <form onSubmit={handleSubmit} className="mt-8 p-6 theme-card-item rounded-2xl border border-rose-500/10 shadow-lg">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 mb-4 flex items-center gap-2">
+                <StarIcon className="w-4 h-4" /> Order Feedback
             </p>
             <div className="flex gap-3 mb-6">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -47,16 +47,16 @@ const ReviewForm = ({ orderId, onReviewSubmitted }) => {
             <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Compose your thoughts..."
-                className="w-full theme-card rounded-xl p-4 text-sm font-bold focus:ring-4 focus:ring-amber-500/10 focus:outline-none transition-all mb-4 placeholder:opacity-30 border border-black/5"
+                placeholder="Write your review..."
+                className="w-full theme-card rounded-xl p-4 text-sm font-bold focus:ring-4 focus:ring-rose-500/10 focus:outline-none transition-all mb-4 placeholder:opacity-30 border border-black/5"
                 rows="3"
             />
             <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 bg-amber-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-amber-700 transition-all shadow-xl shadow-amber-600/30 disabled:opacity-50 active:scale-95"
+                className="w-full py-4 bg-rose-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-700 transition-all shadow-xl shadow-rose-600/30 disabled:opacity-50 active:scale-95"
             >
-                {isSubmitting ? 'Transmitting...' : 'Dispatch Review'}
+                {isSubmitting ? 'Sending...' : 'Submit Review'}
             </button>
         </form>
     );
@@ -103,8 +103,8 @@ const Orders = () => {
 
     const StatusBadge = ({ status }) => {
         const colors = {
-            Pending: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
-            Preparing: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+            Pending: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20',
+            Preparing: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20',
             Ready: 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20',
             Completed: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20',
             Cancelled: 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'
@@ -118,7 +118,7 @@ const Orders = () => {
 
     if (loading) return (
         <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-rose-600"></div>
         </div>
     );
 
@@ -127,13 +127,13 @@ const Orders = () => {
             <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
                 <div>
                     <h1 className="text-3xl font-black uppercase tracking-tighter leading-none mb-3">
-                        {(user?.role === 'admin' || user?.role === 'owner') ? 'Order Logistics' : 'My Sessions'}
+                        {(user?.role === 'admin' || user?.role === 'owner') ? 'Manage Orders' : 'My Orders'}
                     </h1>
-                    <p className="opacity-40 text-[10px] font-black uppercase tracking-[0.3em]">Real-time sequence monitoring protocol</p>
+                    <p className="opacity-40 text-[10px] font-black uppercase tracking-[0.3em]">Monitor your orders in real-time</p>
                 </div>
-                <div className="flex items-center gap-3 bg-amber-500/5 px-6 py-3 rounded-2xl border border-amber-500/10">
+                <div className="flex items-center gap-3 bg-rose-500/5 px-6 py-3 rounded-2xl border border-rose-500/10">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">Neural Pulse: Active</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest opacity-60">System Online</span>
                 </div>
             </div>
 
@@ -154,7 +154,7 @@ const Orders = () => {
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-4 mb-4">
-                                        <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-500 font-bold border border-amber-500/20">
+                                        <div className="w-12 h-12 bg-rose-500/10 rounded-xl flex items-center justify-center text-rose-500 font-bold border border-rose-500/20">
                                             {(order.orderType === 'Home Delivery' || order.tableNumber === 0) ? '🛵' : order.tableNumber}
                                         </div>
                                         <div>
@@ -163,7 +163,7 @@ const Orders = () => {
                                                     {(order.orderType === 'Home Delivery' || order.tableNumber === 0) ? 'Home Delivery' : `Table ${order.tableNumber}`}
                                                 </h3>
                                                 {!selectedRestaurant && (
-                                                    <span className="px-2 py-0.5 bg-amber-500/10 text-amber-500 rounded-md text-[10px] font-black uppercase tracking-wider border border-amber-500/10">
+                                                    <span className="px-2 py-0.5 bg-rose-500/10 text-rose-500 rounded-md text-[10px] font-black uppercase tracking-wider border border-rose-500/10">
                                                         {order.restaurant?.name || 'Local'}
                                                     </span>
                                                 )}
@@ -201,13 +201,13 @@ const Orders = () => {
                                         ))}
                                         <div className="pt-2 border-t border-black/5 flex justify-between items-center">
                                             <span className="text-xs font-bold opacity-40 uppercase tracking-wider">Total</span>
-                                            <span className="text-lg font-bold text-amber-500">₹{(order.totalPrice || 0).toFixed(2)}</span>
+                                            <span className="text-lg font-bold text-rose-500">₹{(order.totalPrice || 0).toFixed(2)}</span>
                                         </div>
                                     </div>
 
                                     {order.specialInstructions && (
                                         <div className="mb-4 flex gap-2 items-start opacity-70">
-                                            <ChatBubbleBottomCenterTextIcon className="w-4 h-4 text-amber-500 mt-0.5" />
+                                            <ChatBubbleBottomCenterTextIcon className="w-4 h-4 text-rose-500 mt-0.5" />
                                             <p className="text-xs italic opacity-80">"{order.specialInstructions}"</p>
                                         </div>
                                     )}
@@ -226,7 +226,7 @@ const Orders = () => {
                                                     </div>
                                                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${order.review.sentiment === 'Positive' ? 'bg-green-500/20 text-green-600 dark:text-green-400' : order.review.sentiment === 'Negative' ? 'bg-red-500/20 text-red-600 dark:text-red-400' : 'bg-slate-500/20 text-slate-600 dark:text-slate-400'
                                                         }`}>
-                                                        {order.review.sentiment} Vibe
+                                                        {order.review.sentiment} Experience
                                                     </span>
                                                 </div>
                                                 <p className="text-sm opacity-70">"{order.review.comment}"</p>
@@ -241,9 +241,9 @@ const Orders = () => {
                                         {order.status === 'Pending' && (
                                             <button
                                                 onClick={() => handleStatusUpdate(order._id, 'Preparing')}
-                                                className="w-full px-8 py-4 bg-amber-600 text-white rounded-2xl hover:bg-amber-700 transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-amber-600/30"
+                                                className="w-full px-8 py-4 bg-rose-600 text-white rounded-2xl hover:bg-rose-700 transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-600/30"
                                             >
-                                                Initialize Preparation
+                                                Start Cooking
                                             </button>
                                         )}
                                         {order.status === 'Preparing' && (
@@ -251,15 +251,15 @@ const Orders = () => {
                                                 onClick={() => handleStatusUpdate(order._id, 'Ready')}
                                                 className="w-full px-8 py-4 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-emerald-600/30"
                                             >
-                                                Dispatch to Front
+                                                Ready for Pickup
                                             </button>
                                         )}
                                         {order.status === 'Ready' && (
                                             <button
                                                 onClick={() => handleStatusUpdate(order._id, 'Completed')}
-                                                className="w-full px-8 py-4 bg-amber-600 text-white rounded-2xl hover:bg-amber-700 transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-amber-600/30"
+                                                className="w-full px-8 py-4 bg-rose-600 text-white rounded-2xl hover:bg-rose-700 transition-all font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-600/30"
                                             >
-                                                Seal Transaction
+                                                Complete Order
                                             </button>
                                         )}
                                         {order.status !== 'Completed' && order.status !== 'Cancelled' && (
@@ -267,7 +267,7 @@ const Orders = () => {
                                                 onClick={() => handleStatusUpdate(order._id, 'Cancelled')}
                                                 className="w-full px-8 py-4 theme-card-item border border-red-500/20 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest"
                                             >
-                                                Void Sequence
+                                                Cancel Order
                                             </button>
                                         )}
                                     </div>

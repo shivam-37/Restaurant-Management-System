@@ -42,7 +42,7 @@ const RestaurantList = ({ restaurants: propsRestaurants, loading: propsLoading }
                     key={restaurant._id}
                     whileHover={{ y: -10 }}
                     transition={{ type: "spring", stiffness: 300 }}
-                    className="group relative theme-card rounded-3xl overflow-hidden cursor-pointer hover:border-amber-500/50"
+                    className="group relative theme-card rounded-3xl overflow-hidden cursor-pointer hover:border-rose-500/50"
                     onClick={() => handleSelect(restaurant)}
                 >
                     <div className="h-48 relative overflow-hidden">
@@ -53,7 +53,7 @@ const RestaurantList = ({ restaurants: propsRestaurants, loading: propsLoading }
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                             />
                         ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-amber-500/10 to-amber-600/10 flex items-center justify-center">
+                            <div className="w-full h-full bg-gradient-to-br from-rose-500/10 to-rose-600/10 flex items-center justify-center">
                                 <h2 className="text-3xl font-black text-white/10 uppercase tracking-widest">{restaurant.name}</h2>
                             </div>
                         )}
@@ -64,7 +64,7 @@ const RestaurantList = ({ restaurants: propsRestaurants, loading: propsLoading }
                     </div>
 
                     <div className="p-6">
-                        <h3 className="text-xl font-bold mb-2 group-hover:text-amber-500 transition-colors">
+                        <h3 className="text-xl font-bold mb-2 group-hover:text-rose-500 transition-colors">
                             {restaurant.name}
                         </h3>
 
@@ -93,7 +93,7 @@ const RestaurantList = ({ restaurants: propsRestaurants, loading: propsLoading }
                             </div>
                             <motion.button
                                 whileTap={{ scale: 0.95 }}
-                                className="bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs font-bold px-4 py-2 rounded-xl"
+                                className="bg-gradient-to-r from-rose-500 to-rose-600 text-white text-xs font-bold px-4 py-2 rounded-xl"
                             >
                                 View Menu
                             </motion.button>

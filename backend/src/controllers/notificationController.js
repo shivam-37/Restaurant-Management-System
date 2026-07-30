@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Notification = require('../models/Notification');
+const Order = require('../models/Order');
 
 // @desc    Simulate sending a notification (Email/SMS)
 // @route   POST /api/notifications/simulate
@@ -46,4 +47,48 @@ const markAsRead = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { simulateNotification, getNotifications, markAsRead };
+// @desc    Push offer/alert notification to customers
+// @route   POST /api/notifications/push
+// @access  Private (Owner/Admin)
+const pushNotification = asyncHandler(async (req, res) => {
+    const { message, type, restaurantId } = req.body;
+
+    if (!message || !type || !restaurantId) {
+        res.status(400);
+        throw new Error('Message, type, and restaurantId are required');
+    }
+
+    if (!['Offer', 'Alert'].includes(type)) {
+        res.status(400);
+        throw new Error('Invalid notification type for push');
+    }
+
+    // Find all distinct users who have ordered from this restaurant
+    const users = await Order.distinct('user', { restaurant: restaurantId });
+
+    if (!users || users.length === 0) {
+        return res.json({ success: true, message: 'No customers found for this restaurant', count: 0 });
+    }
+
+    // Create a notification for each user
+    const notifications = users.map(userId => ({
+        user: userId,
+        message: message,
+        type: type,
+        isRead: false
+    }));
+
+    await Notification.insertMany(notifications);
+
+    res.json({ success: true, message: 'Notifications pushed successfully', count: users.length });
+});
+
+// @desc    Clear all user notifications
+// @route   DELETE /api/notifications
+// @access  Private
+const clearNotifications = asyncHandler(async (req, res) => {
+    await Notification.deleteMany({ user: req.user._id });
+    res.json({ success: true, message: 'Notifications cleared' });
+});
+
+module.exports = { simulateNotification, getNotifications, markAsRead, pushNotification, clearNotifications };
