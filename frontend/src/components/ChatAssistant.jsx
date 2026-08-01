@@ -90,7 +90,20 @@ const ChatAssistant = () => {
                             <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/50 to-transparent"></div>
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-600 to-purple-600 flex items-center justify-center shadow-lg shadow-rose-600/20">
-                                    <SparklesIcon className="w-6 h-6 text-white" />
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-white">
+                                        {/* Chef Hat */}
+                                        <path d="M7 11V9a3 3 0 0 1 1.1-2.3C7.5 5.2 8.4 4 10 4c.8 0 1.5.3 2 .8.5-.5 1.2-.8 2-.8 1.6 0 2.5 1.2 1.9 2.7A3 3 0 0 1 17 9v2" />
+                                        {/* Hat brim */}
+                                        <path d="M5 11h14v2H5z" />
+                                        {/* Robot Head */}
+                                        <path d="M7 13v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-6" />
+                                        {/* Eyes */}
+                                        <circle cx="10" cy="17" r="1.5" fill="currentColor" stroke="none" />
+                                        <circle cx="14" cy="17" r="1.5" fill="currentColor" stroke="none" />
+                                        {/* Ears */}
+                                        <path d="M5 15h2" />
+                                        <path d="M17 15h2" />
+                                    </svg>
                                 </div>
                                 <div>
                                     <h3 className="font-black uppercase tracking-tighter text-lg leading-none">Dine AI</h3>
