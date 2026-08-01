@@ -55,6 +55,9 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // Create user
     role = role ? role.toLowerCase() : 'user';
+    if (role !== 'owner' && role !== 'user') {
+        role = 'user';
+    }
     const otp = generateOtp();
     const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
 
@@ -290,7 +293,7 @@ const googleAuth = asyncHandler(async (req, res) => {
             googleId: payload.sub,
             authProvider: 'google',
             isEmailVerified: true,
-            role: role ? role.toLowerCase() : 'user'
+            role: (role && (role.toLowerCase() === 'owner' || role.toLowerCase() === 'user')) ? role.toLowerCase() : 'user'
         });
     } else if (!user.googleId) {
         // Link existing account to Google

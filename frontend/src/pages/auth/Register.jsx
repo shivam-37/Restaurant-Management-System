@@ -404,7 +404,6 @@ const Register = () => {
                                         >
                                             <option value="user" className="bg-white text-black dark:bg-black dark:text-white">Customer - Regular Account</option>
                                             <option value="owner" className="bg-white text-black dark:bg-black dark:text-white">Owner - Restaurant Manager</option>
-                                            <option value="admin" className="bg-white text-black dark:bg-black dark:text-white">Admin - System Monitor</option>
                                         </select>
                                         <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none opacity-20">
                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
