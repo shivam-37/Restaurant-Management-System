@@ -60,6 +60,8 @@ export const updateRestaurant = (id, data) => api.put(`/restaurant/${id}`, data)
 export const updateTableStatus = (id, number, status) => api.put(`/restaurant/${id}/table/${number}`, { status });
 
 export const getUsers = () => api.get('/users');
+export const getAllUsers = () => api.get('/users/all');
+export const updateUserRole = (id, role) => api.put(`/users/${id}/role`, { role });
 export const deleteUser = (id) => api.delete(`/users/${id}`);
 export const deleteAccount = () => api.delete('/users/me');
 export const updateNotificationPrefs = (prefs) => api.put('/users/notifications', prefs);

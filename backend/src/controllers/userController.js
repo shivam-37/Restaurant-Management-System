@@ -56,6 +56,43 @@ const getUsers = asyncHandler(async (req, res) => {
     res.json(enrichedUsers);
 });
 
+// @desc    Get all users across all roles
+// @route   GET /api/users/all
+// @access  Private/Admin
+const getAllUsers = asyncHandler(async (req, res) => {
+    const users = await User.find({}).select('-password');
+    res.json(users);
+});
+
+// @desc    Update user role
+// @route   PUT /api/users/:id/role
+// @access  Private/Admin
+const updateUserRole = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    const { role } = req.body;
+
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+
+    if (!['user', 'owner', 'admin'].includes(role)) {
+        res.status(400);
+        throw new Error('Invalid role');
+    }
+
+    // Prevent changing your own role to avoid locking yourself out
+    if (user._id.toString() === req.user._id.toString() && user.role === 'admin' && role !== 'admin') {
+        res.status(400);
+        throw new Error('Cannot demote yourself');
+    }
+
+    user.role = role;
+    await user.save();
+
+    res.json({ message: 'Role updated successfully', user: { _id: user._id, role: user.role } });
+});
+
 // @desc    Delete user
 // @route   DELETE /api/users/:id
 // @access  Private/Admin
@@ -101,6 +138,8 @@ const updateNotifications = asyncHandler(async (req, res) => {
 module.exports = {
     updateUserProfile,
     getUsers,
+    getAllUsers,
+    updateUserRole,
     deleteUser,
     deleteAccount,
     updateNotifications

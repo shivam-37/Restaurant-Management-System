@@ -9,6 +9,7 @@ import Analytics from './Analytics';
 import KitchenDisplay from './KitchenDisplay';
 import TableMap from './TableMap';
 import Reservations from '../Reservations';
+import UserManagement from './UserManagement';
 import NotificationTray from '../NotificationTray';
 import {
     HomeIcon,
@@ -31,7 +32,8 @@ import {
     MapIcon,
     CheckCircleIcon,
     ArrowRightIcon,
-    CalendarIcon
+    CalendarIcon,
+    ShieldCheckIcon
 } from '@heroicons/react/24/outline';
 
 import AuthContext from '../../../context/AuthContext';
@@ -89,6 +91,7 @@ const AdminDashboard = () => {
         { name: 'Orders', icon: ShoppingBagIcon, color: 'from-green-500 to-emerald-500' },
         { name: 'Reservations', icon: CalendarIcon, color: 'from-yellow-500 to-rose-500' },
         { name: 'Customers', icon: UsersIcon, color: 'from-orange-500 to-red-500' },
+        { name: 'System Users', icon: ShieldCheckIcon, color: 'from-indigo-500 to-purple-500' },
         { name: 'Analytics', icon: ChartBarIcon, color: 'from-rose-500 to-purple-500' },
         { name: 'Settings', icon: Cog6ToothIcon, color: 'from-gray-500 to-gray-600' },
     ];
@@ -463,6 +466,7 @@ const AdminDashboard = () => {
                             {activeTab === 'Table Map' && <TableMap />}
                             {activeTab === 'Settings' && <Settings />}
                             {activeTab === 'Customers' && <Customers />}
+                            {activeTab === 'System Users' && <UserManagement />}
                             {activeTab === 'Analytics' && <Analytics />}
                         </motion.div>
                     </AnimatePresence>
