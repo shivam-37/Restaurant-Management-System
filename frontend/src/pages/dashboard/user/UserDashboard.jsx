@@ -104,10 +104,10 @@ const UserDashboard = ({ user, logout }) => {
             <motion.aside initial={{ x: -100 }} animate={{ x: 0 }} className="fixed inset-y-0 left-0 w-72 z-20 hidden md:flex flex-col border-r border-black/5" style={{ background: 'var(--sidebar-bg)' }}>
                 <div className="p-8 border-b border-black/5">
                     <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-600/20">
+                        <div className="w-10 h-10 bg-gradient-to-br from-rose-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-600/30">
                             <SparklesIcon className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-xl font-black uppercase tracking-tighter">Dine Guest</span>
+                        <span className="text-xl font-black bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent uppercase tracking-tighter">Dine Flow</span>
                     </div>
                 </div>
 
@@ -138,7 +138,7 @@ const UserDashboard = ({ user, logout }) => {
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-[10px] font-black uppercase tracking-widest truncate">{user?.name}</p>
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-30 mt-0.5">Guest Account</p>
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40 mt-0.5 text-rose-500">Premium Member</p>
                         </div>
                     </div>
                     <button onClick={logout} className="w-full flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-500/5 rounded-2xl transition-colors">
