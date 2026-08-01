@@ -81,13 +81,13 @@ const registerUser = asyncHandler(async (req, res) => {
     if (user) {
         // Send OTP asynchronously
         if (email) {
-            await sendEmail({
+            sendEmail({
                 email: user.email,
                 subject: 'Verify your account',
                 message: `Your verification OTP is: ${otp}`
             }).catch(err => console.error('Background Email Sending Failed:', err));
         } else if (phone) {
-            await sendSms({
+            sendSms({
                 phone: user.phone,
                 message: `Your verification OTP is: ${otp}`
             }).catch(err => console.error('Background SMS Sending Failed:', err));
@@ -202,7 +202,7 @@ const loginUser = asyncHandler(async (req, res) => {
             user.emailOtp = otp;
             user.emailOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
             await user.save();
-            await sendEmail({
+            sendEmail({
                 email: user.email,
                 subject: 'Login Verification Code',
                 message: `Your login verification OTP is: ${otp}`
@@ -215,7 +215,7 @@ const loginUser = asyncHandler(async (req, res) => {
             user.phoneOtp = otp;
             user.phoneOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
             await user.save();
-            await sendSms({
+            sendSms({
                 phone: user.phone,
                 message: `Your login verification OTP is: ${otp}`
             }).catch(err => console.error('Background SMS Sending Failed:', err));
@@ -358,7 +358,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
     // Send Email if account has email
     if (user.email) {
-        await sendEmail({
+        sendEmail({
             email: user.email,
             subject: 'Password Reset OTP - DineFlow',
             message: `Your password reset OTP code is: ${otp}\nThis code is valid for 10 minutes.`
@@ -367,7 +367,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
     // Send SMS if account has phone number
     if (user.phone) {
-        await sendSms({
+        sendSms({
             phone: user.phone,
             message: `Your password reset OTP code is: ${otp}`
         }).catch(err => console.error('Forgot Password SMS Error:', err));
@@ -523,14 +523,14 @@ const sendOtp = asyncHandler(async (req, res) => {
     }
 
     if (email) {
-        await sendEmail({
+        sendEmail({
             email,
             subject: 'Your Verification Code',
             message: `Your verification OTP is: ${otp}`
         }).catch(err => console.error('Background Email Sending Failed:', err));
         res.status(200).json({ message: 'OTP sent to email', method: 'email' });
     } else if (phone) {
-        await sendSms({
+        sendSms({
             phone,
             message: `Your verification OTP is: ${otp}`
         }).catch(err => console.error('Background SMS Sending Failed:', err));
