@@ -4,7 +4,7 @@ const OpenAI = require('openai');
 const dotenv = require('dotenv');
 const path = require('path');
 
-const MODEL_NAME = "google/gemma-3n-e4b-it";
+const MODEL_NAME = "meta/llama-3.1-8b-instruct";
 
 // ── In-memory request queue to prevent burst calls ──────────────────────────
 let lastCallTime = 0;
