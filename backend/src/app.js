@@ -32,7 +32,8 @@ const limiter = rateLimit({
 const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5174', 'http://127.0.0.1:5174'];
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        // Allow local development and any Render/Vercel/Netlify frontend deployments
+        if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.includes('onrender.com') || origin.includes('vercel.app') || origin.includes('netlify.app')) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
