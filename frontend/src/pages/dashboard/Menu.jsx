@@ -311,7 +311,9 @@ const Menu = () => {
             setCartInstructions('');
             setIsCartOpen(false);
         } catch (error) {
-            alert('Failed to place order');
+            console.error('Order/Payment Error:', error);
+            const errorMsg = error.response?.data?.message || error.message || 'Failed to place order';
+            alert(`Error: ${errorMsg}`);
         } finally {
             setIsLoading(false);
         }
