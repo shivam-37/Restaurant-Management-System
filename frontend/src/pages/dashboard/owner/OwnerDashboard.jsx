@@ -190,7 +190,7 @@ const OwnerDashboard = () => {
     return (
         <div className="flex flex-col h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]" style={{ color: 'var(--text-primary)' }}>
             {/* Top Navigation Bar */}
-            <header className="flex-shrink-0 z-50 backdrop-blur-3xl border-b border-black/5 dark:border-white/5 bg-white/80 dark:bg-black/80 px-4 md:px-8 py-4 flex items-center justify-between shadow-sm overflow-hidden">
+            <header className="flex-shrink-0 z-50 backdrop-blur-3xl border-b border-black/5 dark:border-white/5 bg-white/80 dark:bg-black/80 px-4 md:px-8 py-4 flex items-center justify-between shadow-sm">
                  <div className="flex items-center gap-4 lg:gap-8 flex-1 min-w-0">
                      <div className="flex items-center space-x-3 shrink-0">
                          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
@@ -202,7 +202,7 @@ const OwnerDashboard = () => {
                          </div>
                      </div>
                      
-                     <nav className="hidden lg:flex items-center gap-1 overflow-x-auto scrollbar-hide pb-1">
+                     <nav className="hidden lg:flex items-center gap-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         {navItems.map((item) => (
                             <button
                                 key={item.name}
