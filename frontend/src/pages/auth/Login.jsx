@@ -42,7 +42,7 @@ const Login = () => {
                     localStorage.removeItem('token');
                     return;
                 }
-                navigate(result.role === 'admin' ? '/admin/dashboard' : '/dashboard');
+                navigate('/dashboard');
             } catch (err) {
                 setError(err.response?.data?.message || 'Google Login failed');
             } finally {
@@ -88,7 +88,7 @@ const Login = () => {
                     localStorage.removeItem('token');
                     return;
                 }
-                navigate(result.role === 'admin' ? '/admin/dashboard' : '/dashboard');
+                navigate('/dashboard');
             }
         } catch (err) {
             console.error('Login Error:', err);
@@ -117,7 +117,7 @@ const Login = () => {
                 return;
             }
             setShowOtpModal(false);
-            navigate(result.role === 'admin' ? '/admin/dashboard' : '/dashboard');
+            navigate('/dashboard');
         } catch (err) {
             throw err;
         } finally {

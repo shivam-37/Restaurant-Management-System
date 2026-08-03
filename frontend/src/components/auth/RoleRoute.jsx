@@ -27,7 +27,7 @@ const RoleRoute = ({ children, allowedRoles }) => {
     if (allowedRoles && !allowedRoles.includes(user.role)) {
         // Redirect to a safe page based on role
         if (user.role === 'owner') return <Navigate to="/dashboard" replace />;
-        if (user.role === 'admin') return <Navigate to="/admin/dashboard" replace />;
+        if (user.role === 'admin') return <Navigate to="/dashboard" replace />;
         return <Navigate to="/" replace />;
     }
 

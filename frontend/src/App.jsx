@@ -11,7 +11,7 @@ import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import Dashboard from './pages/dashboard/Dashboard';
 import TableRedirect from './components/TableRedirect';
 import OwnerLogin from './pages/auth/OwnerLogin';
-import AdminDashboard from './pages/admin/AdminDashboard';
+
 import RoleRoute from './components/auth/RoleRoute';
 
 function App() {
@@ -34,11 +34,7 @@ function App() {
                 <Dashboard />
               </RoleRoute>
             } />
-            <Route path="/admin/dashboard" element={
-              <RoleRoute allowedRoles={['admin']}>
-                <AdminDashboard />
-              </RoleRoute>
-            } />
+
           </Routes>
         </AuthProvider>
       </Router>
