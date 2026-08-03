@@ -44,7 +44,7 @@ const orderSchema = mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['Cash', 'Card', 'UPI'],
+        enum: ['Cash', 'Card', 'UPI', 'Razorpay (Test)'],
         default: 'Cash'
     },
     deliveryAddress: {
