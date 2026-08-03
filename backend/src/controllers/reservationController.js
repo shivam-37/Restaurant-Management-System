@@ -93,11 +93,13 @@ const getReservations = asyncHandler(async (req, res) => {
 // @route   PUT /api/reservations/:id
 // @access  Private (Staff/Admin)
 const updateReservationStatus = asyncHandler(async (req, res) => {
-    const reservation = await Reservation.findById(req.params.id);
+    const updatedReservation = await Reservation.findByIdAndUpdate(
+        req.params.id,
+        { status: req.body.status },
+        { new: true, runValidators: false }
+    ).populate('user', 'name').populate('restaurant', 'name');
 
-    if (reservation) {
-        reservation.status = req.body.status || reservation.status;
-        const updatedReservation = await reservation.save();
+    if (updatedReservation) {
         res.json(updatedReservation);
     } else {
         res.status(404);

@@ -88,7 +88,8 @@ const Reservations = () => {
             await updateReservationStatus(id, status);
             fetchReservations();
         } catch (error) {
-            alert('Failed to update status');
+            console.error('Status Update Error:', error.response?.data || error);
+            alert(`Failed to update status: ${error.response?.data?.message || error.message}`);
         }
     };
 
