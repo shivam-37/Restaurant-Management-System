@@ -78,8 +78,6 @@ const AuthProvider = ({ children }) => {
                         }
                     }
                 }
-        const checkUserLoggedIn = async () => {
-            // ... (rest is handled in the checkUserLoggedIn method body above, this chunk is just replacing the catch block)
             } catch (error) {
                 console.error("Auth check failed", error);
                 if (error.response && error.response.status === 401) {

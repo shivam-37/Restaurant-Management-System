@@ -1,15 +1,40 @@
 const asyncHandler = require('express-async-handler');
 const Reservation = require('../models/Reservation');
 
+const Restaurant = require('../models/Restaurant');
+const Notification = require('../models/Notification');
+
+// @desc    Get occupied tables for a specific date and time
+// @route   GET /api/reservations/tables/occupied
+// @access  Private
+const getOccupiedReservationTables = asyncHandler(async (req, res) => {
+    const { restaurantId, date, time } = req.query;
+
+    if (!restaurantId || !date || !time) {
+        return res.json([]);
+    }
+
+    // Find all reservations for this restaurant, date, and time that are NOT Cancelled
+    const reservations = await Reservation.find({
+        restaurant: restaurantId,
+        date: new Date(date),
+        time: time,
+        status: { $ne: 'Cancelled' }
+    });
+
+    const occupiedTables = reservations.map(res => res.tableNumber);
+    res.json(occupiedTables);
+});
+
 // @desc    Create new reservation
 // @route   POST /api/reservations
 // @access  Private
 const createReservation = asyncHandler(async (req, res) => {
-    const { name, phone, date, time, partySize, restaurantId } = req.body;
+    const { name, phone, date, time, partySize, tableNumber, restaurantId } = req.body;
 
-    if (!name || !phone || !date || !time || !partySize || !restaurantId) {
+    if (!name || !phone || !date || !time || !partySize || !tableNumber || !restaurantId) {
         res.status(400);
-        throw new Error('Please add all fields including restaurantId');
+        throw new Error('Please add all fields including tableNumber and restaurantId');
     }
 
     const reservation = await Reservation.create({
@@ -19,8 +44,21 @@ const createReservation = asyncHandler(async (req, res) => {
         phone,
         date,
         time,
-        partySize
+        partySize,
+        tableNumber
     });
+
+    // Notify the owner
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (restaurant && restaurant.owner) {
+        await Notification.create({
+            user: restaurant.owner,
+            title: 'New Reservation',
+            message: `A new reservation was booked by ${name} for ${partySize} people at Table ${tableNumber} on ${new Date(date).toLocaleDateString()} at ${time}.`,
+            type: 'system',
+            read: false
+        });
+    }
 
     res.status(201).json(reservation);
 });
@@ -71,5 +109,6 @@ module.exports = {
     createReservation,
     getMyReservations,
     getReservations,
-    updateReservationStatus
+    updateReservationStatus,
+    getOccupiedReservationTables
 };

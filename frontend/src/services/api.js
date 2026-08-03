@@ -47,6 +47,7 @@ export const getReservations = (restaurantId) => api.get(`/reservations${restaur
 export const getMyReservations = (restaurantId) => api.get(`/reservations/my${restaurantId ? `?restaurantId=${restaurantId}` : ''}`);
 export const createReservation = (data) => api.post('/reservations', data);
 export const updateReservationStatus = (id, status) => api.put(`/reservations/${id}`, { status });
+export const getOccupiedReservationTables = (restaurantId, date, time) => api.get(`/reservations/tables/occupied?restaurantId=${restaurantId}&date=${date}&time=${time}`);
 
 // AI APIs
 export const generateDescription = (data) => api.post('/ai/generate-description', data);

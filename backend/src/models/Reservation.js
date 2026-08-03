@@ -27,6 +27,10 @@ const reservationSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please add a time']
     },
+    tableNumber: {
+        type: Number,
+        required: [true, 'Please select a table']
+    },
     partySize: {
         type: Number,
         required: [true, 'Please add party size']
