@@ -323,7 +323,20 @@ const generateFullMenuItem = asyncHandler(async (req, res) => {
 
     } catch (error) {
         console.error('[AI FALLBACK] generateFullMenuItem:', error.message);
-        res.status(500).json({ message: "Failed to generate menu item from AI.", details: error.message });
+        
+        // Provide a graceful fallback if the AI generation fails
+        // e.g. due to missing NVIDIA_API_KEY, rate limits, or parse errors
+        const safeImagePrompt = encodeURIComponent(prompt + " plate professional food photography delicious");
+        const image = `https://image.pollinations.ai/prompt/${safeImagePrompt}?width=800&height=600&nologo=true`;
+
+        res.json({
+            name: prompt,
+            description: `Delicious ${prompt} prepared fresh by our chef.`,
+            category: 'Main Course',
+            price: 0,
+            stock: 0,
+            image: image
+        });
     }
 });
 
