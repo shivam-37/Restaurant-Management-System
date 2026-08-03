@@ -7,7 +7,17 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        const activeRole = sessionStorage.getItem('activeRole');
+        let token = activeRole ? localStorage.getItem(`token_${activeRole}`) : null;
+        
+        if (!token) {
+            // Fallback for new tabs or legacy tokens
+            token = localStorage.getItem('token_owner') || 
+                    localStorage.getItem('token_admin') || 
+                    localStorage.getItem('token_user') || 
+                    localStorage.getItem('token');
+        }
+        
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

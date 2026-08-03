@@ -19,7 +19,13 @@ const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [restaurants, setRestaurants] = useState([]);
     const [selectedRestaurant, setSelectedRestaurant] = useState(() => {
-        const saved = localStorage.getItem('selectedRestaurant');
+        let activeRole = sessionStorage.getItem('activeRole');
+        if (!activeRole) {
+            if (localStorage.getItem('token_owner')) activeRole = 'owner';
+            else if (localStorage.getItem('token_admin')) activeRole = 'admin';
+            else if (localStorage.getItem('token_user')) activeRole = 'user';
+        }
+        const saved = activeRole ? localStorage.getItem(`selectedRestaurant_${activeRole}`) : localStorage.getItem('selectedRestaurant');
         try {
             return saved ? JSON.parse(saved) : null;
         } catch (e) {
@@ -28,18 +34,29 @@ const AuthProvider = ({ children }) => {
     });
 
     useEffect(() => {
-        if (selectedRestaurant) {
-            localStorage.setItem('selectedRestaurant', JSON.stringify(selectedRestaurant));
-        } else {
-            localStorage.removeItem('selectedRestaurant');
+        const activeRole = sessionStorage.getItem('activeRole') || user?.role;
+        if (selectedRestaurant && activeRole) {
+            localStorage.setItem(`selectedRestaurant_${activeRole}`, JSON.stringify(selectedRestaurant));
+        } else if (activeRole) {
+            localStorage.removeItem(`selectedRestaurant_${activeRole}`);
         }
-    }, [selectedRestaurant]);
+    }, [selectedRestaurant, user]);
 
     useEffect(() => {
         const checkUserLoggedIn = async () => {
             try {
-                const token = localStorage.getItem('token');
+                let activeRole = sessionStorage.getItem('activeRole');
+                let token = activeRole ? localStorage.getItem(`token_${activeRole}`) : null;
+                
+                if (!token) {
+                    if (localStorage.getItem('token_owner')) { activeRole = 'owner'; token = localStorage.getItem('token_owner'); }
+                    else if (localStorage.getItem('token_admin')) { activeRole = 'admin'; token = localStorage.getItem('token_admin'); }
+                    else if (localStorage.getItem('token_user')) { activeRole = 'user'; token = localStorage.getItem('token_user'); }
+                    else if (localStorage.getItem('token')) { token = localStorage.getItem('token'); }
+                }
+
                 if (token) {
+                    if (activeRole) sessionStorage.setItem('activeRole', activeRole);
                     const { data } = await getMe();
                     setUser(data);
 
@@ -61,10 +78,18 @@ const AuthProvider = ({ children }) => {
                         }
                     }
                 }
+        const checkUserLoggedIn = async () => {
+            // ... (rest is handled in the checkUserLoggedIn method body above, this chunk is just replacing the catch block)
             } catch (error) {
                 console.error("Auth check failed", error);
                 if (error.response && error.response.status === 401) {
+                    const activeRole = sessionStorage.getItem('activeRole');
+                    if (activeRole) {
+                        localStorage.removeItem(`token_${activeRole}`);
+                        localStorage.removeItem(`selectedRestaurant_${activeRole}`);
+                    }
                     localStorage.removeItem('token');
+                    sessionStorage.removeItem('activeRole');
                     setUser(null);
                     setSelectedRestaurant(null);
                 }
@@ -76,7 +101,9 @@ const AuthProvider = ({ children }) => {
     }, []);
 
     const handleAuthSuccess = async (data) => {
-        localStorage.setItem('token', data.token);
+        const role = data.role;
+        localStorage.setItem(`token_${role}`, data.token);
+        sessionStorage.setItem('activeRole', role);
 
         let restaurantToSet = null;
 
@@ -135,11 +162,17 @@ const AuthProvider = ({ children }) => {
     };
 
     const logout = useCallback(() => {
+        const role = user?.role || sessionStorage.getItem('activeRole');
+        if (role) {
+            localStorage.removeItem(`token_${role}`);
+            localStorage.removeItem(`selectedRestaurant_${role}`);
+        }
         localStorage.removeItem('token');
         localStorage.removeItem('selectedRestaurant');
+        sessionStorage.removeItem('activeRole');
         setUser(null);
         setSelectedRestaurant(null);
-    }, []);
+    }, [user]);
 
     const forgotPassword = async (payload) => {
         const { data } = await apiForgotPassword(payload);
