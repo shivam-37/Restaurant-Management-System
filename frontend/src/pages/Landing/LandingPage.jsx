@@ -97,6 +97,12 @@ const LandingPage = () => {
               >
                 Login
               </Link>
+              <Link 
+                to="/owner/login" 
+                className="hidden md:block px-5 py-2.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 transition-colors"
+              >
+                Partner Portal
+              </Link>
 
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="hidden md:block">
                 <Link
@@ -137,9 +143,12 @@ const LandingPage = () => {
                   </span>
                 </button>
 
-                <div className="pt-4 border-t border-black/10 dark:border-white/10 grid grid-cols-2 gap-3">
-                  <Link to="/login" className="flex items-center justify-center px-4 py-3 theme-card-item rounded-xl text-sm font-bold border border-black/10">Login</Link>
-                  <Link to="/register" className="flex items-center justify-center px-4 py-3 bg-rose-500 text-white rounded-xl text-sm font-bold shadow-md shadow-rose-500/20">Get Started</Link>
+                <div className="pt-4 border-t border-black/10 dark:border-white/10 flex flex-col gap-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Link to="/login" className="flex items-center justify-center px-4 py-3 theme-card-item rounded-xl text-sm font-bold border border-black/10">Login</Link>
+                    <Link to="/register" className="flex items-center justify-center px-4 py-3 bg-rose-500 text-white rounded-xl text-sm font-bold shadow-md shadow-rose-500/20">Get Started</Link>
+                  </div>
+                  <Link to="/owner/login" className="flex items-center justify-center px-4 py-3 theme-card-item rounded-xl text-sm font-bold border border-indigo-500/30 text-indigo-600 dark:text-indigo-400">Partner Login</Link>
                 </div>
               </div>
             </motion.div>
@@ -191,7 +200,16 @@ const LandingPage = () => {
                     to="/login"
                     className="px-8 py-4 theme-card-item border border-black/10 dark:border-white/10 rounded-2xl text-base font-semibold hover:border-rose-500/40 transition-all flex items-center gap-3"
                   >
-                    <span>Login to Dashboard</span>
+                    <span>User Login</span>
+                  </Link>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <Link
+                    to="/owner/login"
+                    className="px-8 py-4 theme-card-item border border-indigo-500/30 rounded-2xl text-base font-semibold text-indigo-600 dark:text-indigo-400 hover:border-indigo-500 transition-all flex items-center gap-3"
+                  >
+                    <span>Partner Login</span>
                   </Link>
                 </motion.div>
               </div>
@@ -357,7 +375,8 @@ const LandingPage = () => {
           <div className="flex flex-wrap justify-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300 mb-10">
             <a href="#features" className="hover:text-rose-500 transition">Features</a>
             <a href="#restaurants" className="hover:text-rose-500 transition">Restaurants</a>
-            <Link to="/login" className="hover:text-rose-500 transition">Login</Link>
+            <Link to="/login" className="hover:text-rose-500 transition">User Login</Link>
+            <Link to="/owner/login" className="hover:text-indigo-500 transition">Partner Portal</Link>
             <Link to="/register" className="hover:text-rose-500 transition">Register</Link>
             <Link to="/privacy" className="hover:text-rose-500 transition">Privacy Policy</Link>
             <Link to="/terms" className="hover:text-rose-500 transition">Terms of Service</Link>

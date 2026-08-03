@@ -147,7 +147,7 @@ const UserDashboard = ({ user, logout }) => {
                 </div>
             </motion.aside>
 
-            <main className="flex-1 md:ml-72 relative overflow-y-auto">
+            <main className="flex-1 md:ml-72 relative overflow-y-auto pb-24 md:pb-0">
                 <header className="sticky top-0 z-50 backdrop-blur-xl border-b border-black/5 px-8 py-6 flex justify-between items-center" style={{ background: 'var(--navbar-bg)' }}>
                     <div>
                         <h1 className="text-3xl font-black uppercase tracking-tighter">{activeTab}</h1>
@@ -156,6 +156,9 @@ const UserDashboard = ({ user, logout }) => {
                     <div className="flex items-center gap-6">
                         <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-black/5 hover:border-rose-500/30 transition-all shadow-sm" title="Toggle theme">
                             {theme === 'dark' ? <SunIcon className="w-4 h-4 text-rose-400" /> : <MoonIcon className="w-4 h-4 text-rose-600" />}
+                        </button>
+                        <button onClick={logout} className="md:hidden w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-black/5 hover:border-red-500/30 text-red-500 transition-all shadow-sm" title="Sign Out">
+                            <ArrowLeftOnRectangleIcon className="w-5 h-5" />
                         </button>
                         {selectedRestaurant && (
                             <motion.button
@@ -270,6 +273,25 @@ const UserDashboard = ({ user, logout }) => {
                     </AnimatePresence>
                 </div>
             </main>
+
+            {/* Mobile Bottom Navigation */}
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t border-black/5 pb-safe" style={{ background: 'var(--navbar-bg)' }}>
+                <div className="flex items-center justify-around p-2">
+                    {navItems.map((item) => (
+                        <button
+                            key={item.name}
+                            onClick={() => setActiveTab(item.name)}
+                            className={`flex flex-col items-center justify-center space-y-1 p-2 rounded-xl transition-all ${
+                                activeTab === item.name ? 'text-rose-600' : 'opacity-40 hover:opacity-100'
+                            }`}
+                        >
+                            <item.icon className="h-5 w-5" />
+                            <span className="text-[8px] font-black uppercase tracking-widest truncate max-w-[60px] text-center">{item.name === 'Overview' ? 'Home' : item.name === 'My Orders' ? 'Orders' : item.name === 'Reservations' ? 'Book' : item.name}</span>
+                        </button>
+                    ))}
+                </div>
+            </nav>
+
             <ChatAssistant />
         </div>
     );

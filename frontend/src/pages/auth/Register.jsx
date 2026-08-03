@@ -374,45 +374,7 @@ const Register = () => {
                             </div>
                         </motion.div>
 
-                        {/* Role Selection */}
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.5 }}
-                        >
-                                <label 
-                                    htmlFor="role" 
-                                    className={`text-sm font-semibold mb-2 block transition-colors duration-300 ${
-                                        focusedField === 'role' ? 'text-rose-500' : 'text-gray-900 dark:text-gray-100'
-                                    }`}
-                                >
-                                    Account Type
-                                </label>
-                                <div className="relative group">
-                                    <div className="relative">
-                                        <Shield className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
-                                            focusedField === 'role' ? 'text-rose-500' : 'text-gray-400'
-                                        }`} />
-                                        <select
-                                            id="role"
-                                            name="role"
-                                            value={role}
-                                            onChange={onChange}
-                                            onFocus={() => setFocusedField('role')}
-                                            onBlur={() => setFocusedField(null)}
-                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-10 text-sm font-medium appearance-none focus:outline-none focus:border-rose-500 transition-all cursor-pointer"
-                                        >
-                                            <option value="user" className="bg-white text-black dark:bg-black dark:text-white">Customer - Regular Account</option>
-                                            <option value="owner" className="bg-white text-black dark:bg-black dark:text-white">Owner - Restaurant Manager</option>
-                                        </select>
-                                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none opacity-20">
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                        </motion.div>
+
 
                         {/* Password Field */}
                         <motion.div

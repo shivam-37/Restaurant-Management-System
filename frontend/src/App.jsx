@@ -10,6 +10,9 @@ import TermsOfService from './pages/legal/TermsOfService';
 import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import Dashboard from './pages/dashboard/Dashboard';
 import TableRedirect from './components/TableRedirect';
+import OwnerLogin from './pages/auth/OwnerLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import RoleRoute from './components/auth/RoleRoute';
 
 function App() {
   return (
@@ -19,13 +22,23 @@ function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/owner/login" element={<OwnerLogin />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/table/:restaurantId/:tableNumber" element={<TableRedirect />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={
+              <RoleRoute allowedRoles={['owner', 'admin']}>
+                <Dashboard />
+              </RoleRoute>
+            } />
+            <Route path="/admin/dashboard" element={
+              <RoleRoute allowedRoles={['admin']}>
+                <AdminDashboard />
+              </RoleRoute>
+            } />
           </Routes>
         </AuthProvider>
       </Router>

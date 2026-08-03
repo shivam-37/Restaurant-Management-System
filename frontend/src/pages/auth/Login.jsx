@@ -36,8 +36,13 @@ const Login = () => {
             try {
                 setIsLoading(true);
                 setError(null);
-                await loginWithGoogle(tokenResponse.credential || tokenResponse.access_token);
-                navigate('/dashboard');
+                const result = await loginWithGoogle(tokenResponse.credential || tokenResponse.access_token);
+                if (result.role === 'owner') {
+                    setError('Owners must use the Partner Portal to log in.');
+                    localStorage.removeItem('token');
+                    return;
+                }
+                navigate(result.role === 'admin' ? '/admin/dashboard' : '/dashboard');
             } catch (err) {
                 setError(err.response?.data?.message || 'Google Login failed');
             } finally {
@@ -78,7 +83,12 @@ const Login = () => {
                 setOtpMethod(result.method);
                 setShowOtpModal(true);
             } else {
-                navigate('/dashboard');
+                if (result.role === 'owner') {
+                    setError('Owners must use the Partner Portal to log in.');
+                    localStorage.removeItem('token');
+                    return;
+                }
+                navigate(result.role === 'admin' ? '/admin/dashboard' : '/dashboard');
             }
         } catch (err) {
             console.error('Login Error:', err);
@@ -99,9 +109,15 @@ const Login = () => {
             if (otpMethod === 'email' || isEmail) payload.email = cleanIdentifier;
             else payload.phone = formattedPhone;
             
-            await verifyUserOtp(payload);
+            const result = await verifyUserOtp(payload);
+            if (result.role === 'owner') {
+                setError('Owners must use the Partner Portal to log in.');
+                localStorage.removeItem('token');
+                setShowOtpModal(false);
+                return;
+            }
             setShowOtpModal(false);
-            navigate('/dashboard');
+            navigate(result.role === 'admin' ? '/admin/dashboard' : '/dashboard');
         } catch (err) {
             throw err;
         } finally {
