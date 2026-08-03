@@ -359,13 +359,32 @@ const chatWithNvidia = asyncHandler(async (req, res) => {
             apiKey: process.env.NVIDIA_API_KEY,
             baseURL: 'https://integrate.api.nvidia.com/v1',
         });
+        
+        let restaurantContext = "";
+        if (restaurantId) {
+            const Restaurant = require('../models/Restaurant');
+            const Menu = require('../models/Menu');
+            
+            const restaurant = await Restaurant.findById(restaurantId);
+            const menuItems = await Menu.find({ restaurant: restaurantId, isAvailable: true }).select('name category description price');
+            
+            if (restaurant) {
+                const menuList = menuItems.map(item => `- ${item.name} ($${item.price}): ${item.description || item.category}`).join('\n');
+                restaurantContext = `
+You are specifically representing a restaurant named "${restaurant.name}".
+Cuisine Type/Description: ${restaurant.cuisine || restaurant.description || 'Not specified'}.
+Here is our current live menu. YOU MUST ONLY suggest, recommend, or discuss items from this specific menu. DO NOT invent or recommend any random items outside of this list:
+${menuList || 'No menu items available.'}
+`;
+            }
+        }
 
         // Determine AI personality based on user role
         let systemContent = "";
         if (req.user && (req.user.role === 'owner' || req.user.role === 'admin')) {
-             systemContent = "You are an intelligent, helpful, and polite Restaurant Management Assistant. Your job is to help the restaurant owner/admin manage their business, analyze inventory, understand orders, and generate menu ideas. Keep your answers reasonably concise, professional, and well-organized. If asked about something unrelated to restaurant management, politely steer the conversation back.";
+             systemContent = `You are an intelligent, helpful, and polite Restaurant Management Assistant. Your job is to help the restaurant owner/admin manage their business, analyze inventory, understand orders, and generate menu ideas. Keep your answers reasonably concise, professional, and well-organized. If asked about something unrelated to restaurant management, politely steer the conversation back.\n${restaurantContext}`;
         } else {
-             systemContent = "You are 'Dine AI', a helpful, friendly, and polite Restaurant Concierge for a customer. Your job is to help the customer understand the menu, recommend dishes, answer questions about dining, and provide excellent customer service. Do NOT provide any information about restaurant management, stock predictions, revenue, or backend operations. Keep your answers concise, appetizing, and focused on the dining experience. If asked about something unrelated to dining or food, politely steer the conversation back.";
+             systemContent = `You are 'Dine AI', a helpful, friendly, and polite Restaurant Concierge for a customer. Your job is to help the customer understand the menu, recommend dishes, answer questions about dining, and provide excellent customer service. Do NOT provide any information about restaurant management, stock predictions, revenue, or backend operations. Keep your answers concise, appetizing, and focused on the dining experience. If asked about something unrelated to dining or food, politely steer the conversation back.\nCRITICAL: ONLY recommend items from the provided menu list. DO NOT invent items.\n${restaurantContext}`;
         }
 
         const systemMessage = {
