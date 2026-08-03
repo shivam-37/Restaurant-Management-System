@@ -276,8 +276,9 @@ const Menu = () => {
                             setCartInstructions('');
                             setIsCartOpen(false);
                         } catch (err) {
-                            console.error(err);
-                            alert('Payment verification failed.');
+                            console.error('Payment Verification Error:', err);
+                            const errMsg = err.response?.data?.message || err.message || 'Payment verification failed.';
+                            alert(`Error: ${errMsg}`);
                         } finally {
                             setIsLoading(false);
                         }
