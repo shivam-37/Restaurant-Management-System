@@ -88,7 +88,7 @@ const OwnerLogin = () => {
                     localStorage.removeItem('token');
                     return;
                 }
-                navigate(result.role === 'admin' ? '/admin/dashboard' : '/dashboard');
+                navigate('/dashboard');
             }
         } catch (err) {
             console.error('Login Error:', err);
@@ -119,7 +119,7 @@ const OwnerLogin = () => {
             }
 
             setShowOtpModal(false);
-            navigate(result.role === 'admin' ? '/admin/dashboard' : '/dashboard');
+            navigate('/dashboard');
         } catch (err) {
             throw err;
         } finally {
