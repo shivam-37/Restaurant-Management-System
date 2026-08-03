@@ -30,7 +30,7 @@ function App() {
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/table/:restaurantId/:tableNumber" element={<TableRedirect />} />
             <Route path="/dashboard" element={
-              <RoleRoute allowedRoles={['owner', 'admin']}>
+              <RoleRoute allowedRoles={['owner', 'admin', 'user']}>
                 <Dashboard />
               </RoleRoute>
             } />
