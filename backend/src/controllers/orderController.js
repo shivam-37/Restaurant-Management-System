@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Order = require('../models/Order');
 const Menu = require('../models/Menu');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -115,6 +116,20 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
             } catch (pointsError) {
                 console.error('Loyalty points update failed:', pointsError.message);
                 // We don't throw here so the status update response still goes through
+            }
+
+            // Create notification for the user
+            try {
+                if (updatedOrder.status !== oldStatus) {
+                    await Notification.create({
+                        user: updatedOrder.user,
+                        title: 'Order Status Update',
+                        message: `Your order #${updatedOrder._id.toString().substring(0,6)} is now ${updatedOrder.status}.`,
+                        type: 'Order'
+                    });
+                }
+            } catch (notifErr) {
+                console.error('Failed to create notification:', notifErr.message);
             }
 
             res.json(updatedOrder);
@@ -346,10 +361,35 @@ const addOrderReview = asyncHandler(async (req, res) => {
     res.json(order);
 });
 
+// @desc    Get occupied tables for a restaurant
+// @route   GET /api/orders/tables/occupied
+// @access  Public
+const getOccupiedTables = asyncHandler(async (req, res) => {
+    const { restaurantId } = req.query;
+    if (!restaurantId) {
+        res.status(400);
+        throw new Error('Restaurant ID is required');
+    }
+
+    const occupiedOrders = await Order.find({
+        restaurant: restaurantId,
+        orderType: 'Dine-In',
+        status: { $in: ['Pending', 'Preparing', 'Ready'] }
+    });
+
+    const occupiedTables = occupiedOrders.map(order => order.tableNumber).filter(num => num > 0);
+    
+    // Deduplicate tables if any
+    const uniqueTables = [...new Set(occupiedTables)];
+    
+    res.json(uniqueTables);
+});
+
 module.exports = {
     createOrder,
     getOrders,
     updateOrderStatus,
     getAnalytics,
-    addOrderReview
+    addOrderReview,
+    getOccupiedTables
 };

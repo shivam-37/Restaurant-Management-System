@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getMenu, createMenuItem, updateMenuItem, deleteMenuItem, generateDescription, createOrder, generateOrderInstructions, getRecommendations, generateFullMenuItem, createRazorpayOrder, verifyRazorpayPayment } from '../../services/api';
-import { SparklesIcon as SparklesOutline, ShoppingCartIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { getMenu, createMenuItem, updateMenuItem, deleteMenuItem, generateDescription, createOrder, generateOrderInstructions, getRecommendations, generateFullMenuItem, createRazorpayOrder, verifyRazorpayPayment, getOccupiedTables } from '../../services/api';
+import { SparklesIcon as SparklesOutline, ShoppingCartIcon, SparklesIcon, UsersIcon } from '@heroicons/react/24/outline';
+import PremiumModal from '../../components/PremiumModal';
 import {
     PlusIcon,
     PencilIcon,
@@ -44,6 +45,9 @@ const Menu = () => {
     });
     const [recommendations, setRecommendations] = useState([]);
     const [isAiLoading, setIsAiLoading] = useState(false);
+    const [occupiedTables, setOccupiedTables] = useState([]);
+    const [guests, setGuests] = useState(1);
+    const [showPremiumModal, setShowPremiumModal] = useState(false);
 
     useEffect(() => {
         fetchMenu();
@@ -51,6 +55,21 @@ const Menu = () => {
             fetchAIRecommendations();
         }
     }, [user?.role, selectedRestaurant?._id]);
+
+    useEffect(() => {
+        if (orderType === 'Dine-In' && isCartOpen && selectedRestaurant) {
+            fetchOccupiedTables();
+        }
+    }, [orderType, isCartOpen, selectedRestaurant]);
+
+    const fetchOccupiedTables = async () => {
+        try {
+            const { data } = await getOccupiedTables(selectedRestaurant._id);
+            setOccupiedTables(data);
+        } catch (error) {
+            console.error("Failed to fetch occupied tables", error);
+        }
+    };
 
     const fetchAIRecommendations = async () => {
         setIsAiLoading(true);
@@ -241,6 +260,7 @@ const Menu = () => {
                 })),
                 totalPrice: cart.reduce((acc, item) => acc + (item.price * item.quantity), 0),
                 tableNumber: orderType === 'Dine-In' ? (parseInt(tableNumber) || 1) : 0,
+                guests: orderType === 'Dine-In' ? parseInt(guests) || 1 : 1,
                 specialInstructions: cartInstructions,
                 restaurantId: selectedRestaurant._id,
                 orderType,
@@ -271,7 +291,7 @@ const Menu = () => {
                             });
                             // 4. Place Actual Order
                             await createOrder(orderData);
-                            alert('Payment successful! Order placed!');
+                            setShowPremiumModal(true);
                             setCart([]);
                             setCartInstructions('');
                             setIsCartOpen(false);
@@ -307,7 +327,7 @@ const Menu = () => {
             }
 
             await createOrder(orderData);
-            alert('Order placed successfully!');
+            setShowPremiumModal(true);
             setCart([]);
             setCartInstructions('');
             setIsCartOpen(false);
@@ -909,15 +929,58 @@ const Menu = () => {
                                             </div>
 
                                             {orderType === 'Dine-In' ? (
-                                                <div>
-                                                    <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Table Number</label>
-                                                    <input
-                                                        type="number"
-                                                        placeholder="Table Number"
-                                                        value={tableNumber}
-                                                        onChange={(e) => setTableNumber(e.target.value)}
-                                                        className="w-full theme-card-item border border-black/5 rounded-2xl px-5 py-4 text-sm font-bold placeholder:opacity-30"
-                                                    />
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block flex items-center justify-between">
+                                                            <span>Select Table</span>
+                                                            <span className="flex gap-2">
+                                                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Available</span>
+                                                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Occupied</span>
+                                                            </span>
+                                                        </label>
+                                                        <div className="grid grid-cols-5 gap-2">
+                                                            {Array.from({ length: 15 }, (_, i) => i + 1).map(num => {
+                                                                const isOccupied = occupiedTables.includes(num);
+                                                                const isSelected = tableNumber === num.toString();
+                                                                return (
+                                                                    <button
+                                                                        key={num}
+                                                                        disabled={isOccupied}
+                                                                        onClick={() => setTableNumber(num.toString())}
+                                                                        className={`
+                                                                            py-2 rounded-xl text-xs font-bold transition-all relative overflow-hidden
+                                                                            ${isOccupied ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20 opacity-50 cursor-not-allowed' : 
+                                                                              isSelected ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 
+                                                                              'theme-card-item border border-black/5 hover:border-emerald-500/50'}
+                                                                        `}
+                                                                    >
+                                                                        {num}
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div>
+                                                        <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block flex items-center gap-1">
+                                                            <UsersIcon className="w-3 h-3" /> Party Size
+                                                        </label>
+                                                        <div className="flex items-center gap-3 theme-card-item border border-black/5 rounded-2xl p-2 w-max">
+                                                            <button 
+                                                                onClick={() => setGuests(Math.max(1, guests - 1))}
+                                                                className="w-8 h-8 flex items-center justify-center rounded-xl bg-black/5 hover:bg-black/10 transition-colors"
+                                                            >
+                                                                <MinusIcon className="w-4 h-4 opacity-70" />
+                                                            </button>
+                                                            <span className="font-bold w-4 text-center">{guests}</span>
+                                                            <button 
+                                                                onClick={() => setGuests(guests + 1)}
+                                                                className="w-8 h-8 flex items-center justify-center rounded-xl bg-black/5 hover:bg-black/10 transition-colors"
+                                                            >
+                                                                <PlusIcon className="w-4 h-4 opacity-70" />
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div>
@@ -990,6 +1053,11 @@ const Menu = () => {
                     </>
                 )}
             </AnimatePresence>
+            
+            <PremiumModal 
+                isOpen={showPremiumModal}
+                onClose={() => setShowPremiumModal(false)}
+            />
         </div>
     );
 };

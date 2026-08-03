@@ -42,6 +42,10 @@ const orderSchema = mongoose.Schema({
         enum: ['Dine-In', 'Home Delivery'],
         default: 'Dine-In'
     },
+    guests: {
+        type: Number,
+        default: 1
+    },
     paymentMethod: {
         type: String,
         enum: ['Cash', 'Card', 'UPI', 'Razorpay (Test)'],
