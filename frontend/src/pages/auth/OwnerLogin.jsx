@@ -425,6 +425,7 @@ const OwnerLogin = () => {
                 phone={!identifier.includes('@') ? (identifier.trim().startsWith('+') ? identifier.trim() : `${countryCode}${identifier.trim()}`) : ''}
                 method={otpMethod || (identifier.includes('@') ? 'email' : 'phone')}
                 isLoading={isOtpLoading}
+                colorTheme="indigo"
             />
         </div>
     );

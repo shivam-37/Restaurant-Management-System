@@ -187,99 +187,81 @@ const OwnerDashboard = () => {
     ];
 
     return (
-        <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-            {/* Sidebar */}
-            <motion.aside
-                initial={{ x: -100 }}
-                animate={{ x: 0 }}
-                className="w-72 border-r hidden md:flex flex-col"
-                style={{ background: 'var(--sidebar-bg)', borderColor: 'var(--border-color)' }}
-            >
-                <div className="p-6 border-b border-black/5 dark:border-white/5">
-                    <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-rose-600 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-600/20 group cursor-pointer hover:rotate-12 transition-transform duration-300">
-                            <SparklesIcon className="w-6 h-6 text-white" />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-xl font-black uppercase tracking-tighter leading-none">Dine Flow</span>
-                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-rose-500 mt-1">Owner Dashboard</span>
-                        </div>
-                    </div>
-                </div>
-
-                <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
-                    {navItems.map((item) => (
-                        <button
-                            key={item.name}
-                            onClick={() => setActiveTab(item.name)}
-                            className={`w-full flex items-center px-5 py-4 rounded-[1.25rem] transition-all duration-300 group ${activeTab === item.name 
-                                ? 'bg-rose-600 text-white shadow-xl shadow-rose-600/20' 
-                                : 'opacity-50 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5 hover:translate-x-1'
-                            }`}
-                        >
-                            <item.icon className={`h-5 w-5 mr-4 transition-transform group-hover:scale-110 ${activeTab === item.name ? 'text-white' : 'text-rose-500'}`} />
-                            <span className="text-xs font-black uppercase tracking-widest">{item.name}</span>
-                        </button>
-                    ))}
-                </nav>
-
-                <div className="p-6 border-t border-black/5 dark:border-white/5 bg-rose-500/5">
-                    <button
-                        onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                        className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-black/5 dark:hover:bg-white/5 transition-all group relative"
-                    >
-                        <div className="w-12 h-12 rounded-2xl bg-rose-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-rose-600/20 group-hover:scale-110 transition-transform overflow-hidden">
-                            {user?.avatar ? (
-                                <img src={user.avatar} alt={user?.name} className="w-full h-full object-cover" />
-                            ) : (
-                                user?.name?.charAt(0)
-                            )}
-                        </div>
-                        <div className="flex-1 text-left min-w-0">
-                            <p className="text-sm font-black uppercase tracking-tight truncate">{user?.name}</p>
-                            <div className="flex items-center gap-1.5 opacity-40">
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                                <p className="text-[10px] font-black uppercase tracking-widest leading-none">Account Active</p>
-                            </div>
-                        </div>
-                    </button>
-                    <AnimatePresence>
-                        {isProfileMenuOpen && (
-                            <motion.div 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 10 }}
-                                className="mt-4 bg-white dark:bg-gray-900 rounded-2xl border border-black/5 dark:border-white/5 overflow-hidden shadow-2xl"
+        <div className="flex flex-col h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]" style={{ color: 'var(--text-primary)' }}>
+            {/* Top Navigation Bar */}
+            <header className="flex-shrink-0 z-50 backdrop-blur-3xl border-b border-black/5 dark:border-white/5 bg-white/80 dark:bg-black/80 px-8 py-4 flex items-center justify-between shadow-sm">
+                 <div className="flex items-center gap-12">
+                     <div className="flex items-center space-x-3">
+                         <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                             <SparklesIcon className="w-5 h-5 text-white" />
+                         </div>
+                         <div className="flex flex-col">
+                             <span className="text-lg font-black uppercase tracking-tighter leading-none">Dine Flow</span>
+                             <span className="text-[8px] font-black uppercase tracking-[0.3em] text-indigo-500 mt-1">Owner Portal</span>
+                         </div>
+                     </div>
+                     
+                     <nav className="hidden lg:flex items-center gap-2">
+                        {navItems.map((item) => (
+                            <button
+                                key={item.name}
+                                onClick={() => setActiveTab(item.name)}
+                                className={`flex items-center px-4 py-2.5 rounded-xl transition-all duration-300 group ${activeTab === item.name 
+                                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' 
+                                    : 'opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'
+                                }`}
                             >
-                                <button onClick={logout} className="w-full flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-500/5 transition-colors">
-                                    <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-3" /> Log Out
-                                </button>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </div>
-            </motion.aside>
+                                <item.icon className={`h-4 w-4 mr-2 transition-transform group-hover:scale-110 ${activeTab === item.name ? 'text-white' : 'text-indigo-500'}`} />
+                                <span className="text-[10px] font-black uppercase tracking-widest">{item.name}</span>
+                            </button>
+                        ))}
+                     </nav>
+                 </div>
 
-            {/* Main Content */}
-            <main className="flex-1 relative overflow-y-auto">
-                <header className="sticky top-0 z-50 backdrop-blur-3xl border-b px-10 py-6 flex items-center justify-between" style={{ background: 'var(--navbar-bg)', borderColor: 'var(--border-color)' }}>
-                    <div>
-                        <h1 className="text-3xl font-black uppercase tracking-tighter leading-none">{activeTab}</h1>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-2 opacity-40">{selectedRestaurant?.name}</p>
-                    </div>
-                    <div className="flex items-center gap-6">
-                        <NotificationTray />
-                        <div className="h-8 w-px bg-black/5 dark:bg-white/10 mx-2" />
-                        <button 
-                            onClick={toggleTheme} 
-                            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-rose-600/10 text-rose-600 dark:text-rose-400 hover:bg-rose-600 hover:text-white transition-all shadow-lg shadow-rose-600/5 group"
-                        >
-                            {theme === 'dark' ? <SunIcon className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500" /> : <MoonIcon className="w-5 h-5 group-hover:-rotate-12 transition-transform duration-500" />}
-                        </button>
-                    </div>
-                </header>
+                 <div className="flex items-center gap-6">
+                     <NotificationTray />
+                     <div className="h-6 w-px bg-black/10 dark:bg-white/10" />
+                     <button 
+                         onClick={toggleTheme} 
+                         className="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+                     >
+                         {theme === 'dark' ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
+                     </button>
+                     
+                     {/* Profile Dropdown */}
+                     <div className="relative">
+                         <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="flex items-center gap-3">
+                             <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-sm shadow-md overflow-hidden hover:scale-105 transition-transform">
+                                 {user?.avatar ? <img src={user.avatar} className="w-full h-full object-cover" /> : user?.name?.charAt(0)}
+                             </div>
+                         </button>
+                         <AnimatePresence>
+                             {isProfileMenuOpen && (
+                                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute right-0 mt-4 w-56 bg-white dark:bg-gray-900 rounded-2xl border border-black/5 dark:border-white/5 shadow-2xl py-2">
+                                     <div className="px-5 py-3 border-b border-black/5 dark:border-white/5 mb-2">
+                                         <p className="text-xs font-black uppercase tracking-widest truncate">{user?.name}</p>
+                                         <p className="text-[9px] text-indigo-500 font-bold uppercase tracking-widest mt-1">Owner Account</p>
+                                     </div>
+                                     <button onClick={logout} className="w-full flex items-center px-5 py-3 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-colors">
+                                         <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-3" /> Log Out
+                                     </button>
+                                 </motion.div>
+                             )}
+                         </AnimatePresence>
+                     </div>
+                 </div>
+            </header>
 
-                <div className="p-8">
+            {/* Main Content Area */}
+            <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-[#0a0a0a] relative pb-24 lg:pb-0">
+                <div className="max-w-7xl mx-auto p-6 lg:p-10">
+                    <div className="mb-10 flex items-end justify-between">
+                        <div>
+                            <h1 className="text-4xl font-black uppercase tracking-tighter leading-none">{activeTab}</h1>
+                            <p className="text-[10px] font-black uppercase tracking-[0.3em] mt-2 opacity-40">{selectedRestaurant?.name}</p>
+                        </div>
+                    </div>
+
                     {activeTab === 'Overview' && (
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
@@ -406,20 +388,37 @@ const OwnerDashboard = () => {
                             </div>
                         </>
                     )}
-
                     <AnimatePresence mode="wait">
-                        <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                        <motion.div key={activeTab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
                             {activeTab === 'Menu' && <Menu />}
-                            {activeTab === 'Orders' && <Orders />}
-                            {activeTab === 'Reservations' && <Reservations />}
+                            {(activeTab === 'Orders' || activeTab === 'My Orders') && <Orders />}
                             {activeTab === 'Kitchen' && <KitchenDisplay />}
                             {activeTab === 'Table Map' && <TableMap />}
-                            {(activeTab === 'Analytics' || activeTab === 'Performance') && <Analytics />}
+                            {activeTab === 'Reservations' && <Reservations />}
+                            {activeTab === 'Analytics' && <Analytics />}
                             {activeTab === 'Settings' && <Settings />}
                         </motion.div>
                     </AnimatePresence>
                 </div>
             </main>
+
+            {/* Mobile Bottom Navigation for Owner Dashboard */}
+            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] backdrop-blur-xl bg-black/90 border-t border-white/10 pb-6 pt-2 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center justify-around px-2 overflow-x-auto scrollbar-hide">
+                    {navItems.map((item) => (
+                        <button
+                            key={item.name}
+                            onClick={() => setActiveTab(item.name)}
+                            className={`flex flex-col items-center justify-center space-y-1 p-2 rounded-xl transition-all min-w-[60px] ${
+                                activeTab === item.name ? 'text-indigo-500 scale-110' : 'text-white/40 hover:text-white/80'
+                            }`}
+                        >
+                            <item.icon className="h-5 w-5" />
+                            <span className="text-[8px] font-black uppercase tracking-widest truncate max-w-[60px] text-center">{item.name === 'Overview' ? 'Home' : item.name}</span>
+                        </button>
+                    ))}
+                </div>
+            </nav>
         </div>
     );
 };

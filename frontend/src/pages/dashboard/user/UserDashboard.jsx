@@ -275,14 +275,14 @@ const UserDashboard = ({ user, logout }) => {
             </main>
 
             {/* Mobile Bottom Navigation */}
-            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl border-t border-black/5 pb-safe" style={{ background: 'var(--navbar-bg)' }}>
-                <div className="flex items-center justify-around p-2">
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-[100] backdrop-blur-xl bg-black/90 border-t border-white/10 pb-6 pt-2 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+                <div className="flex items-center justify-around px-2">
                     {navItems.map((item) => (
                         <button
                             key={item.name}
                             onClick={() => setActiveTab(item.name)}
                             className={`flex flex-col items-center justify-center space-y-1 p-2 rounded-xl transition-all ${
-                                activeTab === item.name ? 'text-rose-600' : 'opacity-40 hover:opacity-100'
+                                activeTab === item.name ? 'text-rose-500 scale-110' : 'text-white/40 hover:text-white/80'
                             }`}
                         >
                             <item.icon className="h-5 w-5" />
