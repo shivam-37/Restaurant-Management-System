@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChefHat } from 'lucide-react';
 import { getAnalytics, getRestaurants } from '../../../services/api';
 import Menu from '../Menu';
 import Orders from '../Orders';
@@ -105,7 +106,7 @@ const UserDashboard = ({ user, logout }) => {
                 <div className="p-8 border-b border-black/5">
                     <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-rose-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-600/30">
-                            <SparklesIcon className="w-5 h-5 text-white" />
+                            <ChefHat className="w-6 h-6 text-white" />
                         </div>
                         <span className="text-xl font-black bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent uppercase tracking-tighter">Dine Flow</span>
                     </div>

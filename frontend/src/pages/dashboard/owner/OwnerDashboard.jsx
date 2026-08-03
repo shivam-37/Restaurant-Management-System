@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChefHat } from 'lucide-react';
 import { getAnalytics, predictInventory, pushNotification } from '../../../services/api';
 import { MegaphoneIcon } from '@heroicons/react/24/outline';
 import Menu from '../Menu';
@@ -189,36 +190,36 @@ const OwnerDashboard = () => {
     return (
         <div className="flex flex-col h-screen overflow-hidden bg-gray-50 dark:bg-[#0a0a0a]" style={{ color: 'var(--text-primary)' }}>
             {/* Top Navigation Bar */}
-            <header className="flex-shrink-0 z-50 backdrop-blur-3xl border-b border-black/5 dark:border-white/5 bg-white/80 dark:bg-black/80 px-8 py-4 flex items-center justify-between shadow-sm">
-                 <div className="flex items-center gap-12">
-                     <div className="flex items-center space-x-3">
+            <header className="flex-shrink-0 z-50 backdrop-blur-3xl border-b border-black/5 dark:border-white/5 bg-white/80 dark:bg-black/80 px-4 md:px-8 py-4 flex items-center justify-between shadow-sm overflow-hidden">
+                 <div className="flex items-center gap-4 lg:gap-8 flex-1 min-w-0">
+                     <div className="flex items-center space-x-3 shrink-0">
                          <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
-                             <SparklesIcon className="w-5 h-5 text-white" />
+                             <ChefHat className="w-5 h-5 text-white" />
                          </div>
-                         <div className="flex flex-col">
+                         <div className="flex flex-col hidden sm:flex">
                              <span className="text-lg font-black uppercase tracking-tighter leading-none">Dine Flow</span>
                              <span className="text-[8px] font-black uppercase tracking-[0.3em] text-indigo-500 mt-1">Owner Portal</span>
                          </div>
                      </div>
                      
-                     <nav className="hidden lg:flex items-center gap-2">
+                     <nav className="hidden lg:flex items-center gap-1 overflow-x-auto scrollbar-hide pb-1">
                         {navItems.map((item) => (
                             <button
                                 key={item.name}
                                 onClick={() => setActiveTab(item.name)}
-                                className={`flex items-center px-4 py-2.5 rounded-xl transition-all duration-300 group ${activeTab === item.name 
+                                className={`flex items-center px-3 py-2 rounded-xl transition-all duration-300 group whitespace-nowrap shrink-0 ${activeTab === item.name 
                                     ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' 
                                     : 'opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'
                                 }`}
                             >
-                                <item.icon className={`h-4 w-4 mr-2 transition-transform group-hover:scale-110 ${activeTab === item.name ? 'text-white' : 'text-indigo-500'}`} />
+                                <item.icon className={`h-4 w-4 mr-1.5 transition-transform group-hover:scale-110 ${activeTab === item.name ? 'text-white' : 'text-indigo-500'}`} />
                                 <span className="text-[10px] font-black uppercase tracking-widest">{item.name}</span>
                             </button>
                         ))}
                      </nav>
                  </div>
 
-                 <div className="flex items-center gap-6">
+                 <div className="flex items-center gap-4 shrink-0 ml-4">
                      <NotificationTray />
                      <div className="h-6 w-px bg-black/10 dark:bg-white/10" />
                      <button 

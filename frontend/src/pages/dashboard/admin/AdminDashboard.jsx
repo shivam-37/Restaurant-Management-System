@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChefHat } from 'lucide-react';
 import { getAnalytics, predictInventory } from '../../../services/api';
 import RestaurantManagement from './RestaurantManagement';
 import Orders from '../Orders';
@@ -178,7 +179,7 @@ const AdminDashboard = () => {
                         <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-rose-500 to-purple-500 rounded-xl blur-lg opacity-50"></div>
                             <div className="relative w-10 h-10 bg-gradient-to-br from-rose-600 to-purple-600 rounded-xl flex items-center justify-center">
-                                <SparklesIcon className="w-5 h-5 text-white" />
+                                <ChefHat className="w-6 h-6 text-white" />
                             </div>
                         </div>
                         <span className="text-xl font-bold bg-gradient-to-r from-rose-400 to-purple-400 bg-clip-text text-transparent">Admin Panel</span>

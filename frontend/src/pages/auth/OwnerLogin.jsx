@@ -155,7 +155,7 @@ const OwnerLogin = () => {
                             className="flex items-center space-x-3 mb-6"
                         >
                             <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/30">
-                                <Briefcase className="w-6 h-6 text-white" />
+                                <ChefHat className="w-6 h-6 text-white" />
                             </div>
                             <div>
                                 <span className="text-2xl font-light tracking-wider text-gray-900 dark:text-white">DINE</span>
