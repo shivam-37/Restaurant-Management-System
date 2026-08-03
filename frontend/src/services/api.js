@@ -66,6 +66,10 @@ export const deleteUser = (id) => api.delete(`/users/${id}`);
 export const deleteAccount = () => api.delete('/users/me');
 export const updateNotificationPrefs = (prefs) => api.put('/users/notifications', prefs);
 
+// Payment APIs
+export const createRazorpayOrder = (data) => api.post('/payment/create-order', data);
+export const verifyRazorpayPayment = (data) => api.post('/payment/verify', data);
+
 // Auth
 export const login = (credentials) => api.post('/auth/login', credentials);
 export const register = (userData) => api.post('/auth/register', userData);

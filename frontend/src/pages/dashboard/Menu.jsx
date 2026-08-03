@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getMenu, createMenuItem, updateMenuItem, deleteMenuItem, generateDescription, createOrder, generateOrderInstructions, getRecommendations, generateFullMenuItem } from '../../services/api';
+import { getMenu, createMenuItem, updateMenuItem, deleteMenuItem, generateDescription, createOrder, generateOrderInstructions, getRecommendations, generateFullMenuItem, createRazorpayOrder, verifyRazorpayPayment } from '../../services/api';
 import { SparklesIcon as SparklesOutline, ShoppingCartIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import {
     PlusIcon,
@@ -247,6 +247,59 @@ const Menu = () => {
                 paymentMethod,
                 deliveryAddress: orderType === 'Home Delivery' ? deliveryAddress : ''
             };
+
+            if (paymentMethod === 'Razorpay (Test)') {
+                // 1. Create Razorpay Order
+                const resOrder = await createRazorpayOrder({ amount: orderData.totalPrice });
+                const { order, key_id } = resOrder.data;
+
+                // 2. Open Razorpay Checkout
+                const options = {
+                    key: key_id,
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: "Restaurant App Demo",
+                    description: "Test Transaction",
+                    order_id: order.id,
+                    handler: async function (response) {
+                        try {
+                            // 3. Verify Payment
+                            await verifyRazorpayPayment({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature
+                            });
+                            // 4. Place Actual Order
+                            await createOrder(orderData);
+                            alert('Payment successful! Order placed!');
+                            setCart([]);
+                            setCartInstructions('');
+                            setIsCartOpen(false);
+                        } catch (err) {
+                            console.error(err);
+                            alert('Payment verification failed.');
+                        } finally {
+                            setIsLoading(false);
+                        }
+                    },
+                    prefill: {
+                        name: user?.name || "Demo User",
+                        email: user?.email || "demo@example.com",
+                        contact: "9999999999"
+                    },
+                    theme: {
+                        color: "#059669" // emerald-600
+                    }
+                };
+                const rzp = new window.Razorpay(options);
+                rzp.on('payment.failed', function (response) {
+                    alert(response.error.description);
+                    setIsLoading(false);
+                });
+                rzp.open();
+                return; // Let the handler finish the process
+            }
+
             await createOrder(orderData);
             alert('Order placed successfully!');
             setCart([]);
@@ -872,8 +925,8 @@ const Menu = () => {
 
                                             <div>
                                                 <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Payment Method</label>
-                                                <div className="grid grid-cols-3 gap-2">
-                                                    {['Cash', 'Card', 'UPI'].map(method => (
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {['Cash', 'Card', 'UPI', 'Razorpay (Test)'].map(method => (
                                                         <button
                                                             key={method}
                                                             onClick={() => setPaymentMethod(method)}
