@@ -291,6 +291,11 @@ const Menu = () => {
                         color: "#059669" // emerald-600
                     }
                 };
+                if (!window.Razorpay) {
+                    alert('Razorpay SDK failed to load. Are you offline or using an adblocker?');
+                    setIsLoading(false);
+                    return;
+                }
                 const rzp = new window.Razorpay(options);
                 rzp.on('payment.failed', function (response) {
                     alert(response.error.description);
