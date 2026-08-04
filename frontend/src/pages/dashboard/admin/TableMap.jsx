@@ -125,7 +125,7 @@ const TableMap = () => {
                 </div>
             </div>
 
-            <div className="relative w-full overflow-auto rounded-[3rem] border border-black/5 backdrop-blur-sm shadow-2xl scrollbar-hide" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
+            <div className="relative w-full overflow-auto rounded-[3rem] border border-black/5 backdrop-blur-sm shadow-2xl scrollbar-hide" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 <div className="relative min-w-[800px] h-[600px]">
                     {/* Grid Pattern */}
                     <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, currentColor 1.5px, transparent 0)', backgroundSize: '50px 50px' }} />
