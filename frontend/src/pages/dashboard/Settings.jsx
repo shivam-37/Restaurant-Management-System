@@ -358,7 +358,9 @@ const RestaurantTab = ({ selectedRestaurant, updateRestaurantInList, showMessage
         description: selectedRestaurant?.description || '',
         address: selectedRestaurant?.address || '',
         cuisine: selectedRestaurant?.cuisine || '',
-        image: selectedRestaurant?.image || ''
+        image: selectedRestaurant?.image || '',
+        openingTime: selectedRestaurant?.openingTime || '10:00',
+        closingTime: selectedRestaurant?.closingTime || '22:00'
     });
     const [loading, setLoading] = useState(false);
 
@@ -394,6 +396,11 @@ const RestaurantTab = ({ selectedRestaurant, updateRestaurantInList, showMessage
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <InputField label="Cuisine Type" name="cuisine" value={form.cuisine} onChange={e => setForm({ ...form, cuisine: e.target.value })} placeholder="e.g. Indian, Italian" />
                 <InputField label="Address" name="address" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder="Full address" />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <InputField label="Opening Time" name="openingTime" type="time" value={form.openingTime} onChange={e => setForm({ ...form, openingTime: e.target.value })} />
+                <InputField label="Closing Time" name="closingTime" type="time" value={form.closingTime} onChange={e => setForm({ ...form, closingTime: e.target.value })} />
             </div>
 
             <div>

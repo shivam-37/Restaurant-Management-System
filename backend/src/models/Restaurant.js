@@ -11,6 +11,8 @@ const restaurantSchema = mongoose.Schema({
         ref: 'User'
     },
     rating: { type: Number, default: 4.5 },
+    openingTime: { type: String, default: '10:00' },
+    closingTime: { type: String, default: '22:00' },
     tables: [
         {
             number: { type: Number, required: true },

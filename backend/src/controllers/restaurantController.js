@@ -76,7 +76,7 @@ const updateTableStatus = asyncHandler(async (req, res) => {
 // @route   POST /api/restaurant
 // @access  Private/Admin
 const createRestaurant = asyncHandler(async (req, res) => {
-    const { name, description, address, cuisine, image, tables } = req.body;
+    const { name, description, address, cuisine, image, openingTime, closingTime, tables } = req.body;
 
     if (!name) {
         res.status(400);
@@ -89,6 +89,8 @@ const createRestaurant = asyncHandler(async (req, res) => {
         address,
         cuisine,
         image,
+        openingTime: openingTime || '10:00',
+        closingTime: closingTime || '22:00',
         owner: req.user._id,
         tables: tables || [
             { number: 1, capacity: 4, status: 'Available' },

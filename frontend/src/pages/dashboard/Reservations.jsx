@@ -303,9 +303,22 @@ const Reservations = () => {
                                     {/* Modern Time Chips */}
                                     {formData.date && (
                                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-                                            <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 mb-2 block">Select Time</label>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 block">Select Time</label>
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                                                    Operating Hours: {selectedRestaurant?.openingTime || '10:00'} - {selectedRestaurant?.closingTime || '22:00'}
+                                                </span>
+                                            </div>
                                             <div className="flex flex-wrap gap-2">
-                                                {['17:00', '18:00', '19:00', '20:00', '21:00', '22:00'].map(time => {
+                                                {(() => {
+                                                    const startHour = parseInt((selectedRestaurant?.openingTime || '10:00').split(':')[0]);
+                                                    const endHour = parseInt((selectedRestaurant?.closingTime || '22:00').split(':')[0]);
+                                                    const slots = [];
+                                                    for (let i = startHour; i < endHour; i++) {
+                                                        slots.push(`${i.toString().padStart(2, '0')}:00`);
+                                                    }
+                                                    return slots;
+                                                })().map(time => {
                                                     const isSelected = formData.time === time;
                                                     const displayTime = new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
                                                     return (

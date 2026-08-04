@@ -57,6 +57,8 @@ const CreateRestaurant = () => {
         address: '',
         cuisine: '',
         image: '',
+        openingTime: '10:00',
+        closingTime: '22:00',
         tablesCount: 6
     });
 
@@ -78,6 +80,8 @@ const CreateRestaurant = () => {
                 address: formData.address.trim(),
                 cuisine: formData.cuisine.trim(),
                 image: formData.image.trim(),
+                openingTime: formData.openingTime,
+                closingTime: formData.closingTime,
                 tables
             });
 
@@ -189,6 +193,34 @@ const CreateRestaurant = () => {
                                     className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
                                     value={formData.address}
                                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Timings */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label className="text-sm font-semibold mb-2 block text-gray-700 dark:text-gray-200">
+                                    Opening Time
+                                </label>
+                                <input
+                                    type="time"
+                                    required
+                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 px-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                    value={formData.openingTime}
+                                    onChange={(e) => setFormData({ ...formData, openingTime: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="text-sm font-semibold mb-2 block text-gray-700 dark:text-gray-200">
+                                    Closing Time
+                                </label>
+                                <input
+                                    type="time"
+                                    required
+                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 px-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                    value={formData.closingTime}
+                                    onChange={(e) => setFormData({ ...formData, closingTime: e.target.value })}
                                 />
                             </div>
                         </div>
