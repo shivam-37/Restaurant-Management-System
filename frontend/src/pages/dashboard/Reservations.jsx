@@ -192,14 +192,16 @@ const Reservations = () => {
                                         </div>
                                     </div>
 
-                                     {(user.role === 'admin' || user.role === 'owner') && res.status === 'Pending' && (
-                                        <div className="flex items-center gap-3 w-full md:w-auto">
-                                            <button
-                                                onClick={() => handleStatusUpdate(res._id, 'Confirmed')}
-                                                className="flex-1 md:flex-none px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-black text-[9px] uppercase tracking-widest shadow-xl shadow-emerald-600/20"
-                                            >
-                                                Confirm
-                                            </button>
+                                     {res.status !== 'Cancelled' && (
+                                        <div className="flex items-center gap-3 w-full md:w-auto mt-4 md:mt-0">
+                                            {(user?.role === 'admin' || user?.role === 'owner') && res.status === 'Pending' && (
+                                                <button
+                                                    onClick={() => handleStatusUpdate(res._id, 'Confirmed')}
+                                                    className="flex-1 md:flex-none px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-black text-[9px] uppercase tracking-widest shadow-xl shadow-emerald-600/20"
+                                                >
+                                                    Confirm
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => handleStatusUpdate(res._id, 'Cancelled')}
                                                 className="flex-1 md:flex-none px-6 py-3 theme-card-item border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all font-black text-[9px] uppercase tracking-widest"
