@@ -229,10 +229,10 @@ const Reservations = () => {
                             initial={{ scale: 0.9, opacity: 0, y: 30 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 30 }}
-                            className="theme-card rounded-[3rem] w-full max-w-lg overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-white/10"
+                            className="theme-card rounded-[3rem] w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-white/10"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="p-10 border-b border-black/5 flex justify-between items-center bg-rose-500/5">
+                            <div className="p-10 border-b border-black/5 flex justify-between items-center bg-rose-500/5 flex-shrink-0">
                                 <div>
                                     <h2 className="text-2xl font-black uppercase tracking-tighter">Reserve Table</h2>
                                     <p className="text-xs text-rose-500 font-bold uppercase tracking-widest">{selectedRestaurant?.name}</p>
@@ -242,7 +242,7 @@ const Reservations = () => {
                                 </button>
                             </div>
 
-                             <form onSubmit={handleSubmit} className="p-10 space-y-8">
+                             <form onSubmit={handleSubmit} className="p-10 space-y-8 overflow-y-auto flex-1 scrollbar-hide">
                                 <div className="space-y-5">
                                     <div>
                                         <div className="relative group">
