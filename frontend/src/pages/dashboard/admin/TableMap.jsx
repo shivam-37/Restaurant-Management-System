@@ -125,52 +125,54 @@ const TableMap = () => {
                 </div>
             </div>
 
-            <div className="relative w-full h-[600px] rounded-[3rem] border border-black/5 overflow-hidden backdrop-blur-sm shadow-2xl relative" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
-                {/* Grid Pattern */}
-                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, currentColor 1.5px, transparent 0)', backgroundSize: '50px 50px' }} />
+            <div className="relative w-full overflow-auto rounded-[3rem] border border-black/5 backdrop-blur-sm shadow-2xl" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }}>
+                <div className="relative min-w-[800px] h-[600px]">
+                    {/* Grid Pattern */}
+                    <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, currentColor 1.5px, transparent 0)', backgroundSize: '50px 50px' }} />
 
-                {restaurant?.tables.map((table, idx) => {
-                    let posX = table.x;
-                    let posY = table.y;
+                    {restaurant?.tables.map((table, idx) => {
+                        let posX = table.x;
+                        let posY = table.y;
 
-                    if (posX === 0 && posY === 0) {
-                        const cols = 5;
-                        const spacing = 18;
-                        const margin = 8;
-                        posX = margin + (idx % cols) * spacing;
-                        posY = margin + Math.floor(idx / cols) * spacing;
-                    }
+                        if (posX === 0 && posY === 0) {
+                            const cols = 5;
+                            const spacing = 18;
+                            const margin = 8;
+                            posX = margin + (idx % cols) * spacing;
+                            posY = margin + Math.floor(idx / cols) * spacing;
+                        }
 
-                    return (
-                        <motion.button
-                            key={table.number}
-                            layoutId={`table-${table.number}`}
-                            onClick={() => setSelectedTable(table)}
-                            whileHover={{ scale: 1.05, zIndex: 20 }}
-                            whileTap={{ scale: 0.95 }}
-                            className={`absolute w-36 h-36 rounded-3xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-500 shadow-lg ${table.status === 'Available' ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400 hover:bg-green-500/20' :
-                                table.status === 'Occupied' ? 'bg-rose-600/10 border-rose-600/30 text-rose-700 dark:text-rose-400 hover:bg-rose-600/20' :
-                                    table.status === 'Reserved' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20' :
-                                        'bg-red-500/10 border-red-500/30 text-red-700 dark:text-red-400 hover:bg-red-500/20'
-                                }`}
-                            style={{ left: `${posX}%`, top: `${posY}%` }}
-                        >
-                            <span className="text-[10px] font-black opacity-40 uppercase tracking-[0.3em]">TABLE-{table.number}</span>
-                            <div className="flex -space-x-1.5">
-                                {[...Array(table.capacity)].map((_, i) => (
-                                    <div key={i} className={`w-3 h-3 rounded-full border border-black/5 ${table.status === 'Available' ? 'bg-green-500/50' : 'bg-current opacity-40'
-                                        }`} />
-                                ))}
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest">{table.status}</span>
-                        </motion.button>
-                    );
-                })}
+                        return (
+                            <motion.button
+                                key={table.number}
+                                layoutId={`table-${table.number}`}
+                                onClick={() => setSelectedTable(table)}
+                                whileHover={{ scale: 1.05, zIndex: 20 }}
+                                whileTap={{ scale: 0.95 }}
+                                className={`absolute w-36 h-36 rounded-3xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-500 shadow-lg ${table.status === 'Available' ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400 hover:bg-green-500/20' :
+                                    table.status === 'Occupied' ? 'bg-rose-600/10 border-rose-600/30 text-rose-700 dark:text-rose-400 hover:bg-rose-600/20' :
+                                        table.status === 'Reserved' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20' :
+                                            'bg-red-500/10 border-red-500/30 text-red-700 dark:text-red-400 hover:bg-red-500/20'
+                                    }`}
+                                style={{ left: `${posX}%`, top: `${posY}%` }}
+                            >
+                                <span className="text-[10px] font-black opacity-40 uppercase tracking-[0.3em]">TABLE-{table.number}</span>
+                                <div className="flex -space-x-1.5">
+                                    {[...Array(table.capacity)].map((_, i) => (
+                                        <div key={i} className={`w-3 h-3 rounded-full border border-black/5 ${table.status === 'Available' ? 'bg-green-500/50' : 'bg-current opacity-40'
+                                            }`} />
+                                    ))}
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-widest">{table.status}</span>
+                            </motion.button>
+                        );
+                    })}
 
-                {/* Legend / Overlay */}
-                <div className="absolute bottom-8 left-8 flex gap-6 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">
-                    <span className="flex items-center gap-2"><MapPinIcon className="w-4 h-4" /> Entry Point</span>
-                    <span className="flex items-center gap-2"><FireIcon className="w-4 h-4 ml-4" /> Kitchen</span>
+                    {/* Legend / Overlay */}
+                    <div className="absolute bottom-8 left-8 flex gap-6 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">
+                        <span className="flex items-center gap-2"><MapPinIcon className="w-4 h-4" /> Entry Point</span>
+                        <span className="flex items-center gap-2"><FireIcon className="w-4 h-4 ml-4" /> Kitchen</span>
+                    </div>
                 </div>
             </div>
 
