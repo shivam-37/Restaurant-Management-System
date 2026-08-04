@@ -37,6 +37,20 @@ const createReservation = asyncHandler(async (req, res) => {
         throw new Error('Please add all fields including tableNumber and restaurantId');
     }
 
+    // Check for double booking
+    const existingReservation = await Reservation.findOne({
+        restaurant: restaurantId,
+        date: new Date(date),
+        time: time,
+        tableNumber: tableNumber,
+        status: { $ne: 'Cancelled' }
+    });
+
+    if (existingReservation) {
+        res.status(400);
+        throw new Error('This table is already booked for the selected time');
+    }
+
     const reservation = await Reservation.create({
         user: req.user._id,
         restaurant: restaurantId,
@@ -92,18 +106,32 @@ const getReservations = asyncHandler(async (req, res) => {
 // @route   PUT /api/reservations/:id
 // @access  Private (Staff/Admin)
 const updateReservationStatus = asyncHandler(async (req, res) => {
-    const updatedReservation = await Reservation.findByIdAndUpdate(
-        req.params.id,
-        { status: req.body.status },
-        { new: true, runValidators: false }
-    ).populate('user', 'name').populate('restaurant', 'name');
+    const reservation = await Reservation.findById(req.params.id);
 
-    if (updatedReservation) {
-        res.json(updatedReservation);
-    } else {
+    if (!reservation) {
         res.status(404);
         throw new Error('Reservation not found');
     }
+
+    if (req.user.role === 'user') {
+        if (reservation.user.toString() !== req.user._id.toString()) {
+            res.status(401);
+            throw new Error('Not authorized to update this reservation');
+        }
+        if (req.body.status !== 'Cancelled') {
+            res.status(400);
+            throw new Error('Users can only cancel their reservations');
+        }
+    }
+
+    reservation.status = req.body.status;
+    const updatedReservation = await reservation.save();
+    
+    // Populate before sending response
+    await updatedReservation.populate('user', 'name');
+    await updatedReservation.populate('restaurant', 'name');
+
+    res.json(updatedReservation);
 });
 
 module.exports = {

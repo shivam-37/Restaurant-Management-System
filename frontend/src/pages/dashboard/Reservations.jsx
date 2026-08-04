@@ -351,49 +351,44 @@ const Reservations = () => {
                                                     <div className="absolute top-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">Entrance</div>
                                                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">Kitchen</div>
                                                     
-                                                    {/* 2D Floor Plan Grid Layout */}
-                                                    <div className="w-full flex-1 pt-8 pb-8 flex flex-col justify-between">
-                                                        {/* Top Row - Window Booths */}
-                                                        <div className="flex justify-between px-4">
-                                                            {[1, 2, 3].map(num => {
-                                                                const isOccupied = occupiedTables.includes(num);
-                                                                const isSelected = formData.tableNumber === num.toString();
-                                                                return (
-                                                                    <button key={num} type="button" disabled={isOccupied} onClick={() => setFormData({ ...formData, tableNumber: num.toString() })}
-                                                                        className={`w-16 h-12 rounded-t-full transition-all flex items-center justify-center border-b-4 ${isOccupied ? 'bg-rose-500/20 border-rose-500/30 text-rose-500 cursor-not-allowed' : isSelected ? 'bg-emerald-500 border-emerald-600 text-white shadow-lg shadow-emerald-500/40 -translate-y-1' : 'bg-white dark:bg-gray-800 border-black/10 hover:border-emerald-500 text-black dark:text-white shadow-md'}`}>
-                                                                        <span className="text-xs font-black">T{num}</span>
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                        </div>
+                                                    {/* Dynamic Floor Plan Layout */}
+                                                    <div className="absolute inset-0 mt-8 mb-8 mx-4">
+                                                        {selectedRestaurant?.tables?.map((table, idx) => {
+                                                            let posX = table.x;
+                                                            let posY = table.y;
+                                                            if (posX === 0 && posY === 0) {
+                                                                const cols = 5;
+                                                                const spacing = 18;
+                                                                const margin = 8;
+                                                                posX = margin + (idx % cols) * spacing;
+                                                                posY = margin + Math.floor(idx / cols) * spacing;
+                                                            }
 
-                                                        {/* Middle Row - Round Tables */}
-                                                        <div className="flex justify-center gap-8">
-                                                            {[4, 5, 6, 7].map(num => {
-                                                                const isOccupied = occupiedTables.includes(num);
-                                                                const isSelected = formData.tableNumber === num.toString();
-                                                                return (
-                                                                    <button key={num} type="button" disabled={isOccupied} onClick={() => setFormData({ ...formData, tableNumber: num.toString() })}
-                                                                        className={`w-12 h-12 rounded-full transition-all flex items-center justify-center ${isOccupied ? 'bg-rose-500/20 text-rose-500 cursor-not-allowed' : isSelected ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/40 scale-110' : 'bg-white dark:bg-gray-800 hover:border-emerald-500 border-2 border-black/5 text-black dark:text-white shadow-md hover:scale-105'}`}>
-                                                                        <span className="text-[10px] font-black">T{num}</span>
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                        </div>
+                                                            const isOccupied = occupiedTables.includes(table.number);
+                                                            const isSelected = formData.tableNumber === table.number.toString();
 
-                                                        {/* Bottom Row - Large Tables */}
-                                                        <div className="flex justify-between px-8">
-                                                            {[8, 9].map(num => {
-                                                                const isOccupied = occupiedTables.includes(num);
-                                                                const isSelected = formData.tableNumber === num.toString();
-                                                                return (
-                                                                    <button key={num} type="button" disabled={isOccupied} onClick={() => setFormData({ ...formData, tableNumber: num.toString() })}
-                                                                        className={`w-24 h-10 rounded-xl transition-all flex items-center justify-center ${isOccupied ? 'bg-rose-500/20 text-rose-500 cursor-not-allowed' : isSelected ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/40 scale-105' : 'bg-white dark:bg-gray-800 hover:border-emerald-500 border-2 border-black/5 text-black dark:text-white shadow-md hover:scale-105'}`}>
-                                                                        <span className="text-[10px] font-black">Table {num}</span>
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                        </div>
+                                                            return (
+                                                                <button
+                                                                    key={table.number}
+                                                                    type="button"
+                                                                    disabled={isOccupied}
+                                                                    onClick={() => setFormData({ ...formData, tableNumber: table.number.toString() })}
+                                                                    className={`absolute w-12 h-12 sm:w-16 sm:h-16 rounded-2xl transition-all flex flex-col items-center justify-center gap-1 shadow-lg ${
+                                                                        isOccupied ? 'bg-rose-500/20 border-2 border-rose-500/30 text-rose-500 cursor-not-allowed' :
+                                                                        isSelected ? 'bg-emerald-500 border-2 border-emerald-600 text-white shadow-emerald-500/40 scale-110 z-10' :
+                                                                        'bg-white dark:bg-gray-800 border-2 border-black/10 hover:border-emerald-500 text-black dark:text-white hover:scale-105'
+                                                                    }`}
+                                                                    style={{ left: `${posX}%`, top: `${posY}%` }}
+                                                                >
+                                                                    <span className="text-[10px] sm:text-xs font-black">T{table.number}</span>
+                                                                    <div className="flex -space-x-1">
+                                                                        {[...Array(Math.min(table.capacity || 2, 4))].map((_, i) => (
+                                                                            <div key={i} className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-black/10 ${isOccupied ? 'bg-current opacity-40' : isSelected ? 'bg-white' : 'bg-emerald-500/50'}`} />
+                                                                        ))}
+                                                                    </div>
+                                                                </button>
+                                                            );
+                                                        })}
                                                     </div>
                                                 </div>
                                             </div>
