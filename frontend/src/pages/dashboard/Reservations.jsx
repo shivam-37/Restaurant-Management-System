@@ -79,7 +79,7 @@ const Reservations = () => {
             setIsModalOpen(false);
             setFormData({ ...formData, date: '', time: '', tableNumber: '' });
         } catch (error) {
-            alert('Failed to book reservation');
+            alert(`Failed to book reservation: ${error.response?.data?.message || error.message}`);
         }
     };
 

@@ -53,10 +53,9 @@ const createReservation = asyncHandler(async (req, res) => {
     if (restaurant && restaurant.owner) {
         await Notification.create({
             user: restaurant.owner,
-            title: 'New Reservation',
             message: `A new reservation was booked by ${name} for ${partySize} people at Table ${tableNumber} on ${new Date(date).toLocaleDateString()} at ${time}.`,
-            type: 'system',
-            read: false
+            type: 'Reservation',
+            isRead: false
         });
     }
 
