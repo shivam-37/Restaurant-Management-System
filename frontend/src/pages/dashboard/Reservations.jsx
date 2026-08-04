@@ -19,6 +19,8 @@ const Reservations = () => {
     const [reservations, setReservations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
     const [formData, setFormData] = useState({
         name: user?.name || '',
         phone: '',
@@ -65,21 +67,26 @@ const Reservations = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMsg('');
         if (!selectedRestaurant) {
-            alert('Please select a restaurant first');
+            setErrorMsg('Please select a restaurant first');
             return;
         }
         try {
             if (!formData.tableNumber) {
-                alert('Please select a table');
+                setErrorMsg('Please select a table');
                 return;
             }
             await createReservation({ ...formData, restaurantId: selectedRestaurant._id });
             fetchReservations();
             setIsModalOpen(false);
             setFormData({ ...formData, date: '', time: '', tableNumber: '' });
+            setShowSuccess(true);
+            setTimeout(() => {
+                setShowSuccess(false);
+            }, 4000);
         } catch (error) {
-            alert(`Failed to book reservation: ${error.response?.data?.message || error.message}`);
+            setErrorMsg(`Failed to book reservation: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -120,7 +127,7 @@ const Reservations = () => {
                 <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setIsModalOpen(true)}
+                    onClick={() => { setIsModalOpen(true); setErrorMsg(''); }}
                     className="flex items-center px-8 py-4 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-600/30 hover:bg-rose-700 transition-all group"
                 >
                     <PlusIcon className="h-5 w-5 mr-3 group-hover:rotate-90 transition-transform duration-500" />
@@ -245,6 +252,14 @@ const Reservations = () => {
                             </div>
 
                              <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-6 sm:space-y-8 overflow-y-auto flex-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                                <AnimatePresence>
+                                    {errorMsg && (
+                                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-500 mb-6">
+                                            <NoSymbolIcon className="w-5 h-5 flex-shrink-0" />
+                                            <p className="text-xs font-bold">{errorMsg}</p>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                                 <div className="space-y-5">
                                     <div>
                                         <div className="relative group">
@@ -380,27 +395,29 @@ const Reservations = () => {
                                                             }
 
                                                             const isOccupied = occupiedTables.includes(table.number);
+                                                            const capacityTooSmall = (table.capacity || 4) < parseInt(formData.partySize || 2, 10);
+                                                            const isDisabled = isOccupied || capacityTooSmall;
                                                             const isSelected = formData.tableNumber === table.number.toString();
 
                                                             return (
                                                                 <button
                                                                     key={table.number}
                                                                     type="button"
-                                                                    disabled={isOccupied}
+                                                                    disabled={isDisabled}
                                                                     onClick={() => setFormData({ ...formData, tableNumber: table.number.toString() })}
-                                                                    className={`absolute w-12 h-12 sm:w-16 sm:h-16 rounded-2xl transition-all flex flex-col items-center justify-center gap-1 shadow-lg ${
+                                                                    className={`absolute w-12 h-12 sm:w-16 sm:h-16 rounded-2xl transition-all flex flex-col items-center justify-center shadow-lg ${
                                                                         isOccupied ? 'bg-rose-500/20 border-2 border-rose-500/30 text-rose-500 cursor-not-allowed' :
+                                                                        capacityTooSmall ? 'bg-gray-500/10 border-2 border-gray-500/20 text-gray-500 opacity-50 cursor-not-allowed' :
                                                                         isSelected ? 'bg-emerald-500 border-2 border-emerald-600 text-white shadow-emerald-500/40 scale-110 z-10' :
                                                                         'bg-white dark:bg-gray-800 border-2 border-black/10 hover:border-emerald-500 text-black dark:text-white hover:scale-105'
                                                                     }`}
                                                                     style={{ left: `${posX}%`, top: `${posY}%` }}
                                                                 >
-                                                                    <span className="text-[10px] sm:text-xs font-black">T{table.number}</span>
-                                                                    <div className="flex -space-x-1">
-                                                                        {[...Array(Math.min(table.capacity || 2, 4))].map((_, i) => (
-                                                                            <div key={i} className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-black/10 ${isOccupied ? 'bg-current opacity-40' : isSelected ? 'bg-white' : 'bg-emerald-500/50'}`} />
-                                                                        ))}
-                                                                    </div>
+                                                                    <span className="text-[10px] sm:text-xs font-black leading-none">T{table.number}</span>
+                                                                    <span className={`text-[8px] sm:text-[9px] font-bold flex items-center gap-0.5 mt-1 ${isSelected ? 'text-white/80' : 'opacity-60'}`}>
+                                                                        <UserGroupIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                                                                        {table.capacity || 4}
+                                                                    </span>
                                                                 </button>
                                                             );
                                                         })}
@@ -419,6 +436,55 @@ const Reservations = () => {
                                     Confirm Booking
                                 </motion.button>
                             </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Success Modal */}
+            <AnimatePresence>
+                {showSuccess && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-md z-[120] flex items-center justify-center p-4"
+                        onClick={() => setShowSuccess(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.8, opacity: 0, y: 20 }}
+                            transition={{ type: "spring", bounce: 0.4, duration: 0.6 }}
+                            className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-8 md:p-12 max-w-sm w-full flex flex-col items-center text-center shadow-2xl shadow-emerald-500/20 border border-emerald-500/20"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="relative mb-8">
+                                <motion.div 
+                                    initial={{ scale: 0 }} 
+                                    animate={{ scale: 1 }} 
+                                    transition={{ delay: 0.2, type: "spring", bounce: 0.5 }}
+                                    className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center"
+                                >
+                                    <CheckCircleIcon className="w-16 h-16 text-emerald-500" />
+                                </motion.div>
+                                <motion.div
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1.5, opacity: 0 }}
+                                    transition={{ duration: 1, repeat: Infinity }}
+                                    className="absolute inset-0 bg-emerald-500/20 rounded-full"
+                                />
+                            </div>
+                            <h3 className="text-3xl font-black uppercase tracking-tighter mb-3 text-emerald-500">Confirmed!</h3>
+                            <p className="opacity-60 text-sm font-bold uppercase tracking-widest mb-10 leading-relaxed">Your table has been<br/>successfully reserved.</p>
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => setShowSuccess(false)}
+                                className="w-full py-5 bg-emerald-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-emerald-500/30"
+                            >
+                                Continue
+                            </motion.button>
                         </motion.div>
                     </motion.div>
                 )}

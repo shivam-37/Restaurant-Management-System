@@ -21,8 +21,11 @@ import {
     HomeIcon,
     TrashIcon,
     ExclamationTriangleIcon,
-    CameraIcon
+    CameraIcon,
+    Squares2X2Icon,
+    PlusIcon
 } from '@heroicons/react/24/outline';
+
 
 // ─── Toast ─────────────────────────────────────────────────────────────────────
 const Toast = ({ message, onClose }) => (
@@ -588,7 +591,145 @@ const NotificationsTab = ({ user, showMessage }) => {
     );
 };
 
-// ─── Main Component ────────────────────────────────────────────────────────────
+// ─── Tables Tab ────────────────────────────────────────────────────────────────
+const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) => {
+    const [tables, setTables] = useState(selectedRestaurant?.tables || []);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (selectedRestaurant?.tables) {
+            setTables(selectedRestaurant.tables);
+        }
+    }, [selectedRestaurant]);
+
+    const handleAddTable = () => {
+        const nextNumber = tables.length > 0 ? Math.max(...tables.map(t => t.number)) + 1 : 1;
+        setTables([...tables, { number: nextNumber, capacity: 4, x: 50, y: 50 }]);
+    };
+
+    const handleRemoveTable = (idx) => {
+        setTables(tables.filter((_, i) => i !== idx));
+    };
+
+    const updateTable = (idx, field, value) => {
+        const newTables = [...tables];
+        newTables[idx] = { ...newTables[idx], [field]: value };
+        setTables(newTables);
+    };
+
+    const handleSave = async (e) => {
+        e.preventDefault();
+        if (!selectedRestaurant?._id) return showMessage('error', 'No restaurant selected');
+        setLoading(true);
+        try {
+            const { data } = await updateRestaurant(selectedRestaurant._id, { tables });
+            updateRestaurantInList(data);
+            showMessage('success', 'Table layout saved successfully');
+        } catch {
+            showMessage('error', 'Failed to save table layout');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSave} className="p-6 space-y-6">
+            <div className="flex items-center justify-between pb-6 border-b border-black/5">
+                <div>
+                    <h3 className="font-semibold flex items-center gap-2"><Squares2X2Icon className="w-5 h-5 text-rose-500" /> Table Floor Plan</h3>
+                    <p className="text-sm opacity-60">Manage your seating arrangement and capacity</p>
+                </div>
+                <button
+                    type="button"
+                    onClick={handleAddTable}
+                    className="flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-rose-600/20 hover:bg-rose-700 transition"
+                >
+                    <PlusIcon className="w-4 h-4" /> Add Table
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Visual Editor */}
+                <div className="space-y-3">
+                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">Live Preview & Positioning</label>
+                    <div className="relative w-full aspect-square md:aspect-[4/3] theme-card-item rounded-3xl border-2 border-dashed border-black/10 shadow-inner overflow-hidden">
+                        <div className="absolute inset-0 m-6">
+                            {tables.map((table, idx) => (
+                                <div
+                                    key={idx}
+                                    className="absolute w-12 h-12 rounded-2xl bg-emerald-500 border-2 border-emerald-600 text-white shadow-emerald-500/40 flex flex-col items-center justify-center -translate-x-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing"
+                                    style={{ left: `${table.x}%`, top: `${table.y}%` }}
+                                    draggable
+                                    onDragEnd={(e) => {
+                                        const rect = e.target.parentElement.getBoundingClientRect();
+                                        let newX = ((e.clientX - rect.left) / rect.width) * 100;
+                                        let newY = ((e.clientY - rect.top) / rect.height) * 100;
+                                        newX = Math.max(0, Math.min(100, newX));
+                                        newY = Math.max(0, Math.min(100, newY));
+                                        updateTable(idx, 'x', newX);
+                                        updateTable(idx, 'y', newY);
+                                    }}
+                                >
+                                    <span className="text-[10px] font-black leading-none">T{table.number}</span>
+                                    <span className="text-[8px] font-bold opacity-80 mt-1">{table.capacity}🪑</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="absolute top-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40 pointer-events-none">Entrance</div>
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40 pointer-events-none">Kitchen</div>
+                    </div>
+                    <p className="text-xs opacity-50 text-center italic">Drag tables in the preview to position them, or use sliders below.</p>
+                </div>
+
+                {/* Table List */}
+                <div className="space-y-4 max-h-[500px] overflow-y-auto scrollbar-hide pr-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">Table Details</label>
+                    {tables.length === 0 ? (
+                        <div className="p-8 text-center border-2 border-dashed border-black/5 rounded-2xl opacity-60">
+                            No tables added yet.
+                        </div>
+                    ) : (
+                        tables.map((table, idx) => (
+                            <div key={idx} className="theme-card-item border border-black/5 rounded-2xl p-4 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="font-bold text-sm text-rose-500">Table {table.number}</h4>
+                                    <button type="button" onClick={() => handleRemoveTable(idx)} className="p-1 text-red-500 hover:bg-red-500/10 rounded-lg transition" title="Remove Table">
+                                        <TrashIcon className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] font-bold uppercase tracking-widest opacity-40">Table No.</label>
+                                        <input type="number" value={table.number} onChange={e => updateTable(idx, 'number', parseInt(e.target.value) || 0)} className="w-full theme-card border border-black/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-rose-500" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] font-bold uppercase tracking-widest opacity-40">Capacity</label>
+                                        <input type="number" min="1" value={table.capacity} onChange={e => updateTable(idx, 'capacity', parseInt(e.target.value) || 1)} className="w-full theme-card border border-black/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-rose-500" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-widest opacity-40">
+                                        <span>X Position: {Math.round(table.x)}%</span>
+                                        <span>Y Position: {Math.round(table.y)}%</span>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <input type="range" min="0" max="100" value={table.x} onChange={e => updateTable(idx, 'x', parseFloat(e.target.value))} className="w-full accent-rose-500" />
+                                        <input type="range" min="0" max="100" value={table.y} onChange={e => updateTable(idx, 'y', parseFloat(e.target.value))} className="w-full accent-rose-500" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+
+            <div className="flex justify-end pt-4 border-t border-black/5">
+                <SaveButton isLoading={loading} label="Save Table Layout" />
+            </div>
+        </form>
+    );
+};
+
 const Settings = () => {
     const { user, setUser, selectedRestaurant, updateRestaurantInList, logout } = useContext(AuthContext);
     const [activeTab, setActiveTab] = useState('profile');
@@ -617,7 +758,10 @@ const Settings = () => {
     const tabs = [
         { id: 'profile', name: 'Profile', icon: UserIcon },
         { id: 'security', name: 'Security', icon: ShieldCheckIcon },
-        ...(user?.role === 'owner' ? [{ id: 'restaurant', name: 'Restaurant', icon: HomeIcon }] : []),
+        ...(user?.role === 'owner' ? [
+            { id: 'restaurant', name: 'Restaurant', icon: HomeIcon },
+            { id: 'tables', name: 'Tables', icon: Squares2X2Icon }
+        ] : []),
         { id: 'notifications', name: 'Notifications', icon: BellIcon },
     ];
 
@@ -662,6 +806,13 @@ const Settings = () => {
                 {activeTab === 'security' && <SecurityTab />}
                 {activeTab === 'restaurant' && (
                     <RestaurantTab
+                        selectedRestaurant={selectedRestaurant}
+                        updateRestaurantInList={updateRestaurantInList}
+                        showMessage={showMessage}
+                    />
+                )}
+                {activeTab === 'tables' && (
+                    <TablesTab
                         selectedRestaurant={selectedRestaurant}
                         updateRestaurantInList={updateRestaurantInList}
                         showMessage={showMessage}
