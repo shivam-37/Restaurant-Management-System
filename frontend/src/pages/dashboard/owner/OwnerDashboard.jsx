@@ -156,7 +156,6 @@ const OwnerDashboard = () => {
         { name: 'Reservations', icon: CalendarIcon, color: 'from-yellow-500 to-rose-500' },
         { name: 'Performance', icon: ChartPieIcon, color: 'from-cyan-500 to-blue-500' },
         { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-rose-500' },
-        { name: 'Analytics', icon: ChartBarIcon, color: 'from-rose-500 to-purple-500' },
         { name: 'Settings', icon: Cog6ToothIcon, color: 'from-gray-500 to-gray-600' },
     ];
 
@@ -396,7 +395,7 @@ const OwnerDashboard = () => {
                             {activeTab === 'Kitchen' && <KitchenDisplay />}
                             {activeTab === 'Table Map' && <TableMap />}
                             {activeTab === 'Reservations' && <Reservations />}
-                            {activeTab === 'Analytics' && <Analytics />}
+                            {activeTab === 'Performance' && <Analytics />}
                             {activeTab === 'Settings' && <Settings />}
                         </motion.div>
                     </AnimatePresence>
