@@ -292,3 +292,12 @@ body {
   color: transparent;
   background-image: linear-gradient(to right, #f43f5e, #e11d48);
 }
+
+/* ── Hide Scrollbars ── */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}

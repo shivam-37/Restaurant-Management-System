@@ -346,7 +346,7 @@ const Reservations = () => {
                                                 </span>
                                             </label>
                                             
-                                            <div className="relative w-full overflow-x-auto theme-card-item rounded-3xl border-2 border-dashed border-black/10 shadow-inner">
+                                            <div className="relative w-full overflow-x-auto theme-card-item rounded-3xl border-2 border-dashed border-black/10 shadow-inner scrollbar-hide">
                                                 <div className="relative w-full min-w-[500px] aspect-[4/3] p-4 flex flex-col">
                                                     <div className="absolute top-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">Entrance</div>
                                                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">Kitchen</div>
