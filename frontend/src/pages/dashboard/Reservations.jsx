@@ -224,17 +224,17 @@ const Reservations = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[110] flex items-center justify-center p-4"
                         onClick={() => setIsModalOpen(false)}
                     >
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0, y: 30 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 30 }}
-                            className="theme-card rounded-[3rem] w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-white/10"
+                            className="theme-card rounded-[2rem] sm:rounded-[3rem] w-full max-w-lg max-h-[85vh] sm:max-h-[90vh] flex flex-col overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-white/10"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="p-10 border-b border-black/5 flex justify-between items-center bg-rose-500/5 flex-shrink-0">
+                            <div className="p-6 sm:p-10 border-b border-black/5 flex justify-between items-center bg-rose-500/5 flex-shrink-0">
                                 <div>
                                     <h2 className="text-2xl font-black uppercase tracking-tighter">Reserve Table</h2>
                                     <p className="text-xs text-rose-500 font-bold uppercase tracking-widest">{selectedRestaurant?.name}</p>
@@ -244,7 +244,7 @@ const Reservations = () => {
                                 </button>
                             </div>
 
-                             <form onSubmit={handleSubmit} className="p-10 space-y-8 overflow-y-auto flex-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                             <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-6 sm:space-y-8 overflow-y-auto flex-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                                 <div className="space-y-5">
                                     <div>
                                         <div className="relative group">
@@ -361,8 +361,8 @@ const Reservations = () => {
                                                 </span>
                                             </label>
                                             
-                                            <div className="relative w-full overflow-x-auto theme-card-item rounded-3xl border-2 border-dashed border-black/10 shadow-inner scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                                                <div className="relative w-full min-w-[500px] aspect-[4/3] p-4 flex flex-col">
+                                            <div className="relative w-full overflow-x-auto theme-card-item rounded-3xl border-2 border-dashed border-black/10 shadow-inner scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-x' }}>
+                                                <div className="relative w-full min-w-[500px] sm:min-w-full aspect-[4/3] sm:aspect-[16/9] p-4 flex flex-col">
                                                     <div className="absolute top-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">Entrance</div>
                                                     <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">Kitchen</div>
                                                     

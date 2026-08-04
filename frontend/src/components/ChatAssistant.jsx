@@ -64,7 +64,7 @@ const ChatAssistant = () => {
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(true)}
-                className={`fixed bottom-8 right-8 z-[100] p-4 rounded-2xl shadow-2xl bg-gradient-to-r from-rose-600 to-purple-600 text-white flex items-center justify-center shadow-rose-600/30 border border-white/20 backdrop-blur-sm ${isOpen ? 'hidden' : ''}`}
+                className={`fixed bottom-24 md:bottom-8 right-4 md:right-8 z-[100] p-4 rounded-2xl shadow-2xl bg-gradient-to-r from-rose-600 to-purple-600 text-white flex items-center justify-center shadow-rose-600/30 border border-white/20 backdrop-blur-sm ${isOpen ? 'hidden' : ''}`}
             >
                 <div className="relative">
                     <ChatBubbleLeftRightIcon className="w-8 h-8" />
