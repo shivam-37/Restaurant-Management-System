@@ -5,7 +5,8 @@ import {
     updateProfile,
     updateRestaurant,
     deleteAccount,
-    updateNotificationPrefs
+    updateNotificationPrefs,
+    chatWithAi
 } from '../../services/api';
 import {
     UserIcon,
@@ -23,7 +24,8 @@ import {
     ExclamationTriangleIcon,
     CameraIcon,
     Squares2X2Icon,
-    PlusIcon
+    PlusIcon,
+    SparklesIcon
 } from '@heroicons/react/24/outline';
 
 
@@ -595,6 +597,8 @@ const NotificationsTab = ({ user, showMessage }) => {
 const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) => {
     const [tables, setTables] = useState(selectedRestaurant?.tables || []);
     const [loading, setLoading] = useState(false);
+    const [aiPrompt, setAiPrompt] = useState('');
+    const [aiLoading, setAiLoading] = useState(false);
 
     useEffect(() => {
         if (selectedRestaurant?.tables) {
@@ -632,6 +636,68 @@ const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) 
         }
     };
 
+    const handleAIGenerate = async () => {
+        if (!aiPrompt.trim()) return showMessage('error', 'Please enter a prompt for the AI');
+        setAiLoading(true);
+        try {
+            const msg = `You are an expert restaurant layout designer.
+            The user prompt is: "${aiPrompt}"
+            Please return ONLY a JSON array representing the tables. DO NOT wrap in markdown, no other text.
+            Each object must have exactly these keys:
+            - number (integer, starting from 1)
+            - capacity (integer, based on the prompt, default 4)
+            - x (integer, 5 to 95, representing horizontal percentage on the floor plan)
+            - y (integer, 10 to 90, representing vertical percentage on the floor plan)
+            Ensure the tables are spaced out evenly in a grid-like fashion and do not overlap.`;
+
+            let generatedTables = [];
+            try {
+                const { data } = await chatWithAi([{ role: 'user', content: msg }]);
+                let reply = data.reply;
+                if (reply.includes('<think>') && reply.includes('</think>')) {
+                    reply = reply.replace(/<think>[\s\S]*?<\/think>\n?/g, '');
+                }
+                reply = reply.trim();
+                if (reply.startsWith('```')) {
+                    reply = reply.replace(/^```(json)?\n?/, '').replace(/\n?```$/, '');
+                }
+                generatedTables = JSON.parse(reply);
+                if (!Array.isArray(generatedTables)) throw new Error("Not an array");
+                generatedTables = generatedTables.map((t, i) => ({
+                    number: t.number || (i + 1),
+                    capacity: t.capacity || 4,
+                    x: Math.min(Math.max(t.x || 50, 5), 95),
+                    y: Math.min(Math.max(t.y || 50, 10), 90)
+                }));
+            } catch (err) {
+                console.error("AI JSON parse failed, using smart algorithm fallback.", err);
+                const numbers = aiPrompt.match(/\d+/g);
+                const numTables = numbers && numbers.length > 0 ? parseInt(numbers[0], 10) : 10;
+                const capacity = numbers && numbers.length > 1 ? parseInt(numbers[1], 10) : 4;
+                const cols = Math.ceil(Math.sqrt(numTables * 1.5));
+                const spacingX = cols > 1 ? 80 / (cols - 1) : 0;
+                const rows = Math.ceil(numTables / cols);
+                const spacingY = rows > 1 ? 70 / (rows - 1) : 0;
+                
+                generatedTables = Array.from({ length: numTables }).map((_, i) => ({
+                    number: i + 1,
+                    capacity: capacity,
+                    x: cols > 1 ? 10 + (i % cols) * spacingX : 50,
+                    y: rows > 1 ? 15 + Math.floor(i / cols) * spacingY : 50
+                }));
+            }
+            
+            setTables(generatedTables);
+            showMessage('success', `AI generated a layout with ${generatedTables.length} tables!`);
+            setAiPrompt('');
+        } catch (error) {
+            console.error("AI Generation Error", error);
+            showMessage('error', 'Failed to communicate with AI');
+        } finally {
+            setAiLoading(false);
+        }
+    };
+
     return (
         <form onSubmit={handleSave} className="p-6 space-y-6">
             <div className="flex items-center justify-between pb-6 border-b border-black/5">
@@ -646,6 +712,45 @@ const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) 
                 >
                     <PlusIcon className="w-4 h-4" /> Add Table
                 </button>
+            </div>
+
+            {/* AI Auto-Generator */}
+            <div className="p-6 rounded-[2rem] bg-gradient-to-r from-rose-500/10 to-purple-500/10 border border-purple-500/20 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-32 h-32 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-blob"></div>
+                <div className="absolute bottom-0 right-0 w-32 h-32 bg-rose-500/20 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-blob animation-delay-2000"></div>
+                
+                <div className="relative z-10 flex flex-col sm:flex-row gap-4 items-center">
+                    <div className="flex-1 w-full relative">
+                        <SparklesIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-500" />
+                        <input
+                            type="text"
+                            value={aiPrompt}
+                            onChange={(e) => setAiPrompt(e.target.value)}
+                            placeholder="e.g. Generate 30 tables with 2 seats each..."
+                            className="w-full pl-12 pr-4 py-4 rounded-xl bg-white dark:bg-gray-900 border border-black/5 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all font-bold text-sm shadow-sm"
+                            disabled={aiLoading}
+                        />
+                    </div>
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        type="button"
+                        onClick={handleAIGenerate}
+                        disabled={aiLoading || !aiPrompt.trim()}
+                        className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-rose-600 to-purple-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-purple-600/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                        {aiLoading ? (
+                            <>
+                                <span className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></span>
+                                Generating...
+                            </>
+                        ) : (
+                            <>
+                                <SparklesIcon className="w-4 h-4" /> AI Generate
+                            </>
+                        )}
+                    </motion.button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
