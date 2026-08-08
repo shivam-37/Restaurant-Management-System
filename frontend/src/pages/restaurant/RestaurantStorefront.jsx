@@ -15,6 +15,7 @@ const RestaurantStorefront = () => {
     const [menuItems, setMenuItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [cart, setCart] = useState([]);
+    const [isCartOpen, setIsCartOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -40,6 +41,16 @@ const RestaurantStorefront = () => {
                 return prev.map(i => i._id === item._id ? { ...i, quantity: i.quantity + 1 } : i);
             }
             return [...prev, { ...item, quantity: 1 }];
+        });
+    };
+
+    const removeFromCart = (item) => {
+        setCart(prev => {
+            const existing = prev.find(i => i._id === item._id);
+            if (existing.quantity === 1) {
+                return prev.filter(i => i._id !== item._id);
+            }
+            return prev.map(i => i._id === item._id ? { ...i, quantity: i.quantity - 1 } : i);
         });
     };
 
@@ -76,7 +87,7 @@ const RestaurantStorefront = () => {
                 </div>
 
                 <div className="flex items-center space-x-6">
-                    <button className="relative p-2 hover:bg-white/5 rounded-full transition-colors">
+                    <button onClick={() => setIsCartOpen(true)} className="relative p-2 hover:bg-white/5 rounded-full transition-colors">
                         <ShoppingBagIcon className="w-6 h-6 text-white/80" />
                         {cart.length > 0 && (
                             <span className="absolute top-0 right-0 w-4 h-4 bg-red-600 rounded-full text-[10px] flex items-center justify-center font-bold">
@@ -155,20 +166,20 @@ const RestaurantStorefront = () => {
                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#1a1a1a] rounded-full shadow-2xl"></div>
                         
                         {/* Floating elements */}
-                        <motion.img 
+                        <motion.div 
                             animate={{ y: [0, -20, 0] }} 
                             transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                            src="https://cdn.pixabay.com/photo/2012/04/18/14/45/tomato-37213_960_720.png" 
-                            className="absolute -right-10 top-20 w-32 object-contain drop-shadow-2xl z-20"
-                            alt="Tomato"
-                        />
-                        <motion.img 
+                            className="absolute -right-10 top-20 text-7xl drop-shadow-2xl z-20"
+                        >
+                            🍅
+                        </motion.div>
+                        <motion.div 
                             animate={{ y: [0, 20, 0] }} 
                             transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-                            src="https://cdn.pixabay.com/photo/2012/04/18/13/18/leaf-36968_960_720.png" 
-                            className="absolute -left-10 bottom-20 w-24 object-contain drop-shadow-2xl z-20 opacity-80"
-                            alt="Leaf"
-                        />
+                            className="absolute -left-10 bottom-20 text-7xl drop-shadow-2xl z-20 opacity-80"
+                        >
+                            🍃
+                        </motion.div>
 
                         {/* Main dish */}
                         <img 
@@ -212,12 +223,20 @@ const RestaurantStorefront = () => {
                                     
                                     <div className="flex items-center justify-between">
                                         <span className="text-xl font-bold text-red-500">₹{item.price}</span>
-                                        <button 
-                                            onClick={() => addToCart(item)}
-                                            className="w-10 h-10 bg-red-600 rounded-2xl flex items-center justify-center hover:bg-red-700 hover:scale-110 transition-all active:scale-95"
-                                        >
-                                            <ShoppingBagIcon className="w-5 h-5 text-white" />
-                                        </button>
+                                        {cart.find(i => i._id === item._id) ? (
+                                            <div className="flex items-center space-x-3 bg-red-600 rounded-2xl px-2 h-10">
+                                                <button onClick={() => removeFromCart(item)} className="text-white hover:text-white/80 font-bold px-2">-</button>
+                                                <span className="text-white font-bold">{cart.find(i => i._id === item._id).quantity}</span>
+                                                <button onClick={() => addToCart(item)} className="text-white hover:text-white/80 font-bold px-2">+</button>
+                                            </div>
+                                        ) : (
+                                            <button 
+                                                onClick={() => addToCart(item)}
+                                                className="w-10 h-10 bg-red-600 rounded-2xl flex items-center justify-center hover:bg-red-700 hover:scale-110 transition-all active:scale-95"
+                                            >
+                                                <ShoppingBagIcon className="w-5 h-5 text-white" />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </motion.div>
@@ -233,6 +252,60 @@ const RestaurantStorefront = () => {
             <footer className="py-10 border-t border-white/5 text-center text-white/40 text-sm">
                 <p>&copy; {new Date().getFullYear()} {restaurant.name}. All rights reserved.</p>
             </footer>
+
+            {/* Cart Drawer */}
+            <AnimatePresence>
+                {isCartOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex justify-end"
+                        onClick={() => setIsCartOpen(false)}
+                    >
+                        <motion.div 
+                            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="w-full max-w-md bg-[#111] h-full shadow-2xl border-l border-white/10 flex flex-col"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="p-6 border-b border-white/10 flex justify-between items-center">
+                                <h2 className="text-2xl font-serif">Your Order</h2>
+                                <button onClick={() => setIsCartOpen(false)} className="p-2 hover:bg-white/10 rounded-full">✕</button>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                                {cart.length === 0 ? (
+                                    <p className="text-white/40 text-center mt-10">Your cart is empty.</p>
+                                ) : (
+                                    cart.map(item => (
+                                        <div key={item._id} className="flex gap-4 bg-[#1a1a1a] p-4 rounded-2xl">
+                                            <img src={item.image} alt={item.name} className="w-16 h-16 rounded-xl object-cover" />
+                                            <div className="flex-1">
+                                                <h4 className="font-bold">{item.name}</h4>
+                                                <p className="text-red-500 font-bold text-sm">₹{item.price}</p>
+                                            </div>
+                                            <div className="flex flex-col items-center justify-between bg-black/50 rounded-lg w-8 py-1">
+                                                <button onClick={() => addToCart(item)} className="text-white/60 hover:text-white">+</button>
+                                                <span className="text-sm font-bold">{item.quantity}</span>
+                                                <button onClick={() => removeFromCart(item)} className="text-white/60 hover:text-white">-</button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                            {cart.length > 0 && (
+                                <div className="p-6 border-t border-white/10 bg-[#0a0a0a]">
+                                    <div className="flex justify-between mb-4 font-bold text-lg">
+                                        <span>Total</span>
+                                        <span className="text-red-500">₹{cart.reduce((acc, item) => acc + (item.price * item.quantity), 0)}</span>
+                                    </div>
+                                    <button onClick={() => navigate('/dashboard')} className="w-full py-4 bg-red-600 hover:bg-red-700 font-bold rounded-2xl transition-colors">
+                                        Checkout in Dashboard
+                                    </button>
+                                </div>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
