@@ -99,18 +99,18 @@ const UserDashboard = ({ user, logout }) => {
 
     return (
         <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
-            <div className="fixed inset-0 overflow-hidden -z-10">
-                <div className="absolute top-0 -left-40 w-[500px] h-[500px] bg-rose-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
-                <div className="absolute bottom-40 left-20 w-[500px] h-[500px] bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+            <div className="fixed inset-0 overflow-hidden -z-10 bg-[#0a0a0a]">
+                <div className="absolute top-0 -left-40 w-[500px] h-[500px] bg-orange-500 rounded-full mix-blend-multiply filter blur-[150px] opacity-20 animate-pulse"></div>
+                <div className="absolute bottom-40 right-20 w-[600px] h-[600px] bg-orange-600 rounded-full mix-blend-multiply filter blur-[150px] opacity-10 animate-pulse animation-delay-4000"></div>
             </div>
 
             <motion.aside initial={{ x: -100 }} animate={{ x: 0 }} className="fixed inset-y-0 left-0 w-72 z-20 hidden md:flex flex-col border-r border-black/5" style={{ background: 'var(--sidebar-bg)' }}>
-                <div className="p-8 border-b border-black/5">
+                <div className="p-8 border-b border-white/5">
                     <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-rose-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-600/30">
+                        <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-[0_5px_15px_rgba(249,115,22,0.3)]">
                             <ChefHat className="w-6 h-6 text-white" />
                         </div>
-                        <span className="text-xl font-black bg-gradient-to-r from-rose-600 to-purple-600 bg-clip-text text-transparent uppercase tracking-tighter">Dine Flow</span>
+                        <span className="text-xl font-black text-orange-500 uppercase tracking-tighter">WorldPlate</span>
                     </div>
                 </div>
 
@@ -122,7 +122,7 @@ const UserDashboard = ({ user, logout }) => {
                             className={`relative w-full flex items-center px-5 py-4 rounded-2xl transition-all group ${activeTab === item.name ? 'text-white' : 'opacity-40 hover:opacity-100'}`}
                         >
                             {activeTab === item.name && (
-                                <motion.div layoutId="userActiveTab" className="absolute inset-0 bg-rose-600 rounded-2xl shadow-xl shadow-rose-600/20" />
+                                <motion.div layoutId="userActiveTab" className="absolute inset-0 bg-orange-500 rounded-2xl shadow-[0_5px_15px_rgba(249,115,22,0.2)]" />
                             )}
                             <item.icon className="h-5 w-5 mr-4 relative z-10" />
                             <span className="text-[10px] font-black uppercase tracking-[0.2em] relative z-10">{item.name}</span>
@@ -130,9 +130,9 @@ const UserDashboard = ({ user, logout }) => {
                     ))}
                 </nav>
 
-                <div className="p-6 border-t border-black/5 space-y-3">
+                <div className="p-6 border-t border-white/5 space-y-3">
                     <div className="flex items-center gap-4 px-3">
-                        <div className="w-10 h-10 rounded-xl bg-rose-600/10 flex items-center justify-center text-rose-600 font-black text-xs border border-rose-600/10 uppercase overflow-hidden">
+                        <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 font-black text-xs border border-orange-500/20 uppercase overflow-hidden">
                             {user?.avatar ? (
                                 <img src={user.avatar} alt={user?.name} className="w-full h-full object-cover" />
                             ) : (
@@ -141,7 +141,7 @@ const UserDashboard = ({ user, logout }) => {
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-[10px] font-black uppercase tracking-widest truncate">{user?.name}</p>
-                            <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40 mt-0.5 text-rose-500">Premium Member</p>
+                            <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40 mt-0.5 text-orange-500">Premium Member</p>
                         </div>
                     </div>
                     <button onClick={logout} className="w-full flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-500/5 rounded-2xl transition-colors">
@@ -157,8 +157,8 @@ const UserDashboard = ({ user, logout }) => {
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">Account Name: {user?.name} {selectedRestaurant ? ` Connected to ${selectedRestaurant.name}` : ''}</p>
                     </div>
                     <div className="flex items-center gap-6">
-                        <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-black/5 hover:border-rose-500/30 transition-all shadow-sm" title="Toggle theme">
-                            {theme === 'dark' ? <SunIcon className="w-4 h-4 text-rose-400" /> : <MoonIcon className="w-4 h-4 text-rose-600" />}
+                        <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-white/10 hover:border-orange-500/50 transition-all shadow-sm" title="Toggle theme">
+                            {theme === 'dark' ? <SunIcon className="w-4 h-4 text-orange-400" /> : <MoonIcon className="w-4 h-4 text-orange-600" />}
                         </button>
                         <button onClick={logout} className="md:hidden w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-black/5 hover:border-red-500/30 text-red-500 transition-all shadow-sm" title="Sign Out">
                             <ArrowLeftOnRectangleIcon className="w-5 h-5" />
