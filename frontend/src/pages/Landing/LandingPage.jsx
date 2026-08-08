@@ -165,6 +165,7 @@ const LandingPage = () => {
                 <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Absolutely loved the platform! The operations are so smooth and our sales went up instantly. Highly recommend!</p>
              </div>
           ))}
+        </div>
       </section>
 
       {/* Footer */}
