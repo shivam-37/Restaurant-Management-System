@@ -1,15 +1,17 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBagIcon, StarIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { ShoppingBagIcon, StarIcon, MapPinIcon, ClockIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { getRestaurantDetails, getMenu } from '../../services/api';
 import AuthContext from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 const RestaurantStorefront = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
+    const { theme, toggleTheme } = useTheme();
     
     const [restaurant, setRestaurant] = useState(null);
     const [menuItems, setMenuItems] = useState([]);
@@ -87,6 +89,9 @@ const RestaurantStorefront = () => {
                 </div>
 
                 <div className="flex items-center space-x-6">
+                    <button onClick={toggleTheme} className="p-2 hover:bg-white/5 rounded-full transition-colors" title="Toggle Theme">
+                        {theme === 'dark' ? <SunIcon className="w-5 h-5 text-white/80" /> : <MoonIcon className="w-5 h-5 text-white/80" />}
+                    </button>
                     <button onClick={() => setIsCartOpen(true)} className="relative p-2 hover:bg-white/5 rounded-full transition-colors">
                         <ShoppingBagIcon className="w-6 h-6 text-white/80" />
                         {cart.length > 0 && (
