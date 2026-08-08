@@ -107,7 +107,7 @@ const Orders = () => {
             Preparing: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20',
             Ready: 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20',
             Completed: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20',
-            Cancelled: 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'
+            Cancelled: 'bg-orange-500/10 text-[#f97316] dark:text-red-400 border border-red-500/20'
         };
         return (
             <span className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] shadow-sm ${colors[status] || 'bg-black/5 dark:bg-white/5'}`}>
@@ -224,7 +224,7 @@ const Orders = () => {
                                                             <StarIcon key={i} className="w-4 h-4 text-yellow-400" />
                                                         ))}
                                                     </div>
-                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${order.review.sentiment === 'Positive' ? 'bg-green-500/20 text-green-600 dark:text-green-400' : order.review.sentiment === 'Negative' ? 'bg-red-500/20 text-red-600 dark:text-red-400' : 'bg-slate-500/20 text-slate-600 dark:text-slate-400'
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${order.review.sentiment === 'Positive' ? 'bg-green-500/20 text-green-600 dark:text-green-400' : order.review.sentiment === 'Negative' ? 'bg-orange-500/20 text-[#f97316] dark:text-red-400' : 'bg-slate-500/20 text-slate-600 dark:text-slate-400'
                                                         }`}>
                                                         {order.review.sentiment} Experience
                                                     </span>
@@ -265,7 +265,7 @@ const Orders = () => {
                                         {order.status !== 'Completed' && order.status !== 'Cancelled' && (
                                             <button
                                                 onClick={() => handleStatusUpdate(order._id, 'Cancelled')}
-                                                className="w-full px-8 py-4 theme-card-item border border-red-500/20 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest"
+                                                className="w-full px-8 py-4 theme-card-item border border-red-500/20 text-orange-500 rounded-2xl hover:bg-orange-500 hover:text-white transition-all font-black text-[10px] uppercase tracking-widest"
                                             >
                                                 Cancel Order
                                             </button>

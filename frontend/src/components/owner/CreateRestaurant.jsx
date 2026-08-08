@@ -118,9 +118,9 @@ const CreateRestaurant = () => {
                 {/* Main Form Card */}
                 <div className="theme-card-item rounded-3xl p-6 sm:p-10 border border-rose-500/20 shadow-2xl relative overflow-hidden" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>
                     {error && (
-                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 mb-6 flex items-center gap-3">
-                            <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
-                            <p className="text-sm text-red-500 font-medium">{error}</p>
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-orange-500/10 border border-red-500/30 rounded-2xl p-4 mb-6 flex items-center gap-3">
+                            <AlertCircle className="w-5 h-5 text-orange-500 shrink-0" />
+                            <p className="text-sm text-orange-500 font-medium">{error}</p>
                         </motion.div>
                     )}
 
@@ -285,7 +285,7 @@ const CreateRestaurant = () => {
                                         <button
                                             type="button"
                                             onClick={() => setFormData({ ...formData, image: '' })}
-                                            className="absolute top-2 right-2 p-2 bg-black/60 hover:bg-red-600 text-white rounded-xl transition cursor-pointer"
+                                            className="absolute top-2 right-2 p-2 bg-black/60 hover:bg-[#f97316] text-white rounded-xl transition cursor-pointer"
                                             title="Remove Photo"
                                         >
                                             <X className="w-4 h-4" />

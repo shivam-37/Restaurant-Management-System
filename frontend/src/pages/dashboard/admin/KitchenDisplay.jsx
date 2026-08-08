@@ -119,8 +119,8 @@ const KitchenDisplay = () => {
                                 ))}
 
                                 {order.specialInstructions && (
-                                    <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-red-500 mb-1">Attention Required</p>
+                                    <div className="mt-6 p-4 bg-orange-500/10 border border-red-500/20 rounded-2xl">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-orange-500 mb-1">Attention Required</p>
                                         <p className="text-xs font-bold uppercase tracking-tight opacity-80">{order.specialInstructions}</p>
                                     </div>
                                 )}

@@ -102,7 +102,7 @@ const Customers = () => {
                                 <div className="flex items-center justify-end">
                                     <button
                                         onClick={() => handleDelete(customer._id)}
-                                        className="p-4 opacity-20 hover:opacity-100 bg-black/5 dark:bg-white/5 hover:bg-red-500/10 hover:text-red-500 rounded-2xl transition-all group/btn"
+                                        className="p-4 opacity-20 hover:opacity-100 bg-black/5 dark:bg-white/5 hover:bg-orange-500/10 hover:text-orange-500 rounded-2xl transition-all group/btn"
                                         title="Revoke Access"
                                     >
                                         <TrashIcon className="w-6 h-6 group-hover/btn:scale-110 transition-transform" />

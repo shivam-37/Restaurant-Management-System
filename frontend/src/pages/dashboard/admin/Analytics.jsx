@@ -47,10 +47,10 @@ const Analytics = () => {
 
     if (error) return (
         <div className="text-center py-20 theme-card rounded-3xl border border-red-500/20">
-            <ChartBarIcon className="w-16 h-16 text-red-500 mx-auto mb-4 opacity-50" />
-            <p className="text-red-600 dark:text-red-400 font-black uppercase tracking-widest text-xs mb-2">Sync Error</p>
+            <ChartBarIcon className="w-16 h-16 text-orange-500 mx-auto mb-4 opacity-50" />
+            <p className="text-[#f97316] dark:text-red-400 font-black uppercase tracking-widest text-xs mb-2">Sync Error</p>
             <p className="opacity-60 text-sm mb-6 max-w-xs mx-auto font-medium">{error}</p>
-            <button onClick={fetchAnalytics} className="px-8 py-3 bg-red-500 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-red-600 transition shadow-lg shadow-red-500/20">Attempt Re-sync</button>
+            <button onClick={fetchAnalytics} className="px-8 py-3 bg-orange-500 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[#f97316] transition shadow-lg shadow-red-500/20">Attempt Re-sync</button>
         </div>
     );
 

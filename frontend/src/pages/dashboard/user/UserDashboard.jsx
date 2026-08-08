@@ -144,7 +144,7 @@ const UserDashboard = ({ user, logout }) => {
                             <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-40 mt-0.5 text-orange-500">Premium Member</p>
                         </div>
                     </div>
-                    <button onClick={logout} className="w-full flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-500/5 rounded-2xl transition-colors">
+                    <button onClick={logout} className="w-full flex items-center px-5 py-4 text-xs font-black uppercase tracking-widest text-orange-500 hover:bg-orange-500/5 rounded-2xl transition-colors">
                         <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-4" /> Sign Out
                     </button>
                 </div>
@@ -160,7 +160,7 @@ const UserDashboard = ({ user, logout }) => {
                         <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-white/10 hover:border-orange-500/50 transition-all shadow-sm" title="Toggle theme">
                             {theme === 'dark' ? <SunIcon className="w-4 h-4 text-orange-400" /> : <MoonIcon className="w-4 h-4 text-orange-600" />}
                         </button>
-                        <button onClick={logout} className="md:hidden w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-black/5 hover:border-red-500/30 text-red-500 transition-all shadow-sm" title="Sign Out">
+                        <button onClick={logout} className="md:hidden w-10 h-10 flex items-center justify-center theme-card-item rounded-xl border border-black/5 hover:border-red-500/30 text-orange-500 transition-all shadow-sm" title="Sign Out">
                             <ArrowLeftOnRectangleIcon className="w-5 h-5" />
                         </button>
                         {selectedRestaurant && (

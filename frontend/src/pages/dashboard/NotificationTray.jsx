@@ -105,7 +105,7 @@ const NotificationTray = () => {
                                                     ) : notif.type === 'Offer' ? (
                                                         <div className="p-2 bg-purple-500/10 rounded-lg"><GiftIcon className="w-4 h-4 text-purple-500" /></div>
                                                     ) : notif.type === 'Alert' ? (
-                                                        <div className="p-2 bg-red-500/10 rounded-lg"><ExclamationTriangleIcon className="w-4 h-4 text-red-500" /></div>
+                                                        <div className="p-2 bg-orange-500/10 rounded-lg"><ExclamationTriangleIcon className="w-4 h-4 text-orange-500" /></div>
                                                     ) : (
                                                         <div className="p-2 bg-gray-500/10 rounded-lg"><BellIcon className="w-4 h-4 text-gray-500" /></div>
                                                     )}

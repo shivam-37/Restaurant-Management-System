@@ -172,7 +172,7 @@ const Reservations = () => {
                                             <div className="flex items-center gap-3 mb-1">
                                                 <h3 className="text-lg font-bold truncate">{res.name}</h3>
                                                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em] ${res.status === 'Confirmed' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20' :
-                                                    res.status === 'Cancelled' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20' :
+                                                    res.status === 'Cancelled' ? 'bg-orange-500/10 text-[#f97316] dark:text-red-400 border border-red-500/20' :
                                                         'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
                                                     }`}>
                                                     {res.status}
@@ -211,7 +211,7 @@ const Reservations = () => {
                                             )}
                                             <button
                                                 onClick={() => handleStatusUpdate(res._id, 'Cancelled')}
-                                                className="flex-1 md:flex-none px-6 py-3 theme-card-item border border-red-500/20 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all font-black text-[9px] uppercase tracking-widest"
+                                                className="flex-1 md:flex-none px-6 py-3 theme-card-item border border-red-500/20 text-orange-500 rounded-xl hover:bg-orange-500 hover:text-white transition-all font-black text-[9px] uppercase tracking-widest"
                                             >
                                                 Cancel
                                             </button>
@@ -254,7 +254,7 @@ const Reservations = () => {
                              <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-6 sm:space-y-8 overflow-y-auto flex-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                                 <AnimatePresence>
                                     {errorMsg && (
-                                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-500 mb-6">
+                                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="p-4 bg-orange-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-orange-500 mb-6">
                                             <NoSymbolIcon className="w-5 h-5 flex-shrink-0" />
                                             <p className="text-xs font-bold">{errorMsg}</p>
                                         </motion.div>

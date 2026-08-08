@@ -153,12 +153,12 @@ const OwnerLogin = () => {
                             transition={{ delay: 0.1 }}
                             className="flex items-center space-x-3 mb-6"
                         >
-                            <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/30">
+                            <div className="w-12 h-12 bg-[#f97316] rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
                                 <ChefHat className="w-6 h-6 text-white" />
                             </div>
                             <div>
                                 <span className="text-2xl font-light tracking-wider text-gray-900 dark:text-white">DINE</span>
-                                <span className="text-2xl font-bold text-indigo-600 ml-1">PARTNER</span>
+                                <span className="text-2xl font-bold text-[#f97316] ml-1">PARTNER</span>
                             </div>
                         </motion.div>
                         <motion.h2 
@@ -205,7 +205,7 @@ const OwnerLogin = () => {
                             animate={{ opacity: 1, y: 0 }}
                             className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6"
                         >
-                            <p className="text-sm text-red-600 dark:text-red-400 text-center font-medium">{error}</p>
+                            <p className="text-sm text-[#f97316] dark:text-red-400 text-center font-medium">{error}</p>
                         </motion.div>
                     )}
 
@@ -220,17 +220,17 @@ const OwnerLogin = () => {
                             <label 
                                 htmlFor="identifier" 
                                 className={`text-sm font-semibold mb-2 block transition-colors duration-300 ${
-                                    focusedField === 'identifier' ? 'text-indigo-600' : 'text-gray-700 dark:text-gray-300'
+                                    focusedField === 'identifier' ? 'text-[#f97316]' : 'text-gray-700 dark:text-gray-300'
                                 }`}
                             >
                                 Work Email or Phone
                             </label>
                             <div className="relative group">
-                                <div className={`relative flex items-center bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'identifier' ? 'border-indigo-500 shadow-[0_0_0_4px_rgba(79,70,229,0.1)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl transition-all overflow-hidden`}>
+                                <div className={`relative flex items-center bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'identifier' ? 'border-[#f97316] shadow-[0_0_0_4px_rgba(79,70,229,0.1)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl transition-all overflow-hidden`}>
                                     {!identifier.includes('@') ? (
                                         <div className="flex items-center pl-4 border-r border-gray-200 dark:border-gray-700 shrink-0">
                                             <Smartphone className={`w-5 h-5 mr-2 transition-colors duration-300 ${
-                                                focusedField === 'identifier' ? 'text-indigo-600' : 'text-gray-400'
+                                                focusedField === 'identifier' ? 'text-[#f97316]' : 'text-gray-400'
                                             }`} />
                                             <select
                                                 name="countryCode"
@@ -250,7 +250,7 @@ const OwnerLogin = () => {
                                     ) : (
                                         <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
                                             <Mail className={`w-5 h-5 transition-colors duration-300 ${
-                                                focusedField === 'identifier' ? 'text-indigo-600' : 'text-gray-400'
+                                                focusedField === 'identifier' ? 'text-[#f97316]' : 'text-gray-400'
                                             }`} />
                                         </div>
                                     )}
@@ -281,14 +281,14 @@ const OwnerLogin = () => {
                             <label 
                                 htmlFor="password" 
                                 className={`text-sm font-semibold mb-2 block transition-colors duration-300 ${
-                                    focusedField === 'password' ? 'text-indigo-600' : 'text-gray-700 dark:text-gray-300'
+                                    focusedField === 'password' ? 'text-[#f97316]' : 'text-gray-700 dark:text-gray-300'
                                 }`}
                             >
                                 Password
                             </label>
                             <div className="relative">
                                 <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
-                                    focusedField === 'password' ? 'text-indigo-600' : 'text-gray-400'
+                                    focusedField === 'password' ? 'text-[#f97316]' : 'text-gray-400'
                                 }`} />
                                 <input
                                     id="password"
@@ -300,7 +300,7 @@ const OwnerLogin = () => {
                                     onChange={onChange}
                                     onFocus={() => setFocusedField('password')}
                                     onBlur={() => setFocusedField(null)}
-                                    className={`w-full bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'password' ? 'border-indigo-500 shadow-[0_0_0_4px_rgba(79,70,229,0.1)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none transition-all text-gray-900 dark:text-white`}
+                                    className={`w-full bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'password' ? 'border-[#f97316] shadow-[0_0_0_4px_rgba(79,70,229,0.1)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none transition-all text-gray-900 dark:text-white`}
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -315,7 +315,7 @@ const OwnerLogin = () => {
                         >
                             <Link
                                 to="/forgot-password"
-                                className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-all"
+                                className="text-sm font-semibold text-[#f97316] hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-all"
                             >
                                 Forgot password?
                             </Link>
@@ -330,7 +330,7 @@ const OwnerLogin = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full py-4 bg-indigo-600 text-white rounded-xl text-base font-bold shadow-lg shadow-indigo-600/30 hover:bg-indigo-700 hover:shadow-indigo-600/50 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                                className="w-full py-4 bg-[#f97316] text-white rounded-xl text-base font-bold shadow-lg shadow-orange-500/30 hover:bg-indigo-700 hover:shadow-orange-500/50 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                             >
                                 {isLoading ? 'Authenticating...' : 'Access Dashboard'}
                             </button>

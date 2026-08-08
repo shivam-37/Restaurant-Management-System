@@ -93,9 +93,9 @@ const ResetPassword = () => {
                     ) : (
                         <form className="space-y-6" onSubmit={onSubmit}>
                             {status === 'error' && (
-                                <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 flex items-center gap-3">
-                                    <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
-                                    <p className="text-sm text-red-500 font-medium">{message}</p>
+                                <div className="bg-orange-500/10 border border-red-500/30 rounded-2xl p-4 flex items-center gap-3">
+                                    <AlertCircle className="w-5 h-5 text-orange-500 shrink-0" />
+                                    <p className="text-sm text-orange-500 font-medium">{message}</p>
                                 </div>
                             )}
 

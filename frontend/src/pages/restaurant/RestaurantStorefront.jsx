@@ -115,13 +115,13 @@ const RestaurantStorefront = () => {
         return (
             <div className="min-h-screen bg-[#111] text-white flex flex-col items-center justify-center">
                 <h1 className="text-3xl font-bold mb-4">Restaurant not found</h1>
-                <button onClick={() => navigate('/dashboard')} className="px-6 py-2 bg-red-600 rounded-full">Go Back</button>
+                <button onClick={() => navigate('/dashboard')} className="px-6 py-2 bg-[#f97316] rounded-full">Go Back</button>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white font-sans overflow-x-hidden selection:bg-red-500/30">
+        <div className="min-h-screen bg-[#0a0a0a] text-white font-sans overflow-x-hidden selection:bg-orange-500/30">
             {/* Navigation */}
             <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-10 py-6 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm">
                 <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
@@ -142,17 +142,17 @@ const RestaurantStorefront = () => {
                     <button onClick={() => setIsCartOpen(true)} className="relative p-2 hover:bg-white/5 rounded-full transition-colors">
                         <ShoppingBagIcon className="w-6 h-6 text-white/80" />
                         {cart.length > 0 && (
-                            <span className="absolute top-0 right-0 w-4 h-4 bg-red-600 rounded-full text-[10px] flex items-center justify-center font-bold">
+                            <span className="absolute top-0 right-0 w-4 h-4 bg-[#f97316] rounded-full text-[10px] flex items-center justify-center font-bold">
                                 {cart.reduce((acc, item) => acc + item.quantity, 0)}
                             </span>
                         )}
                     </button>
                     {user ? (
-                        <button onClick={() => navigate('/dashboard')} className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-sm font-medium rounded-full transition-colors">
+                        <button onClick={() => navigate('/dashboard')} className="px-6 py-2.5 bg-[#f97316] hover:bg-orange-600 text-sm font-medium rounded-full transition-colors">
                             Dashboard
                         </button>
                     ) : (
-                        <button onClick={() => navigate('/login')} className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-sm font-medium rounded-full transition-colors">
+                        <button onClick={() => navigate('/login')} className="px-6 py-2.5 bg-[#f97316] hover:bg-orange-600 text-sm font-medium rounded-full transition-colors">
                             Sign Up
                         </button>
                     )}
@@ -180,7 +180,7 @@ const RestaurantStorefront = () => {
                         </h1>
                         
                         <div className="flex items-center space-x-4 mb-12">
-                            <button onClick={() => document.getElementById('menu').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-red-600 hover:bg-red-700 text-sm font-semibold rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20">
+                            <button onClick={() => document.getElementById('menu').scrollIntoView({ behavior: 'smooth' })} className="px-8 py-4 bg-[#f97316] hover:bg-orange-600 text-sm font-semibold rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20">
                                 View Menu
                             </button>
                             <button className="px-8 py-4 bg-white text-black hover:bg-gray-100 text-sm font-semibold rounded-full transition-all hover:scale-105 active:scale-95">
@@ -276,9 +276,9 @@ const RestaurantStorefront = () => {
                                     <p className="text-xs text-white/40 uppercase tracking-wider mb-6 line-clamp-1">{item.category}</p>
                                     
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xl font-bold text-red-500">₹{item.price}</span>
+                                        <span className="text-xl font-bold text-orange-500">₹{item.price}</span>
                                         {cart.find(i => i._id === item._id) ? (
-                                            <div className="flex items-center space-x-3 bg-red-600 rounded-2xl px-2 h-10">
+                                            <div className="flex items-center space-x-3 bg-[#f97316] rounded-2xl px-2 h-10">
                                                 <button onClick={() => removeFromCart(item)} className="text-white hover:text-white/80 font-bold px-2">-</button>
                                                 <span className="text-white font-bold">{cart.find(i => i._id === item._id).quantity}</span>
                                                 <button onClick={() => addToCart(item)} className="text-white hover:text-white/80 font-bold px-2">+</button>
@@ -286,7 +286,7 @@ const RestaurantStorefront = () => {
                                         ) : (
                                             <button 
                                                 onClick={() => addToCart(item)}
-                                                className="w-10 h-10 bg-red-600 rounded-2xl flex items-center justify-center hover:bg-red-700 hover:scale-110 transition-all active:scale-95"
+                                                className="w-10 h-10 bg-[#f97316] rounded-2xl flex items-center justify-center hover:bg-orange-600 hover:scale-110 transition-all active:scale-95"
                                             >
                                                 <ShoppingBagIcon className="w-5 h-5 text-white" />
                                             </button>
@@ -327,11 +327,11 @@ const RestaurantStorefront = () => {
                                 value={newReviewText}
                                 onChange={(e) => setNewReviewText(e.target.value)}
                                 placeholder="Share your experience..."
-                                className="w-full bg-[#222] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-red-600 resize-none h-24 mb-4"
+                                className="w-full bg-[#222] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-[#f97316] resize-none h-24 mb-4"
                                 required
                             />
                             <div className="flex justify-end">
-                                <button type="submit" className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full transition-colors">
+                                <button type="submit" className="px-6 py-2 bg-[#f97316] hover:bg-orange-600 text-white font-bold rounded-full transition-colors">
                                     Submit Review
                                 </button>
                             </div>
@@ -339,7 +339,7 @@ const RestaurantStorefront = () => {
                     ) : (
                         <div className="bg-[#1a1a1a] p-6 rounded-2xl mb-12 text-center border border-white/5">
                             <p className="text-white/60 mb-4">Please log in to leave a review.</p>
-                            <button onClick={() => navigate('/login')} className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full">
+                            <button onClick={() => navigate('/login')} className="px-6 py-2 bg-[#f97316] hover:bg-orange-600 text-white font-bold rounded-full">
                                 Log In
                             </button>
                         </div>
@@ -406,7 +406,7 @@ const RestaurantStorefront = () => {
                                             <img src={item.image} alt={item.name} className="w-16 h-16 rounded-xl object-cover" />
                                             <div className="flex-1">
                                                 <h4 className="font-bold">{item.name}</h4>
-                                                <p className="text-red-500 font-bold text-sm">₹{item.price}</p>
+                                                <p className="text-orange-500 font-bold text-sm">₹{item.price}</p>
                                             </div>
                                             <div className="flex flex-col items-center justify-between bg-black/50 rounded-lg w-8 py-1">
                                                 <button onClick={() => addToCart(item)} className="text-white/60 hover:text-white">+</button>
@@ -421,9 +421,9 @@ const RestaurantStorefront = () => {
                                 <div className="p-6 border-t border-white/10 bg-[#0a0a0a]">
                                     <div className="flex justify-between mb-4 font-bold text-lg">
                                         <span>Total</span>
-                                        <span className="text-red-500">₹{cart.reduce((acc, item) => acc + (item.price * item.quantity), 0)}</span>
+                                        <span className="text-orange-500">₹{cart.reduce((acc, item) => acc + (item.price * item.quantity), 0)}</span>
                                     </div>
-                                    <button onClick={() => navigate('/dashboard')} className="w-full py-4 bg-red-600 hover:bg-red-700 font-bold rounded-2xl transition-colors">
+                                    <button onClick={() => navigate('/dashboard')} className="w-full py-4 bg-[#f97316] hover:bg-orange-600 font-bold rounded-2xl transition-colors">
                                         Checkout in Dashboard
                                     </button>
                                 </div>

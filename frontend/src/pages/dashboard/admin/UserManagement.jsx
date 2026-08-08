@@ -85,7 +85,7 @@ const UserManagement = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
                     { label: 'Total Users', value: stats.total, icon: <UsersIcon className="w-6 h-6" />, color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-500/10', textColor: 'text-blue-600 dark:text-blue-400' },
-                    { label: 'Restaurant Owners', value: stats.owners, icon: <BuildingOfficeIcon className="w-6 h-6" />, color: 'from-indigo-500 to-purple-500', bgColor: 'bg-indigo-500/10', textColor: 'text-indigo-600 dark:text-indigo-400' },
+                    { label: 'Restaurant Owners', value: stats.owners, icon: <BuildingOfficeIcon className="w-6 h-6" />, color: 'from-indigo-500 to-purple-500', bgColor: 'bg-orange-500/10', textColor: 'text-[#f97316] dark:text-indigo-400' },
                     { label: 'Customers', value: stats.customers, icon: <ChartBarIcon className="w-6 h-6" />, color: 'from-emerald-500 to-teal-500', bgColor: 'bg-emerald-500/10', textColor: 'text-emerald-600 dark:text-emerald-400' },
                     { label: 'Administrators', value: stats.admins, icon: <ShieldCheckIcon className="w-6 h-6" />, color: 'from-rose-500 to-pink-500', bgColor: 'bg-rose-500/10', textColor: 'text-rose-600 dark:text-rose-400' }
                 ].map((stat, i) => (
@@ -162,7 +162,7 @@ const UserManagement = () => {
                                             onChange={(e) => handleRoleChange(u._id, e.target.value)}
                                             disabled={u._id === currentUser._id}
                                             className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border border-black/5 cursor-pointer disabled:opacity-50 ${
-                                                u.role === 'admin' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20' :
+                                                u.role === 'admin' ? 'bg-orange-500/10 text-[#f97316] dark:text-red-400 border-red-500/20' :
                                                 u.role === 'owner' ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' :
                                                 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
                                             }`}
@@ -179,7 +179,7 @@ const UserManagement = () => {
                                         <button 
                                             onClick={() => handleDelete(u._id)}
                                             disabled={u._id === currentUser._id}
-                                            className="p-2 opacity-40 group-hover:opacity-100 bg-black/5 dark:bg-white/5 hover:bg-red-500/10 hover:text-red-500 disabled:opacity-10 rounded-xl transition-all"
+                                            className="p-2 opacity-40 group-hover:opacity-100 bg-black/5 dark:bg-white/5 hover:bg-orange-500/10 hover:text-orange-500 disabled:opacity-10 rounded-xl transition-all"
                                             title={u._id === currentUser._id ? "Cannot delete yourself" : "Delete Account"}
                                         >
                                             <TrashIcon className="w-4 h-4" />

@@ -235,7 +235,7 @@ const AdminDashboard = () => {
                         <AnimatePresence>
                             {isProfileMenuOpen && (
                                 <motion.div initial={{ opacity: 0, scale: 0.9, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 10 }} className="absolute bottom-full left-0 w-full mb-2 theme-card rounded-xl border border-black/5 shadow-2xl overflow-hidden">
-                                    <button onClick={logout} className="w-full flex items-center px-4 py-3 text-sm text-red-500 hover:bg-red-500/5 transition font-bold">
+                                    <button onClick={logout} className="w-full flex items-center px-4 py-3 text-sm text-orange-500 hover:bg-orange-500/5 transition font-bold">
                                         <ArrowLeftOnRectangleIcon className="h-5 w-5 mr-3" /> Sign Out
                                     </button>
                                 </motion.div>
@@ -367,7 +367,7 @@ const AdminDashboard = () => {
                                                     <div key={idx} className="theme-card-item border border-black/5 p-6 rounded-2xl group hover:border-rose-500/30 transition-all shadow-sm">
                                                         <div className="flex items-start justify-between mb-3">
                                                             <h4 className="font-bold">{p.name}</h4>
-                                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${p.risk === 'High' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
+                                                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${p.risk === 'High' ? 'bg-orange-500/10 text-orange-500 border border-red-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'
                                                                 }`}>
                                                                 {p.risk} Risk
                                                             </span>

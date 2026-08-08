@@ -49,9 +49,8 @@ const LandingPage = () => {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-8 text-sm font-semibold">
           <a href="#" className="px-4 py-1.5 bg-[#f97316]/20 text-[#f97316] rounded-full">Home</a>
-          <a href="#restaurants" className="hover:text-[#f97316] transition-colors">Menu</a>
-          <a href="#about" className="hover:text-[#f97316] transition-colors">About Us</a>
-          <a href="#specials" className="hover:text-[#f97316] transition-colors">Specials</a>
+          <a href="#restaurants" className="hover:text-[#f97316] transition-colors">Top Restaurants</a>
+          <a href="#testimonials" className="hover:text-[#f97316] transition-colors">Testimonials</a>
           <a href="#contact" className="hover:text-[#f97316] transition-colors">Contact</a>
         </div>
 
@@ -77,8 +76,8 @@ const LandingPage = () => {
         {isMobileMenuOpen && (
           <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className={`md:hidden overflow-hidden px-6 ${theme === 'dark' ? 'bg-[#111]' : 'bg-gray-100'}`}>
              <div className="py-6 flex flex-col gap-4">
-                <a href="#restaurants" className={`hover:text-[#f97316] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Menu</a>
-                <a href="#about" className={`hover:text-[#f97316] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>About Us</a>
+                <a href="#restaurants" className={`hover:text-[#f97316] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Top Restaurants</a>
+                <a href="#testimonials" className={`hover:text-[#f97316] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Testimonials</a>
                 <Link to="/login" className={`hover:text-[#f97316] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Sign In</Link>
                 <Link to="/register" className="text-[#f97316]">Register</Link>
                 <Link to="/owner/login" className="text-[#f97316]">Partner Portal</Link>
@@ -126,12 +125,12 @@ const LandingPage = () => {
             className="absolute -bottom-10 -left-10 bg-white text-black p-4 pr-12 rounded-2xl flex items-center gap-6 shadow-2xl max-w-sm hidden sm:flex"
           >
             <div>
-              <h4 className="font-bold text-lg leading-tight">Great food and lots<br/>of discounted prices</h4>
-              <p className="text-xs text-gray-500 mt-2">People grabbed the offer</p>
+              <h4 className="font-bold text-lg leading-tight">Efficient management<br/>and seamless operations</h4>
+              <p className="text-xs text-gray-500 mt-2">Trusted by partners</p>
             </div>
             <div className="text-center absolute -right-12 bg-gray-100 rounded-full w-24 h-24 flex flex-col justify-center border-4 border-white shadow-xl">
-               <span className="font-black text-2xl">50%</span>
-               <span className="text-[10px] font-bold">offer on Now</span>
+               <span className="font-black text-2xl">100%</span>
+               <span className="text-[10px] font-bold">Uptime</span>
             </div>
           </motion.div>
         </div>
@@ -151,7 +150,7 @@ const LandingPage = () => {
       </section>
 
       {/* What They Say */}
-      <section className="py-20 px-6 lg:px-12 max-w-7xl mx-auto text-center">
+      <section id="testimonials" className="py-20 px-6 lg:px-12 max-w-7xl mx-auto text-center">
         <h2 className="text-3xl font-bold inline-block border-x-4 border-[#f97316] px-6 py-2 mb-16">What They <span className="text-[#f97316]">Say?</span></h2>
         
         <div className="grid md:grid-cols-3 gap-6">
@@ -187,8 +186,8 @@ const LandingPage = () => {
              <h4 className="font-bold mb-4 text-sm">Quick Links</h4>
              <div className="flex flex-col gap-2 text-xs text-gray-500">
                <a href="#" className="hover:text-[#f97316]">Home</a>
-               <a href="#about" className="hover:text-[#f97316]">About Us</a>
-               <a href="#restaurants" className="hover:text-[#f97316]">Menu</a>
+               <a href="#restaurants" className="hover:text-[#f97316]">Top Restaurants</a>
+               <a href="#testimonials" className="hover:text-[#f97316]">Testimonials</a>
              </div>
            </div>
            <div>

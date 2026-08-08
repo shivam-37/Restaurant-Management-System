@@ -39,7 +39,7 @@ const Toast = ({ message, onClose }) => (
                 exit={{ opacity: 0, y: -10 }}
                 className={`flex items-center gap-3 px-5 py-3 rounded-xl border text-sm mb-6 ${message.type === 'success'
                     ? 'bg-green-500/10 border-green-500/30 text-green-400'
-                    : 'bg-red-500/10 border-red-500/30 text-red-400'
+                    : 'bg-orange-500/10 border-red-500/30 text-red-400'
                     }`}
             >
                 {message.type === 'success'
@@ -161,7 +161,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
 
     const strengthMap = ['Too short', 'Weak', 'Medium', 'Strong'];
     const strength = pwForm.password.length >= 12 ? 'Strong' : pwForm.password.length >= 8 ? 'Medium' : pwForm.password.length >= 4 ? 'Weak' : 'Too short';
-    const strengthColor = { Strong: 'bg-green-500', Medium: 'bg-yellow-500', Weak: 'bg-red-500', 'Too short': 'bg-gray-700' }[strength];
+    const strengthColor = { Strong: 'bg-green-500', Medium: 'bg-yellow-500', Weak: 'bg-orange-500', 'Too short': 'bg-gray-700' }[strength];
 
     useEffect(() => {
         if (user?.avatar) {
@@ -292,7 +292,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                                                 showMessage('error', 'Failed to remove profile photo');
                                             }
                                         }}
-                                        className="px-4 py-2.5 text-red-500 hover:opacity-80 transition text-sm"
+                                        className="px-4 py-2.5 text-orange-500 hover:opacity-80 transition text-sm"
                                     >
                                         Remove
                                     </button>
@@ -473,7 +473,7 @@ const RestaurantTab = ({ selectedRestaurant, updateRestaurantInList, showMessage
                     <button
                         type="button"
                         onClick={() => setForm({ ...form, image: '' })}
-                        className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-red-600 text-white rounded-xl transition cursor-pointer text-xs"
+                        className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-[#f97316] text-white rounded-xl transition cursor-pointer text-xs"
                         title="Remove Photo"
                     >
                         ✕
@@ -798,7 +798,7 @@ const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) 
                             <div key={idx} className="theme-card-item border border-black/5 rounded-2xl p-4 space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h4 className="font-bold text-sm text-rose-500">Table {table.number}</h4>
-                                    <button type="button" onClick={() => handleRemoveTable(idx)} className="p-1 text-red-500 hover:bg-red-500/10 rounded-lg transition" title="Remove Table">
+                                    <button type="button" onClick={() => handleRemoveTable(idx)} className="p-1 text-orange-500 hover:bg-orange-500/10 rounded-lg transition" title="Remove Table">
                                         <TrashIcon className="w-4 h-4" />
                                     </button>
                                 </div>
@@ -927,8 +927,8 @@ const Settings = () => {
             </motion.div>
 
             {/* Danger Zone */}
-            <div className="bg-red-500/5 border border-red-500/10 rounded-2xl p-6">
-                <h3 className="text-lg font-bold text-red-500 mb-1 flex items-center gap-2">
+            <div className="bg-orange-500/5 border border-red-500/10 rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-orange-500 mb-1 flex items-center gap-2">
                     <ExclamationTriangleIcon className="w-5 h-5" /> Danger Zone
                 </h3>
                 <p className="text-sm opacity-60 mb-4">Permanently delete your account and all associated data. This cannot be undone.</p>
@@ -936,7 +936,7 @@ const Settings = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setShowDeleteModal(true)}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-red-500/10 text-red-600 border border-red-500/20 rounded-xl hover:bg-red-600 hover:text-white transition text-sm font-bold"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-orange-500/10 text-[#f97316] border border-red-500/20 rounded-xl hover:bg-[#f97316] hover:text-white transition text-sm font-bold"
                 >
                     <TrashIcon className="w-4 h-4" /> Delete My Account
                 </motion.button>
@@ -959,19 +959,19 @@ const Settings = () => {
                             onClick={e => e.stopPropagation()}
                             className="theme-card border border-red-500/20 rounded-2xl p-8 max-w-md w-full shadow-2xl"
                         >
-                            <div className="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <ExclamationTriangleIcon className="w-8 h-8 text-red-500" />
+                            <div className="w-14 h-14 bg-orange-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <ExclamationTriangleIcon className="w-8 h-8 text-orange-500" />
                             </div>
                             <h3 className="text-xl font-bold text-center mb-2">Delete Account</h3>
                             <p className="opacity-60 text-sm text-center mb-6">
-                                This will permanently delete your account. Type <span className="font-bold text-red-500">DELETE</span> to confirm.
+                                This will permanently delete your account. Type <span className="font-bold text-orange-500">DELETE</span> to confirm.
                             </p>
                             <input
                                 type="text"
                                 value={deleteConfirm}
                                 onChange={e => setDeleteConfirm(e.target.value)}
                                 placeholder="Type DELETE to confirm"
-                                className="w-full theme-card-item border-transparent rounded-xl px-4 py-3 focus:outline-none focus:border-red-500 mb-4"
+                                className="w-full theme-card-item border-transparent rounded-xl px-4 py-3 focus:outline-none focus:border-[#f97316] mb-4"
                             />
                             <div className="flex gap-3">
                                 <button
@@ -983,7 +983,7 @@ const Settings = () => {
                                 <button
                                     onClick={handleDeleteAccount}
                                     disabled={deleteConfirm !== 'DELETE' || deleteLoading}
-                                    className="flex-1 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition disabled:opacity-40 disabled:cursor-not-allowed font-bold"
+                                    className="flex-1 py-3 bg-[#f97316] text-white rounded-xl hover:bg-orange-600 transition disabled:opacity-40 disabled:cursor-not-allowed font-bold"
                                 >
                                     {deleteLoading ? 'Deleting...' : 'Delete Forever'}
                                 </button>

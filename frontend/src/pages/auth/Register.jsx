@@ -270,7 +270,7 @@ const Register = () => {
                         <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-6"
+                            className="bg-orange-500/10 border border-red-500/20 rounded-xl p-4 mb-6"
                         >
                             <p className="text-sm text-red-400 text-center">{error}</p>
                         </motion.div>

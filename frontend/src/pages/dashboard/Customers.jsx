@@ -98,7 +98,7 @@ const Customers = () => {
                                         {u._id !== user._id ? (
                                             <button
                                                 onClick={() => handleDelete(u._id)}
-                                                className="p-2 opacity-30 hover:opacity-100 hover:bg-red-500/10 hover:text-red-500 rounded-xl transition-all"
+                                                className="p-2 opacity-30 hover:opacity-100 hover:bg-orange-500/10 hover:text-orange-500 rounded-xl transition-all"
                                                 title="Delete Customer"
                                             >
                                                 <TrashIcon className="h-5 w-5" />

@@ -470,8 +470,8 @@ const Menu = () => {
                             animate={{ opacity: 1 }}
                             className="theme-card rounded-2xl p-12 text-center"
                         >
-                            <div className="w-20 h-20 mx-auto mb-4 bg-red-500/10 rounded-2xl flex items-center justify-center">
-                                <XMarkIcon className="w-10 h-10 text-red-500" />
+                            <div className="w-20 h-20 mx-auto mb-4 bg-orange-500/10 rounded-2xl flex items-center justify-center">
+                                <XMarkIcon className="w-10 h-10 text-orange-500" />
                             </div>
                             <h3 className="text-xl font-semibold mb-2">No Restaurant Selected</h3>
                             <p className="opacity-60 mb-6">You must select a restaurant to manage menu items.</p>
@@ -547,7 +547,7 @@ const Menu = () => {
                                                 <div className="absolute top-3 right-3 z-20">
                                                     <span className={`px-3 py-1 text-xs font-semibold rounded-full ${(item.stock || 0) > 0
                                                         ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                                        : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                                        : 'bg-orange-500/20 text-red-400 border border-red-500/30'
                                                         }`}>
                                                         {(item.stock || 0) > 0 ? `${item.stock} in stock` : 'Out of stock'}
                                                     </span>
@@ -584,7 +584,7 @@ const Menu = () => {
                                                             whileHover={{ scale: 1.1, rotate: 5 }}
                                                             whileTap={{ scale: 0.9 }}
                                                             onClick={() => handleDelete(item._id)}
-                                                            className="p-3 theme-card-item rounded-xl text-red-500 hover:bg-red-600 hover:text-white transition-all shadow-md"
+                                                            className="p-3 theme-card-item rounded-xl text-orange-500 hover:bg-[#f97316] hover:text-white transition-all shadow-md"
                                                         >
                                                             <TrashIcon className="h-5 w-5" />
                                                         </motion.button>
@@ -821,7 +821,7 @@ const Menu = () => {
                                                     <button
                                                         type="button"
                                                         onClick={() => setFormData({ ...formData, image: '' })}
-                                                        className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-red-600 text-white rounded-xl transition cursor-pointer text-xs"
+                                                        className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-[#f97316] text-white rounded-xl transition cursor-pointer text-xs"
                                                         title="Remove Photo"
                                                     >
                                                         ✕
@@ -906,7 +906,7 @@ const Menu = () => {
                                                     <div className="flex items-center gap-3">
                                                         <span className="text-[10px] font-black uppercase tracking-widest text-rose-600">₹{item.price}</span>
                                                         <div className="flex items-center gap-3 theme-card-item rounded-lg px-2 py-1">
-                                                            <button onClick={() => removeFromCart(item._id)} className="p-1 hover:text-red-500 transition-colors">
+                                                            <button onClick={() => removeFromCart(item._id)} className="p-1 hover:text-orange-500 transition-colors">
                                                                 <MinusIcon className="w-3 h-3" />
                                                             </button>
                                                             <span className="text-xs font-black">{item.quantity}</span>

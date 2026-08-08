@@ -117,7 +117,7 @@ const TableMap = () => {
                         <div key={status} className="flex items-center gap-2">
                             <div className={`w-3 h-3 rounded-full shadow-sm ${status === 'Available' ? 'bg-green-500' :
                                 status === 'Occupied' ? 'bg-rose-600' :
-                                    status === 'Reserved' ? 'bg-yellow-500' : 'bg-red-500'
+                                    status === 'Reserved' ? 'bg-yellow-500' : 'bg-orange-500'
                                 }`} />
                             <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{status}</span>
                         </div>
@@ -152,7 +152,7 @@ const TableMap = () => {
                                 className={`absolute w-36 h-36 rounded-3xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-500 shadow-lg ${table.status === 'Available' ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400 hover:bg-green-500/20' :
                                     table.status === 'Occupied' ? 'bg-rose-600/10 border-rose-600/30 text-rose-700 dark:text-rose-400 hover:bg-rose-600/20' :
                                         table.status === 'Reserved' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20' :
-                                            'bg-red-500/10 border-red-500/30 text-red-700 dark:text-red-400 hover:bg-red-500/20'
+                                            'bg-orange-500/10 border-red-500/30 text-red-700 dark:text-red-400 hover:bg-orange-500/20'
                                     }`}
                                 style={{ left: `${posX}%`, top: `${posY}%` }}
                             >
@@ -190,7 +190,7 @@ const TableMap = () => {
                             <div className="flex items-center gap-6 mb-8">
                                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black ${selectedTable.status === 'Available' ? 'bg-green-500 text-white' :
                                     selectedTable.status === 'Occupied' ? 'bg-rose-600 text-white' :
-                                        selectedTable.status === 'Reserved' ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white'
+                                        selectedTable.status === 'Reserved' ? 'bg-yellow-500 text-white' : 'bg-orange-500 text-white'
                                     }`}>
                                     {selectedTable.number}
                                 </div>
