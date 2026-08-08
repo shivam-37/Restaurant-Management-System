@@ -239,7 +239,7 @@ const Orders = () => {
                                     )}
                                 </div>
 
-                                <!-- Admin/Owner Actions -->
+                                {/* Admin/Owner Actions */}
                                 {(user?.role === 'admin' || user?.role === 'owner') && (
                                     <div className="flex flex-col gap-3 w-full md:w-auto">
                                         {order.status === 'Pending' && (
