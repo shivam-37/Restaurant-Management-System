@@ -110,7 +110,7 @@ const UserDashboard = ({ user, logout }) => {
                         <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-[0_5px_15px_rgba(249,115,22,0.3)]">
                             <ChefHat className="w-6 h-6 text-white" />
                         </div>
-                        <span className="text-xl font-black text-orange-500 uppercase tracking-tighter">WorldPlate</span>
+                        <span className="text-xl font-black text-orange-500 uppercase tracking-tighter">DINE FLOW</span>
                     </div>
                 </div>
 

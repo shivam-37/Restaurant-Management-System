@@ -53,7 +53,7 @@ const KitchenDisplay = () => {
 
     if (loading && orders.length === 0) return (
         <div className="flex items-center justify-center h-screen" style={{ background: 'var(--bg-primary)' }}>
-            <div className="w-12 h-12 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-[#f97316] border-t-transparent rounded-full animate-spin"></div>
         </div>
     );
 

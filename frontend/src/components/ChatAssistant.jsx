@@ -64,7 +64,7 @@ const ChatAssistant = () => {
                 whileHover={{ scale: 1.05, y: -5 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(true)}
-                className={`fixed bottom-24 md:bottom-8 right-4 md:right-8 z-[100] p-4 rounded-2xl shadow-2xl bg-gradient-to-r from-rose-600 to-purple-600 text-white flex items-center justify-center shadow-rose-600/30 border border-white/20 backdrop-blur-sm ${isOpen ? 'hidden' : ''}`}
+                className={`fixed bottom-24 md:bottom-8 right-4 md:right-8 z-[100] p-4 rounded-2xl shadow-2xl bg-gradient-to-r from-[#f97316] to-orange-400 text-white flex items-center justify-center shadow-orange-500/30 border border-white/20 backdrop-blur-sm ${isOpen ? 'hidden' : ''}`}
             >
                 <div className="relative">
                     <ChatBubbleLeftRightIcon className="w-8 h-8" />
@@ -86,10 +86,10 @@ const ChatAssistant = () => {
                         className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[100] w-[calc(100vw-32px)] sm:w-[400px] h-[600px] max-h-[85vh] flex flex-col theme-card rounded-[2rem] shadow-2xl shadow-rose-500/10 border border-black/5 overflow-hidden"
                     >
                         {/* Header */}
-                        <div className="flex items-center justify-between p-6 bg-gradient-to-b from-rose-500/5 to-transparent border-b border-black/5 relative backdrop-blur-xl z-10">
-                            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-rose-500/50 to-transparent"></div>
+                        <div className="flex items-center justify-between p-6 bg-gradient-to-b from-orange-500/5 to-transparent border-b border-black/5 relative backdrop-blur-xl z-10">
+                            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent"></div>
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-600 to-purple-600 flex items-center justify-center shadow-lg shadow-rose-600/20">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f97316] to-orange-400 flex items-center justify-center shadow-lg shadow-orange-500/20">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-white">
                                         {/* Chef Hat */}
                                         <path d="M7 11V9a3 3 0 0 1 1.1-2.3C7.5 5.2 8.4 4 10 4c.8 0 1.5.3 2 .8.5-.5 1.2-.8 2-.8 1.6 0 2.5 1.2 1.9 2.7A3 3 0 0 1 17 9v2" />
@@ -107,7 +107,7 @@ const ChatAssistant = () => {
                                 </div>
                                 <div>
                                     <h3 className="font-black uppercase tracking-tighter text-lg leading-none">Dine AI</h3>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-rose-500 mt-1">Powered by Llama 3.1</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-orange-500 mt-1">Powered by Llama 3.1</p>
                                 </div>
                             </div>
                             <button
@@ -130,7 +130,7 @@ const ChatAssistant = () => {
                                 >
                                     <div className={`max-w-[85%] rounded-[1.5rem] px-5 py-4 text-sm font-medium leading-relaxed shadow-sm ${
                                         msg.role === 'user'
-                                        ? 'bg-gradient-to-r from-rose-600 to-purple-600 text-white rounded-tr-sm shadow-rose-600/20'
+                                        ? 'bg-gradient-to-r from-[#f97316] to-orange-400 text-white rounded-tr-sm shadow-orange-500/20'
                                         : 'theme-card-item border border-black/5 rounded-tl-sm'
                                         }`}>
                                         <div className="whitespace-pre-wrap">{msg.content}</div>
@@ -145,9 +145,9 @@ const ChatAssistant = () => {
                                 >
                                     <div className="theme-card-item border border-black/5 rounded-[1.5rem] rounded-tl-sm px-5 py-4 shadow-sm">
                                         <div className="flex gap-1.5 items-center h-5">
-                                            <span className="w-2 h-2 rounded-full bg-rose-500 animate-bounce"></span>
-                                            <span className="w-2 h-2 rounded-full bg-purple-500 animate-bounce delay-100"></span>
-                                            <span className="w-2 h-2 rounded-full bg-rose-500 animate-bounce delay-200"></span>
+                                            <span className="w-2 h-2 rounded-full bg-orange-500 animate-bounce"></span>
+                                            <span className="w-2 h-2 rounded-full bg-orange-400 animate-bounce delay-100"></span>
+                                            <span className="w-2 h-2 rounded-full bg-orange-500 animate-bounce delay-200"></span>
                                         </div>
                                     </div>
                                 </motion.div>
@@ -163,13 +163,13 @@ const ChatAssistant = () => {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     placeholder="Message Dine AI..."
-                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl px-6 py-4 pr-14 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all placeholder:opacity-40"
+                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl px-6 py-4 pr-14 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-[#f97316] transition-all placeholder:opacity-40"
                                     disabled={isLoading}
                                 />
                                 <button
                                     type="submit"
                                     disabled={!input.trim() || isLoading}
-                                    className="absolute right-2 p-2.5 rounded-xl bg-rose-600 text-white hover:bg-rose-500 disabled:opacity-20 disabled:hover:bg-rose-600 transition-all shadow-lg shadow-rose-600/20 active:scale-95"
+                                    className="absolute right-2 p-2.5 rounded-xl bg-[#f97316] text-white hover:bg-orange-500 disabled:opacity-20 disabled:hover:bg-[#f97316] transition-all shadow-lg shadow-orange-500/20 active:scale-95"
                                 >
                                     <PaperAirplaneIcon className="w-4 h-4" />
                                 </button>

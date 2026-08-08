@@ -57,7 +57,7 @@ const TableMap = () => {
 
     if (loading && !restaurant && selectedRestaurant) return (
         <div className="flex flex-col items-center justify-center h-64 theme-card rounded-3xl opacity-50 space-y-4">
-            <div className="w-8 h-8 border-2 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-2 border-[#f97316] border-t-transparent rounded-full animate-spin"></div>
             <p className="font-black uppercase tracking-widest text-[10px]">Loading Table Map...</p>
         </div>
     );

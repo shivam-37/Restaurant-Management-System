@@ -419,9 +419,9 @@ const Menu = () => {
             {isLoading && !menuItems.length ? (
                 <div className="flex items-center justify-center h-64">
                     <div className="relative">
-                        <div className="w-16 h-16 border-4 border-gray-800 border-t-rose-600 rounded-full animate-spin"></div>
+                        <div className="w-16 h-16 border-4 border-gray-800 border-t-[#f97316] rounded-full animate-spin"></div>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-8 h-8 bg-gradient-to-r from-rose-600 to-purple-600 rounded-full animate-pulse"></div>
+                            <div className="w-8 h-8 bg-gradient-to-r from-[#f97316] to-orange-400 rounded-full animate-pulse"></div>
                         </div>
                     </div>
                 </div>
@@ -702,7 +702,7 @@ const Menu = () => {
                                                 className="flex items-center text-[9px] font-black uppercase tracking-widest text-rose-500 hover:text-rose-600 transition-colors disabled:opacity-50"
                                             >
                                                 {isAiGenerating ? (
-                                                    <div className="w-3 h-3 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mr-1.5"></div>
+                                                    <div className="w-3 h-3 border-2 border-[#f97316] border-t-transparent rounded-full animate-spin mr-1.5"></div>
                                                 ) : (
                                                     <SparklesIcon className="w-3 h-3 mr-1.5" />
                                                 )}

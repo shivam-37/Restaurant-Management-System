@@ -346,7 +346,7 @@ const AdminDashboard = () => {
                                                 disabled={isPredicting}
                                                 className="p-3 theme-card-item rounded-xl border border-black/5 hover:border-rose-500 transition group"
                                             >
-                                                <ArrowPathIcon className={`w-5 h-5 text-rose-500 group-hover:rotate-180 transition-transform duration-500 ${isPredicting ? 'animate-spin' : ''}`} />
+                                                <ArrowPathIcon className={`w-5 h-5 text-[#f97316] group-hover:rotate-180 transition-transform duration-500 ${isPredicting ? 'animate-spin' : ''}`} />
                                             </button>
                                         </div>
 

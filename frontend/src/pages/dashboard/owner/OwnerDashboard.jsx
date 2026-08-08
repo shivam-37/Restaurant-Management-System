@@ -132,7 +132,7 @@ const OwnerDashboard = () => {
                         className="max-w-md w-full"
                     >
                         <div className="relative mb-10">
-                            <div className="w-28 h-28 border-4 border-rose-500/10 border-t-rose-500 rounded-full animate-spin mx-auto shadow-2xl"></div>
+                            <div className="w-28 h-28 border-4 border-rose-500/10 border-t-[#f97316] rounded-full animate-spin mx-auto shadow-2xl"></div>
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="w-14 h-14 bg-rose-600 rounded-3xl animate-pulse rotate-45 shadow-xl shadow-rose-600/40 flex items-center justify-center">
                                     <SparklesIcon className="w-6 h-6 text-white -rotate-45" />
