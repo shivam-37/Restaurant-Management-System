@@ -27,8 +27,15 @@ const Menu = () => {
     const [isAiGenerating, setIsAiGenerating] = useState(false);
     const [isAiFullGenerating, setIsAiFullGenerating] = useState(false);
     const [aiDishPrompt, setAiDishPrompt] = useState("");
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState(() => {
+        const saved = localStorage.getItem('cart');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [isCartOpen, setIsCartOpen] = useState(false);
+
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }, [cart]);
     const [cartInstructions, setCartInstructions] = useState('');
     const [orderType, setOrderType] = useState('Dine-In');
     const [paymentMethod, setPaymentMethod] = useState('Cash');

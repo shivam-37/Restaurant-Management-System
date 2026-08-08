@@ -23,12 +23,12 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen font-sans" style={{ backgroundColor: '#0a0a0a', color: '#ffffff' }}>
+    <div className={`min-h-screen font-sans ${theme === 'dark' ? 'bg-[#0a0a0a] text-white' : 'bg-gray-50 text-black'}`}>
       
       {/* Navbar */}
-      <nav className="w-full bg-[#0a0a0a] py-6 px-6 lg:px-12 flex items-center justify-between z-50 sticky top-0 border-b border-white/5">
+      <nav className={`w-full py-6 px-6 lg:px-12 flex items-center justify-between z-50 sticky top-0 border-b ${theme === 'dark' ? 'bg-[#0a0a0a] border-white/5' : 'bg-white border-black/5'}`}>
         <Link to="/" className="text-2xl font-black tracking-tight text-[#f97316]">
-          WorldPlate
+          Dine Flow
         </Link>
 
         {/* Desktop Nav */}
@@ -42,12 +42,12 @@ const LandingPage = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          <button onClick={toggleTheme} className="p-2 text-white/50 hover:text-white transition-colors" title="Toggle Theme">
+          <button onClick={toggleTheme} className={`p-2 transition-colors ${theme === 'dark' ? 'text-white/50 hover:text-white' : 'text-black/50 hover:text-black'}`} title="Toggle Theme">
             {theme === 'dark' ? <Sun className="w-5 h-5 text-[#f97316]" /> : <Moon className="w-5 h-5 text-[#f97316]" />}
           </button>
           
           <Link to="/login" className="hidden md:block text-sm font-semibold hover:text-[#f97316] transition-colors">Sign In</Link>
-          <span className="hidden md:block text-white/30">/</span>
+          <span className={`hidden md:block ${theme === 'dark' ? 'text-white/30' : 'text-black/30'}`}>/</span>
           <Link to="/register" className="hidden md:block text-sm font-semibold hover:text-[#f97316] transition-colors">Register</Link>
           <Link to="/owner/login" className="hidden md:block text-xs px-3 py-1 border border-[#f97316]/30 text-[#f97316] rounded-full hover:bg-[#f97316] hover:text-white transition-all ml-2">Partner</Link>
 
@@ -60,11 +60,11 @@ const LandingPage = () => {
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="md:hidden bg-[#111] overflow-hidden px-6">
+          <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className={`md:hidden overflow-hidden px-6 ${theme === 'dark' ? 'bg-[#111]' : 'bg-gray-100'}`}>
              <div className="py-6 flex flex-col gap-4">
-                <a href="#restaurants" className="text-white hover:text-[#f97316]">Menu</a>
-                <a href="#about" className="text-white hover:text-[#f97316]">About Us</a>
-                <Link to="/login" className="text-white hover:text-[#f97316]">Sign In</Link>
+                <a href="#restaurants" className={`hover:text-[#f97316] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Menu</a>
+                <a href="#about" className={`hover:text-[#f97316] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>About Us</a>
+                <Link to="/login" className={`hover:text-[#f97316] ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Sign In</Link>
                 <Link to="/register" className="text-[#f97316]">Register</Link>
                 <Link to="/owner/login" className="text-[#f97316]">Partner Portal</Link>
              </div>
@@ -79,15 +79,15 @@ const LandingPage = () => {
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
             className="text-5xl lg:text-7xl font-bold leading-tight"
           >
-            Experience the <br/>
-            <span className="text-[#f97316] underline decoration-4 underline-offset-8">Taste</span> of the <br/>
-            World
+            The Ultimate <br/>
+            <span className="text-[#f97316] underline decoration-4 underline-offset-8">Platform</span> for <br/>
+            Restaurants
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
-            className="text-gray-400 max-w-md text-sm leading-relaxed"
+            className={`max-w-md text-sm leading-relaxed ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
           >
-            From classic favorites to exotic delights, explore a diverse menu inspired by cuisines from across the globe.
+            Streamline your operations, manage menus, track orders, and boost your restaurant's growth with Dine Flow.
           </motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
             <Link to="/register" className="inline-block px-8 py-3 bg-[#f97316] text-white font-bold rounded-full hover:bg-orange-600 transition-colors shadow-[0_10px_30px_rgba(249,115,22,0.3)]">
@@ -125,15 +125,15 @@ const LandingPage = () => {
       {/* Our Best Delivered Section & Restaurants */}
       <section id="restaurants" className="py-20 px-6 lg:px-12 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold inline-block border-x-4 border-[#f97316] px-6 py-2">Our Best <span className="text-[#f97316]">Delivered</span></h2>
+          <h2 className="text-3xl font-bold inline-block border-x-4 border-[#f97316] px-6 py-2">Top <span className="text-[#f97316]">Restaurants</span></h2>
         </div>
 
         {/* Example featured item card styled like the image */}
-        <div className="bg-[#111]/80 border border-white/5 rounded-[3rem] p-4 lg:p-8 flex flex-col md:flex-row items-center gap-8 mb-20 max-w-4xl mx-auto relative overflow-hidden">
-           <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop" className="w-64 h-64 object-cover rounded-[3rem] shadow-2xl border-4 border-[#1a1a1a]" alt="Breakfast Specials" />
+        <div className={`border rounded-[3rem] p-4 lg:p-8 flex flex-col md:flex-row items-center gap-8 mb-20 max-w-4xl mx-auto relative overflow-hidden ${theme === 'dark' ? 'bg-[#111]/80 border-white/5' : 'bg-white shadow-xl border-black/5'}`}>
+           <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop" className={`w-64 h-64 object-cover rounded-[3rem] shadow-2xl border-4 ${theme === 'dark' ? 'border-[#1a1a1a]' : 'border-gray-50'}`} alt="Breakfast Specials" />
            <div className="flex-1 text-left">
              <h3 className="text-3xl font-bold mb-3">Breakfast Specials</h3>
-             <p className="text-sm text-gray-400 mb-6 max-w-sm leading-relaxed">Explore our top-rated food categories, crafted to satisfy every craving. From delicious breakfasts to late night snacks.</p>
+             <p className={`text-sm mb-6 max-w-sm leading-relaxed ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Explore our top-rated food categories, crafted to satisfy every craving. From delicious breakfasts to late night snacks.</p>
              <div className="flex items-center justify-between">
                 <span className="text-4xl font-bold">$99/-</span>
                 <Link to="/login" className="px-6 py-3 bg-[#f97316] text-white font-bold rounded-full hover:bg-orange-600 transition-colors">Order Now</Link>
@@ -154,7 +154,7 @@ const LandingPage = () => {
         
         <div className="grid md:grid-cols-3 gap-6">
           {[1,2,3].map(i => (
-             <div key={i} className="bg-[#111]/80 border border-white/5 rounded-3xl p-8 text-left">
+             <div key={i} className={`border rounded-3xl p-8 text-left ${theme === 'dark' ? 'bg-[#111]/80 border-white/5' : 'bg-white shadow-xl border-black/5'}`}>
                 <div className="flex items-center gap-4 mb-6">
                   <img src={`https://i.pravatar.cc/100?img=${i+12}`} className="w-12 h-12 rounded-full" alt="User" />
                   <div>
@@ -162,31 +162,17 @@ const LandingPage = () => {
                     <div className="flex text-[#f97316] text-sm">★★★★★</div>
                   </div>
                 </div>
-                <p className="text-sm text-gray-400 leading-relaxed">Absolutely loved the flavors! The food was fresh, and the delivery was super fast. Highly recommend!</p>
+                <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Absolutely loved the platform! The operations are so smooth and our sales went up instantly. Highly recommend!</p>
              </div>
           ))}
-        </div>
-      </section>
-
-      {/* Meet Our Chefs */}
-      <section className="py-20 px-6 lg:px-12 max-w-7xl mx-auto text-center mb-10">
-         <h2 className="text-3xl font-bold inline-block border-x-4 border-[#f97316] px-6 py-2 mb-16">Meet Our <span className="text-[#f97316]">Chefs</span></h2>
-         
-         <div className="bg-[#111]/80 border border-white/5 rounded-[3rem] p-8 flex flex-col md:flex-row items-center gap-12 max-w-4xl mx-auto">
-             <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?q=80&w=800&auto=format&fit=crop" className="w-64 h-64 object-cover rounded-3xl shadow-2xl" alt="Chef" />
-             <div className="flex-1 text-left">
-                <p className="text-sm text-gray-400 leading-relaxed mb-6">Our expert chefs bring passion, skill, and creativity to every dish, ensuring an unforgettable dining experience. With years of experience and a love for flavors, they craft each meal to perfection using only the finest ingredients.</p>
-                <button className="px-8 py-2 border border-[#f97316] text-[#f97316] rounded-full hover:bg-[#f97316] hover:text-white transition-colors text-sm font-bold">View All</button>
-             </div>
-         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#0a0a0a] border-t border-white/5 py-12 px-6 lg:px-12">
+      <footer className={`border-t py-12 px-6 lg:px-12 ${theme === 'dark' ? 'bg-[#0a0a0a] border-white/5' : 'bg-gray-50 border-black/5'}`}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
            <div className="col-span-1 md:col-span-2">
-             <h3 className="text-xl font-black tracking-tight text-[#f97316] mb-4">WorldPlate</h3>
-             <p className="text-xs text-gray-500 max-w-xs leading-relaxed">At WorldPlate, we're always excited to hear from you. Whether you have a project in mind or just want to chat, contact us!</p>
+             <h3 className="text-xl font-black tracking-tight text-[#f97316] mb-4">Dine Flow</h3>
+             <p className={`text-xs max-w-xs leading-relaxed ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>At Dine Flow, we're always excited to hear from you. Whether you have a project in mind or just want to chat, contact us!</p>
            </div>
            <div>
              <h4 className="font-bold mb-4 text-sm">Quick Links</h4>
@@ -199,7 +185,7 @@ const LandingPage = () => {
            <div>
              <h4 className="font-bold mb-4 text-sm">Sign Up Newsletter</h4>
              <div className="flex gap-2">
-               <input type="email" placeholder="Enter email" className="bg-[#111] border border-white/10 rounded-lg px-3 py-2 text-xs w-full focus:outline-none focus:border-[#f97316]" />
+               <input type="email" placeholder="Enter email" className={`border rounded-lg px-3 py-2 text-xs w-full focus:outline-none focus:border-[#f97316] ${theme === 'dark' ? 'bg-[#111] border-white/10' : 'bg-white border-black/10'}`} />
                <button className="bg-[#f97316] text-white px-4 py-2 rounded-lg text-xs font-bold">Subscribe</button>
              </div>
            </div>

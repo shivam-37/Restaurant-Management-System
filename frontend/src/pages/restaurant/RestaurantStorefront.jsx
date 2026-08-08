@@ -16,8 +16,15 @@ const RestaurantStorefront = () => {
     const [restaurant, setRestaurant] = useState(null);
     const [menuItems, setMenuItems] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState(() => {
+        const saved = localStorage.getItem('cart');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [isCartOpen, setIsCartOpen] = useState(false);
+
+    useEffect(() => {
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }, [cart]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -78,7 +85,7 @@ const RestaurantStorefront = () => {
             {/* Navigation */}
             <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-10 py-6 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-sm">
                 <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/dashboard')}>
-                    <span className="text-2xl font-serif font-bold text-white tracking-tight">{restaurant.name || 'Huff & Puff'}</span>
+                    <span className="text-2xl font-serif font-bold text-white tracking-tight">{restaurant.name || 'Dine Flow'}</span>
                 </div>
                 
                 <div className="hidden md:flex items-center space-x-10">

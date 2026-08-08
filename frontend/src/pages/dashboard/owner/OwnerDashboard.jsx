@@ -192,12 +192,12 @@ const OwnerDashboard = () => {
             <header className="flex-shrink-0 z-50 backdrop-blur-3xl border-b border-black/5 dark:border-white/5 bg-white/80 dark:bg-black/80 px-4 md:px-8 py-4 flex items-center justify-between shadow-sm">
                  <div className="flex items-center gap-4 lg:gap-8 flex-1 min-w-0">
                      <div className="flex items-center space-x-3 shrink-0">
-                         <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+                         <div className="w-10 h-10 bg-[#f97316] rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
                              <ChefHat className="w-5 h-5 text-white" />
                          </div>
                          <div className="flex flex-col hidden sm:flex">
                              <span className="text-lg font-black uppercase tracking-tighter leading-none">Dine Flow</span>
-                             <span className="text-[8px] font-black uppercase tracking-[0.3em] text-indigo-500 mt-1">Owner Portal</span>
+                             <span className="text-[8px] font-black uppercase tracking-[0.3em] text-[#f97316] mt-1">Owner Portal</span>
                          </div>
                      </div>
                      
@@ -207,11 +207,11 @@ const OwnerDashboard = () => {
                                 key={item.name}
                                 onClick={() => setActiveTab(item.name)}
                                 className={`flex items-center px-3 py-2 rounded-xl transition-all duration-300 group whitespace-nowrap shrink-0 ${activeTab === item.name 
-                                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20' 
+                                    ? 'bg-[#f97316] text-white shadow-md shadow-orange-500/20' 
                                     : 'opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'
                                 }`}
                             >
-                                <item.icon className={`h-4 w-4 mr-1.5 transition-transform group-hover:scale-110 ${activeTab === item.name ? 'text-white' : 'text-indigo-500'}`} />
+                                <item.icon className={`h-4 w-4 mr-1.5 transition-transform group-hover:scale-110 ${activeTab === item.name ? 'text-white' : 'text-[#f97316]'}`} />
                                 <span className="text-[10px] font-black uppercase tracking-widest">{item.name}</span>
                             </button>
                         ))}
@@ -223,7 +223,7 @@ const OwnerDashboard = () => {
                      <div className="h-6 w-px bg-black/10 dark:bg-white/10" />
                      <button 
                          onClick={toggleTheme} 
-                         className="w-10 h-10 flex items-center justify-center rounded-xl bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 hover:text-white transition-all shadow-sm"
+                         className="w-10 h-10 flex items-center justify-center rounded-xl bg-orange-500/10 text-[#f97316] dark:text-[#f97316] hover:bg-[#f97316] hover:text-white transition-all shadow-sm"
                      >
                          {theme === 'dark' ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
                      </button>
@@ -231,7 +231,7 @@ const OwnerDashboard = () => {
                      {/* Profile Dropdown */}
                      <div className="relative">
                          <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="flex items-center gap-3">
-                             <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-sm shadow-md overflow-hidden hover:scale-105 transition-transform">
+                             <div className="w-10 h-10 rounded-xl bg-[#f97316] flex items-center justify-center text-white font-black text-sm shadow-md overflow-hidden hover:scale-105 transition-transform">
                                  {user?.avatar ? <img src={user.avatar} className="w-full h-full object-cover" /> : user?.name?.charAt(0)}
                              </div>
                          </button>
@@ -240,7 +240,7 @@ const OwnerDashboard = () => {
                                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute right-0 mt-4 w-56 bg-white dark:bg-gray-900 rounded-2xl border border-black/5 dark:border-white/5 shadow-2xl py-2">
                                      <div className="px-5 py-3 border-b border-black/5 dark:border-white/5 mb-2">
                                          <p className="text-xs font-black uppercase tracking-widest truncate">{user?.name}</p>
-                                         <p className="text-[9px] text-indigo-500 font-bold uppercase tracking-widest mt-1">Owner Account</p>
+                                         <p className="text-[9px] text-[#f97316] font-bold uppercase tracking-widest mt-1">Owner Account</p>
                                      </div>
                                      <button onClick={logout} className="w-full flex items-center px-5 py-3 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-500/10 transition-colors">
                                          <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-3" /> Log Out
@@ -328,10 +328,10 @@ const OwnerDashboard = () => {
                             {/* Marketing & Alerts (Push Notifications) */}
                             <div className="theme-card rounded-[3rem] p-10 mb-10 border border-black/5 shadow-sm relative overflow-hidden">
                                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-6 relative z-10">
-                                    <div className="flex items-center gap-6">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-600/20">
-                                            <MegaphoneIcon className="w-8 h-8 text-white" />
-                                        </div>
+                                     <div className="flex items-center gap-6">
+                                         <div className="w-16 h-16 bg-gradient-to-br from-[#f97316] to-orange-400 rounded-2xl flex items-center justify-center shadow-xl shadow-orange-500/20">
+                                             <MegaphoneIcon className="w-8 h-8 text-white" />
+                                         </div>
                                         <div>
                                             <h2 className="text-3xl font-black uppercase tracking-tighter">Marketing & Alerts</h2>
                                             <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 mt-1">Push notifications to your customers</p>
@@ -341,21 +341,21 @@ const OwnerDashboard = () => {
                                 <div className="relative z-10 space-y-4">
                                     <div className="flex gap-4 mb-2">
                                         {['Offer', 'Alert'].map(type => (
-                                            <button
-                                                key={type}
-                                                onClick={() => setPushType(type)}
-                                                className={`px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${pushType === type ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'theme-card-item border border-black/5 opacity-50 hover:opacity-100'}`}
-                                            >
-                                                {type}
-                                            </button>
+                                             <button
+                                                 key={type}
+                                                 onClick={() => setPushType(type)}
+                                                 className={`px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${pushType === type ? 'bg-[#f97316] text-white shadow-lg shadow-orange-500/30' : 'theme-card-item border border-black/5 opacity-50 hover:opacity-100'}`}
+                                             >
+                                                 {type}
+                                             </button>
                                         ))}
                                     </div>
-                                    <textarea
-                                        value={pushMessage}
-                                        onChange={(e) => setPushMessage(e.target.value)}
-                                        placeholder={`Enter your ${pushType.toLowerCase()} message here...`}
-                                        className="w-full h-32 theme-card-item border border-black/5 rounded-2xl p-6 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold placeholder:opacity-30 resize-none"
-                                    />
+                                     <textarea
+                                         value={pushMessage}
+                                         onChange={(e) => setPushMessage(e.target.value)}
+                                         placeholder={`Enter your ${pushType.toLowerCase()} message here...`}
+                                         className="w-full h-32 theme-card-item border border-black/5 rounded-2xl p-6 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-[#f97316] transition-all font-bold placeholder:opacity-30 resize-none"
+                                     />
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1">
                                             <AnimatePresence>
@@ -371,12 +371,12 @@ const OwnerDashboard = () => {
                                                 )}
                                             </AnimatePresence>
                                         </div>
-                                        <button
-                                            onClick={handlePushNotification}
-                                            disabled={isPushing || !pushMessage.trim()}
-                                            className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-indigo-600/30 hover:bg-indigo-700 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
-                                        >
-                                            {isPushing ? (
+                                         <button
+                                             onClick={handlePushNotification}
+                                             disabled={isPushing || !pushMessage.trim()}
+                                             className="px-8 py-4 bg-[#f97316] text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-orange-500/30 hover:bg-orange-600 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                                         >
+                                             {isPushing ? (
                                                 <ArrowPathIcon className="w-4 h-4 animate-spin" />
                                             ) : (
                                                 <MegaphoneIcon className="w-4 h-4" />
@@ -410,7 +410,7 @@ const OwnerDashboard = () => {
                             key={item.name}
                             onClick={() => setActiveTab(item.name)}
                             className={`flex flex-col items-center justify-center space-y-1 p-2 rounded-xl transition-all min-w-[60px] ${
-                                activeTab === item.name ? 'text-indigo-500 scale-110' : 'text-white/40 hover:text-white/80'
+                                activeTab === item.name ? 'text-[#f97316] scale-110' : 'text-white/40 hover:text-white/80'
                             }`}
                         >
                             <item.icon className="h-5 w-5" />
