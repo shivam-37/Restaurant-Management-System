@@ -344,7 +344,7 @@ const generateFullMenuItem = asyncHandler(async (req, res) => {
 // @route   POST /api/ai/chat
 // @access  Private
 const chatWithNvidia = asyncHandler(async (req, res) => {
-    const { messages } = req.body;
+    const { messages, restaurantId } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
         res.status(400);
