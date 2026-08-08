@@ -101,7 +101,6 @@ const AdminDashboard = () => {
         {
             label: 'Total Sales',
             value: `₹${(analytics.totalSales || 0).toLocaleString()}`,
-            change: '+12.5%',
             icon: CurrencyDollarIcon,
             color: 'from-green-500 to-emerald-500',
             bgColor: 'bg-green-500/10',
@@ -110,7 +109,6 @@ const AdminDashboard = () => {
         {
             label: 'Active Orders',
             value: analytics.activeOrders,
-            change: '+8.2%',
             icon: ClockIcon,
             color: 'from-blue-500 to-cyan-500',
             bgColor: 'bg-blue-500/10',
@@ -119,7 +117,6 @@ const AdminDashboard = () => {
         {
             label: 'Total Orders',
             value: analytics.totalOrders,
-            change: '+23.1%',
             icon: ShoppingBagIcon,
             color: 'from-purple-500 to-pink-500',
             bgColor: 'bg-purple-500/10',
@@ -128,7 +125,6 @@ const AdminDashboard = () => {
         {
             label: 'New Customers',
             value: analytics.newCustomers,
-            change: '+5.7%',
             icon: UserGroupIcon,
             color: 'from-orange-500 to-red-500',
             bgColor: 'bg-orange-500/10',
@@ -325,7 +321,6 @@ const AdminDashboard = () => {
                                                         <div>
                                                             <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">{stat.label}</p>
                                                             <p className="text-2xl font-black tracking-tight">{stat.value}</p>
-                                                            <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${stat.textColor}`}>{stat.change}</p>
                                                         </div>
                                                         <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} p-3 shadow-lg shadow-rose-500/20 flex items-center justify-center`}><Icon className="w-6 h-6 text-white" /></div>
                                                     </div>
