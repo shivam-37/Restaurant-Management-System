@@ -49,14 +49,14 @@ const Customers = () => {
 
     return (
         <div className="space-y-8">
-            <div className="flex justify-between items-center bg-rose-500/5 p-6 rounded-3xl border border-rose-500/10">
+            <div className="flex justify-between items-center bg-orange-500/5 p-6 rounded-3xl border border-orange-500/10">
                 <div>
                     <h1 className="text-3xl font-black uppercase tracking-tighter">Customer Registry</h1>
                     <p className="opacity-60 text-sm font-bold uppercase tracking-widest mt-1">Manage platform-wide clientele</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <span className="text-[10px] font-black uppercase tracking-widest opacity-40">Total Reach</span>
-                    <span className="px-4 py-2 bg-rose-600 text-white rounded-xl text-lg font-black shadow-lg shadow-rose-600/20">
+                    <span className="px-4 py-2 bg-orange-600 text-white rounded-xl text-lg font-black shadow-lg shadow-orange-600/20">
                         {customers.length}
                     </span>
                 </div>
@@ -68,17 +68,17 @@ const Customers = () => {
                         key={customer._id}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="theme-card border border-black/5 rounded-[2rem] p-8 hover:border-rose-500/30 transition-all group shadow-sm hover:shadow-2xl"
+                        className="theme-card border border-black/5 rounded-[2rem] p-8 hover:border-orange-500/30 transition-all group shadow-sm hover:shadow-2xl"
                     >
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                             <div className="flex items-center gap-6">
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-rose-600 to-purple-600 flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-rose-500/20">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-600 to-purple-600 flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-orange-500/20">
                                     {customer.name?.charAt(0)}
                                 </div>
                                 <div>
                                     <h3 className="font-black text-xl tracking-tight leading-none mb-2">{customer.name}</h3>
                                     <div className="flex items-center opacity-60 text-sm font-bold tracking-tight">
-                                        <EnvelopeIcon className="w-4 h-4 mr-2 text-rose-500" />
+                                        <EnvelopeIcon className="w-4 h-4 mr-2 text-orange-500" />
                                         {customer.email}
                                     </div>
                                 </div>
@@ -88,7 +88,7 @@ const Customers = () => {
                                 <div className="text-center md:text-left">
                                     <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Order Density</p>
                                     <div className="flex items-center justify-center md:justify-start font-black text-lg">
-                                        <ShoppingBagIcon className="w-5 h-5 mr-3 text-rose-500" />
+                                        <ShoppingBagIcon className="w-5 h-5 mr-3 text-orange-500" />
                                         {customer.orderCount || 0}
                                     </div>
                                 </div>

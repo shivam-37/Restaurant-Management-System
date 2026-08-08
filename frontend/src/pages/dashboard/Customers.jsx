@@ -45,11 +45,11 @@ const Customers = () => {
                     <p className="opacity-60 font-medium mt-1">Manage and view your restaurant's clientele</p>
                 </div>
                 <div className="relative w-full md:w-auto">
-                    <MagnifyingGlassIcon className="h-5 w-5 text-rose-500 absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+                    <MagnifyingGlassIcon className="h-5 w-5 text-orange-500 absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none" />
                     <input
                         type="text"
                         placeholder="Search customers..."
-                        className="w-full theme-card-item border-transparent rounded-2xl pl-12 pr-4 py-3 focus:outline-none focus:border-rose-500 transition font-medium"
+                        className="w-full theme-card-item border-transparent rounded-2xl pl-12 pr-4 py-3 focus:outline-none focus:border-orange-500 transition font-medium"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -60,11 +60,11 @@ const Customers = () => {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b border-black/5 bg-rose-500/5">
-                                <th className="px-8 py-5 text-[10px] font-black text-rose-500 uppercase tracking-widest">User Details</th>
-                                <th className="px-8 py-5 text-[10px] font-black text-rose-500 uppercase tracking-widest">Access Role</th>
-                                <th className="px-8 py-5 text-[10px] font-black text-rose-500 uppercase tracking-widest">Member Since</th>
-                                <th className="px-8 py-5 text-right text-[10px] font-black text-rose-500 uppercase tracking-widest">Actions</th>
+                            <tr className="border-b border-black/5 bg-orange-500/5">
+                                <th className="px-8 py-5 text-[10px] font-black text-orange-500 uppercase tracking-widest">User Details</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-orange-500 uppercase tracking-widest">Access Role</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-orange-500 uppercase tracking-widest">Member Since</th>
+                                <th className="px-8 py-5 text-right text-[10px] font-black text-orange-500 uppercase tracking-widest">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-black/5">
@@ -72,7 +72,7 @@ const Customers = () => {
                                 <tr key={u._id} className="hover:bg-black/5 transition-colors group">
                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-rose-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-rose-500/20">
+                                            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-orange-500 to-purple-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-orange-500/20">
                                                 {u.name.charAt(0)}
                                             </div>
                                             <div>
@@ -84,7 +84,7 @@ const Customers = () => {
                                     <td className="px-8 py-5">
                                         <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ${u.role === 'admin'
                                             ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20'
-                                            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+                                            : 'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20'
                                             }`}>
                                             {u.role}
                                         </span>

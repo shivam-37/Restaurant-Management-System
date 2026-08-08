@@ -65,7 +65,7 @@ const TableMap = () => {
     if (!selectedRestaurant) {
         return (
             <div className="space-y-10">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-rose-500/5 p-8 rounded-[2.5rem] border border-rose-500/10">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-orange-500/5 p-8 rounded-[2.5rem] border border-orange-500/10">
                     <div>
                         <h2 className="text-3xl font-black uppercase tracking-tighter">Table Layout</h2>
                         <p className="opacity-50 text-[10px] font-black uppercase tracking-[0.2em] mt-1">Select a restaurant to view the table map</p>
@@ -83,17 +83,17 @@ const TableMap = () => {
                                 setSelectedRestaurant(r);
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                             }}
-                            className="group relative theme-card rounded-[2rem] p-10 text-left hover:border-rose-500 transition-all overflow-hidden shadow-sm hover:shadow-2xl"
+                            className="group relative theme-card rounded-[2rem] p-10 text-left hover:border-orange-500 transition-all overflow-hidden shadow-sm hover:shadow-2xl"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                             <div className="relative z-10">
-                                <div className="w-16 h-16 bg-gradient-to-br from-rose-600 to-rose-400 text-white rounded-2xl flex items-center justify-center text-3xl font-black mb-8 shadow-xl shadow-rose-600/20 group-hover:scale-110 transition-transform">
+                                <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-orange-400 text-white rounded-2xl flex items-center justify-center text-3xl font-black mb-8 shadow-xl shadow-orange-600/20 group-hover:scale-110 transition-transform">
                                     {r.name.charAt(0)}
                                 </div>
                                 <h3 className="text-2xl font-black tracking-tighter mb-2">{r.name}</h3>
                                 <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-10">{r.cuisine} Style • {r.tables?.length || 0} Tables</p>
 
-                                <div className="flex items-center gap-3 text-rose-600 dark:text-rose-400 font-black text-[10px] uppercase tracking-widest pt-8 border-t border-black/5">
+                                <div className="flex items-center gap-3 text-orange-600 dark:text-orange-400 font-black text-[10px] uppercase tracking-widest pt-8 border-t border-black/5">
                                     View Tables
                                     <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                                 </div>
@@ -116,7 +116,7 @@ const TableMap = () => {
                     {['Available', 'Occupied', 'Reserved', 'Cleaning'].map(status => (
                         <div key={status} className="flex items-center gap-2">
                             <div className={`w-3 h-3 rounded-full shadow-sm ${status === 'Available' ? 'bg-green-500' :
-                                status === 'Occupied' ? 'bg-rose-600' :
+                                status === 'Occupied' ? 'bg-orange-600' :
                                     status === 'Reserved' ? 'bg-yellow-500' : 'bg-orange-500'
                                 }`} />
                             <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{status}</span>
@@ -150,7 +150,7 @@ const TableMap = () => {
                                 whileHover={{ scale: 1.05, zIndex: 20 }}
                                 whileTap={{ scale: 0.95 }}
                                 className={`absolute w-36 h-36 rounded-3xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-500 shadow-lg ${table.status === 'Available' ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400 hover:bg-green-500/20' :
-                                    table.status === 'Occupied' ? 'bg-rose-600/10 border-rose-600/30 text-rose-700 dark:text-rose-400 hover:bg-rose-600/20' :
+                                    table.status === 'Occupied' ? 'bg-orange-600/10 border-orange-600/30 text-orange-700 dark:text-orange-400 hover:bg-orange-600/20' :
                                         table.status === 'Reserved' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20' :
                                             'bg-orange-500/10 border-red-500/30 text-red-700 dark:text-red-400 hover:bg-orange-500/20'
                                     }`}
@@ -189,7 +189,7 @@ const TableMap = () => {
                             </div>
                             <div className="flex items-center gap-6 mb-8">
                                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-black ${selectedTable.status === 'Available' ? 'bg-green-500 text-white' :
-                                    selectedTable.status === 'Occupied' ? 'bg-rose-600 text-white' :
+                                    selectedTable.status === 'Occupied' ? 'bg-orange-600 text-white' :
                                         selectedTable.status === 'Reserved' ? 'bg-yellow-500 text-white' : 'bg-orange-500 text-white'
                                     }`}>
                                     {selectedTable.number}
@@ -206,8 +206,8 @@ const TableMap = () => {
                                         key={status}
                                         onClick={() => handleStatusChange(selectedTable.number, status)}
                                         className={`p-5 rounded-2xl border-2 font-black text-[10px] uppercase tracking-widest transition-all ${selectedTable.status === status
-                                            ? 'bg-rose-600 border-rose-500 text-white shadow-xl shadow-rose-600/30 ring-4 ring-rose-600/10'
-                                            : 'theme-card-item opacity-40 border-black/5 hover:opacity-100 hover:border-rose-500/50'
+                                            ? 'bg-orange-600 border-orange-500 text-white shadow-xl shadow-orange-600/30 ring-4 ring-orange-600/10'
+                                            : 'theme-card-item opacity-40 border-black/5 hover:opacity-100 hover:border-orange-500/50'
                                             }`}
                                     >
                                         {status}

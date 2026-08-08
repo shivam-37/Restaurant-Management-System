@@ -178,12 +178,12 @@ const Register = () => {
                         className="flex items-center space-x-3"
                     >
                         <Link to="/" className="flex items-center space-x-3 group cursor-pointer">
-                            <div className="w-14 h-14 bg-rose-500/10 backdrop-blur-lg rounded-2xl flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500/20 transition-colors">
-                                <ChefHat className="w-7 h-7 text-rose-500" />
+                            <div className="w-14 h-14 bg-orange-500/10 backdrop-blur-lg rounded-2xl flex items-center justify-center border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
+                                <ChefHat className="w-7 h-7 text-orange-500" />
                             </div>
                             <div>
                                 <span className="text-2xl font-light tracking-wider text-white">DINE</span>
-                                <span className="text-2xl font-bold text-rose-500 ml-2">FLOW</span>
+                                <span className="text-2xl font-bold text-orange-500 ml-2">FLOW</span>
                             </div>
                         </Link>
                     </motion.div>
@@ -199,7 +199,7 @@ const Register = () => {
                             <h1 className="text-7xl font-black mb-4 leading-none">
                                 JOIN
                                 <br />
-                                <span className="text-rose-500">US</span>
+                                <span className="text-orange-500">US</span>
                             </h1>
                             <p className="text-xl text-gray-400 leading-relaxed">
                                 Create your account and start managing your restaurant with powerful tools and insights.
@@ -220,12 +220,12 @@ const Register = () => {
                     {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                 </button>
                 {/* Subtle Glow Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent"></div>
                 
                 {/* Animated Dots */}
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-20 right-20 w-64 h-64 bg-rose-500/5 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-20 left-20 w-64 h-64 bg-rose-500/5 rounded-full blur-3xl"></div>
+                    <div className="absolute top-20 right-20 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-20 left-20 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl"></div>
                 </div>
 
                 <motion.div 
@@ -237,11 +237,11 @@ const Register = () => {
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex justify-center mb-8">
                         <Link to="/" className="flex items-center space-x-2 group cursor-pointer">
-                            <div className="w-12 h-12 bg-rose-500/10 rounded-xl flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500/20 transition-colors">
-                                <ChefHat className="w-6 h-6 text-rose-500" />
+                            <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
+                                <ChefHat className="w-6 h-6 text-orange-500" />
                             </div>
                             <span className="text-2xl font-light text-gray-900 dark:text-white">DINE</span>
-                            <span className="text-2xl font-bold text-rose-500 ml-1">FLOW</span>
+                            <span className="text-2xl font-bold text-orange-500 ml-1">FLOW</span>
                         </Link>
                     </div>
 
@@ -251,7 +251,7 @@ const Register = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="text-3xl font-bold mb-2 text-rose-500"
+                            className="text-3xl font-bold mb-2 text-orange-500"
                         >
                             Create Account
                         </motion.h2>
@@ -287,7 +287,7 @@ const Register = () => {
                                 <label 
                                     htmlFor="name" 
                                     className={`text-sm font-semibold mb-2 block transition-colors duration-300 ${
-                                        focusedField === 'name' ? 'text-rose-500' : 'text-gray-900 dark:text-gray-100'
+                                        focusedField === 'name' ? 'text-orange-500' : 'text-gray-900 dark:text-gray-100'
                                     }`}
                                 >
                                     Full Name
@@ -295,7 +295,7 @@ const Register = () => {
                                 <div className="relative group">
                                     <div className="relative">
                                         <User className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
-                                            focusedField === 'name' ? 'text-rose-500' : 'opacity-20'
+                                            focusedField === 'name' ? 'text-orange-500' : 'opacity-20'
                                         }`} />
                                         <input
                                             id="name"
@@ -306,7 +306,7 @@ const Register = () => {
                                             onChange={onChange}
                                             onFocus={() => setFocusedField('name')}
                                             onBlur={() => setFocusedField(null)}
-                                            className="w-full theme-card-item border border-black/5 rounded-2xl py-5 pl-12 pr-6 text-[11px] font-black uppercase tracking-widest focus:outline-none focus:border-rose-500/30 transition-all"
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl py-5 pl-12 pr-6 text-[11px] font-black uppercase tracking-widest focus:outline-none focus:border-orange-500/30 transition-all"
                                             placeholder="John Doe"
                                         />
                                     </div>
@@ -322,17 +322,17 @@ const Register = () => {
                             <label 
                                 htmlFor="identifier" 
                                 className={`text-sm font-semibold mb-2 block transition-colors duration-300 ${
-                                    focusedField === 'identifier' ? 'text-rose-500' : 'text-gray-900 dark:text-gray-100'
+                                    focusedField === 'identifier' ? 'text-orange-500' : 'text-gray-900 dark:text-gray-100'
                                 }`}
                             >
                                 Email Address or Phone Number
                             </label>
                             <div className="relative group">
-                                <div className={`relative flex items-center theme-card-item border border-black/10 dark:border-white/10 rounded-2xl focus-within:border-rose-500 transition-all overflow-hidden`}>
+                                <div className={`relative flex items-center theme-card-item border border-black/10 dark:border-white/10 rounded-2xl focus-within:border-orange-500 transition-all overflow-hidden`}>
                                     {!identifier.includes('@') ? (
                                         <div className="flex items-center pl-4 border-r border-black/10 dark:border-white/10 shrink-0">
                                             <Smartphone className={`w-4 h-4 mr-2 transition-colors duration-300 ${
-                                                focusedField === 'identifier' ? 'text-rose-500' : 'text-gray-400'
+                                                focusedField === 'identifier' ? 'text-orange-500' : 'text-gray-400'
                                             }`} />
                                             <select
                                                 name="countryCode"
@@ -352,7 +352,7 @@ const Register = () => {
                                     ) : (
                                         <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
                                             <Mail className={`w-4 h-4 transition-colors duration-300 ${
-                                                focusedField === 'identifier' ? 'text-rose-500' : 'text-gray-400'
+                                                focusedField === 'identifier' ? 'text-orange-500' : 'text-gray-400'
                                             }`} />
                                         </div>
                                     )}
@@ -385,7 +385,7 @@ const Register = () => {
                                 <label 
                                     htmlFor="password" 
                                     className={`text-sm font-semibold mb-2 block transition-colors duration-300 ${
-                                        focusedField === 'password' ? 'text-rose-500' : 'text-gray-900 dark:text-gray-100'
+                                        focusedField === 'password' ? 'text-orange-500' : 'text-gray-900 dark:text-gray-100'
                                     }`}
                                 >
                                     Password
@@ -393,7 +393,7 @@ const Register = () => {
                                 <div className="relative group">
                                     <div className="relative">
                                         <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
-                                            focusedField === 'password' ? 'text-rose-500' : 'text-gray-400'
+                                            focusedField === 'password' ? 'text-orange-500' : 'text-gray-400'
                                         }`} />
                                         <input
                                             id="password"
@@ -405,7 +405,7 @@ const Register = () => {
                                             onChange={onChange}
                                             onFocus={() => setFocusedField('password')}
                                             onBlur={() => setFocusedField(null)}
-                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                             placeholder="Enter password"
                                         />
                                         <button
@@ -428,7 +428,7 @@ const Register = () => {
                                 <label 
                                     htmlFor="confirmPassword" 
                                     className={`text-sm font-semibold mb-2 block transition-colors duration-300 ${
-                                        focusedField === 'confirmPassword' ? 'text-rose-500' : 'text-gray-900 dark:text-gray-100'
+                                        focusedField === 'confirmPassword' ? 'text-orange-500' : 'text-gray-900 dark:text-gray-100'
                                     }`}
                                 >
                                     Confirm Password
@@ -436,7 +436,7 @@ const Register = () => {
                                 <div className="relative group">
                                     <div className="relative">
                                         <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
-                                            focusedField === 'confirmPassword' ? 'text-rose-500' : 'text-gray-400'
+                                            focusedField === 'confirmPassword' ? 'text-orange-500' : 'text-gray-400'
                                         }`} />
                                         <input
                                             id="confirmPassword"
@@ -448,7 +448,7 @@ const Register = () => {
                                             onChange={onChange}
                                             onFocus={() => setFocusedField('confirmPassword')}
                                             onBlur={() => setFocusedField(null)}
-                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                             placeholder="Confirm password"
                                         />
                                         <button
@@ -477,9 +477,9 @@ const Register = () => {
                                             className={`flex-1 rounded-full transition-all duration-300 ${
                                                 password.length >= level * 3
                                                     ? password.length >= 12
-                                                        ? 'bg-rose-500'
+                                                        ? 'bg-orange-500'
                                                         : password.length >= 8
-                                                            ? 'bg-rose-400'
+                                                            ? 'bg-orange-400'
                                                             : 'bg-rose-300'
                                                     : 'bg-gray-300 dark:bg-gray-800'
                                             }`}
@@ -508,15 +508,15 @@ const Register = () => {
                                 name="terms"
                                 type="checkbox"
                                 required
-                                className="h-4 w-4 mt-1 rounded border-gray-700 bg-gray-900 text-rose-500 focus:ring-rose-500 focus:ring-offset-0"
+                                className="h-4 w-4 mt-1 rounded border-gray-700 bg-gray-900 text-orange-500 focus:ring-orange-500 focus:ring-offset-0"
                             />
                             <label htmlFor="terms" className="ml-2 block text-sm text-gray-700 dark:text-gray-400">
                                 I agree to the{' '}
-                                <Link to="/terms" className="text-rose-500 hover:text-rose-400 transition underline underline-offset-2">
+                                <Link to="/terms" className="text-orange-500 hover:text-orange-400 transition underline underline-offset-2">
                                     Terms of Service
                                 </Link>{' '}
                                 and{' '}
-                                <Link to="/privacy" className="text-rose-500 hover:text-rose-400 transition underline underline-offset-2">
+                                <Link to="/privacy" className="text-orange-500 hover:text-orange-400 transition underline underline-offset-2">
                                     Privacy Policy
                                 </Link>
                             </label>
@@ -531,7 +531,7 @@ const Register = () => {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full py-4 bg-rose-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-rose-500/25 hover:bg-rose-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                                    className="w-full py-4 bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-500/25 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                                 >
                                     {isLoading ? 'Creating Account...' : (
                                         <>Create Account <ArrowRight className="w-4 h-4" /></>
@@ -550,7 +550,7 @@ const Register = () => {
                                 Already have an account?{' '}
                                 <Link
                                     to="/login"
-                                    className="text-rose-500 font-bold hover:text-rose-600 ml-1"
+                                    className="text-orange-500 font-bold hover:text-orange-600 ml-1"
                                 >
                                     Sign In
                                 </Link>

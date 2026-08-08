@@ -83,7 +83,7 @@ const ChatAssistant = () => {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 50, scale: 0.95 }}
                         transition={{ type: "spring", bounce: 0.3, duration: 0.6 }}
-                        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[100] w-[calc(100vw-32px)] sm:w-[400px] h-[600px] max-h-[85vh] flex flex-col theme-card rounded-[2rem] shadow-2xl shadow-rose-500/10 border border-black/5 overflow-hidden"
+                        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[100] w-[calc(100vw-32px)] sm:w-[400px] h-[600px] max-h-[85vh] flex flex-col theme-card rounded-[2rem] shadow-2xl shadow-orange-500/10 border border-black/5 overflow-hidden"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between p-6 bg-gradient-to-b from-orange-500/5 to-transparent border-b border-black/5 relative backdrop-blur-xl z-10">
@@ -119,7 +119,7 @@ const ChatAssistant = () => {
                         </div>
 
                         {/* Chat Messages Log */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-rose-500/20 relative z-0">
+                        <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-orange-500/20 relative z-0">
                             {messages.map((msg, index) => (
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}

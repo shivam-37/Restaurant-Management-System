@@ -132,9 +132,9 @@ const OwnerDashboard = () => {
                         className="max-w-md w-full"
                     >
                         <div className="relative mb-10">
-                            <div className="w-28 h-28 border-4 border-rose-500/10 border-t-[#f97316] rounded-full animate-spin mx-auto shadow-2xl"></div>
+                            <div className="w-28 h-28 border-4 border-orange-500/10 border-t-[#f97316] rounded-full animate-spin mx-auto shadow-2xl"></div>
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="w-14 h-14 bg-rose-600 rounded-3xl animate-pulse rotate-45 shadow-xl shadow-rose-600/40 flex items-center justify-center">
+                                <div className="w-14 h-14 bg-orange-600 rounded-3xl animate-pulse rotate-45 shadow-xl shadow-orange-600/40 flex items-center justify-center">
                                     <SparklesIcon className="w-6 h-6 text-white -rotate-45" />
                                 </div>
                             </div>
@@ -153,9 +153,9 @@ const OwnerDashboard = () => {
         { name: 'Menu', icon: ClipboardDocumentListIcon, color: 'from-purple-500 to-pink-500' },
         { name: 'Orders', icon: ShoppingBagIcon, color: 'from-orange-600 to-red-600' },
         { name: 'Kitchen', icon: UserGroupIcon, color: 'from-green-500 to-teal-500' },
-        { name: 'Reservations', icon: CalendarIcon, color: 'from-yellow-500 to-rose-500' },
+        { name: 'Reservations', icon: CalendarIcon, color: 'from-yellow-500 to-orange-500' },
         { name: 'Performance', icon: ChartPieIcon, color: 'from-cyan-500 to-blue-500' },
-        { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-rose-500' },
+        { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-orange-500' },
         { name: 'Settings', icon: Cog6ToothIcon, color: 'from-gray-500 to-gray-600' },
     ];
 
@@ -272,7 +272,7 @@ const OwnerDashboard = () => {
                                                 <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">{stat.label}</p>
                                                 <p className={`text-4xl font-black tracking-tighter ${stat.textColor}`}>{stat.value}</p>
                                             </div>
-                                            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.color} p-4 shadow-xl shadow-rose-600/20 group-hover:scale-110 transition-transform duration-500`}>
+                                            <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.color} p-4 shadow-xl shadow-orange-600/20 group-hover:scale-110 transition-transform duration-500`}>
                                                 <stat.icon className="w-6 h-6 text-white" />
                                             </div>
                                         </div>
@@ -281,11 +281,11 @@ const OwnerDashboard = () => {
                             </div>
 
                             {/* AI Predictions */}
-                            <div className="theme-card bg-gradient-to-br from-rose-500/5 via-transparent to-purple-500/5 rounded-[3rem] p-10 mb-10 border border-rose-500/10 shadow-2xl relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/5 blur-[100px] -mr-32 -mt-32"></div>
+                            <div className="theme-card bg-gradient-to-br from-orange-500/5 via-transparent to-purple-500/5 rounded-[3rem] p-10 mb-10 border border-orange-500/10 shadow-2xl relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 blur-[100px] -mr-32 -mt-32"></div>
                                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-6 relative z-10">
                                     <div className="flex items-center gap-6">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-rose-600 to-rose-400 rounded-2xl flex items-center justify-center shadow-xl shadow-rose-600/20">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-orange-400 rounded-2xl flex items-center justify-center shadow-xl shadow-orange-600/20">
                                             <SparklesIcon className="w-8 h-8 text-white" />
                                         </div>
                                         <div>
@@ -295,7 +295,7 @@ const OwnerDashboard = () => {
                                     </div>
                                     <button 
                                         onClick={fetchAIPredictions} 
-                                        className="flex items-center gap-3 px-6 py-4 bg-white/10 dark:bg-white/5 hover:bg-rose-600 hover:text-white rounded-2xl border border-black/5 transition-all group font-black text-[10px] uppercase tracking-widest shadow-lg"
+                                        className="flex items-center gap-3 px-6 py-4 bg-white/10 dark:bg-white/5 hover:bg-orange-600 hover:text-white rounded-2xl border border-black/5 transition-all group font-black text-[10px] uppercase tracking-widest shadow-lg"
                                     >
                                         <ArrowPathIcon className={`w-4 h-4 ${isPredicting ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-700'}`} />
                                         Update
@@ -304,13 +304,13 @@ const OwnerDashboard = () => {
                                 {predictions.length > 0 ? (
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                                         {predictions.map((p, idx) => (
-                                            <div key={idx} className="theme-card-item p-6 rounded-[1.5rem] border border-rose-500/20 shadow-sm hover:shadow-xl transition-all group/item">
+                                            <div key={idx} className="theme-card-item p-6 rounded-[1.5rem] border border-orange-500/20 shadow-sm hover:shadow-xl transition-all group/item">
                                                 <div className="flex justify-between items-start mb-4">
                                                     <h4 className="font-black text-lg tracking-tight leading-none">{p.name}</h4>
-                                                    <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-lg shadow-rose-500/50"></div>
+                                                    <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse shadow-lg shadow-orange-500/50"></div>
                                                 </div>
                                                 <p className="text-xs font-bold opacity-50 mb-6 leading-relaxed uppercase tracking-tight">{p.reason}</p>
-                                                <div className="flex items-center gap-3 text-[10px] text-rose-600 dark:text-rose-400 font-black uppercase tracking-widest bg-rose-500/10 p-4 rounded-xl border border-rose-500/10">
+                                                <div className="flex items-center gap-3 text-[10px] text-orange-600 dark:text-orange-400 font-black uppercase tracking-widest bg-orange-500/10 p-4 rounded-xl border border-orange-500/10">
                                                     <ExclamationTriangleIcon className="w-4 h-4 shrink-0" />
                                                     {p.recommendation}
                                                 </div>

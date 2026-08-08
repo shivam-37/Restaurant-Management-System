@@ -15,6 +15,7 @@ const NotificationTray = () => {
     const [notifications, setNotifications] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [isClearing, setIsClearing] = useState(false);
 
     useEffect(() => {
         fetchNotifications();
@@ -42,6 +43,7 @@ const NotificationTray = () => {
     };
     const handleClearAll = async () => {
         try {
+            setIsClearing(true);
             console.log("Clearing all notifications...");
             const res = await clearNotifications();
             console.log("Clear response:", res.data);
@@ -49,6 +51,8 @@ const NotificationTray = () => {
             setUnreadCount(0);
         } catch (error) {
             console.error("Failed to clear notifications:", error);
+        } finally {
+            setIsClearing(false);
         }
     };
 
@@ -56,11 +60,11 @@ const NotificationTray = () => {
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative w-12 h-12 flex items-center justify-center theme-card-item border border-black/5 rounded-2xl hover:border-rose-500/30 transition-all shadow-sm group"
+                className="relative w-12 h-12 flex items-center justify-center theme-card-item border border-black/5 rounded-2xl hover:border-orange-500/30 transition-all shadow-sm group"
             >
                 <BellIcon className="w-5 h-5 opacity-40 group-hover:opacity-100 transition-opacity" />
                 {unreadCount > 0 && (
-                    <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-rose-600 rounded-full border-2 border-[var(--bg-primary)] shadow-lg shadow-rose-600/40"></span>
+                    <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-orange-600 rounded-full border-2 border-[var(--bg-primary)] shadow-lg shadow-orange-600/40"></span>
                 )}
             </button>
 
@@ -95,7 +99,7 @@ const NotificationTray = () => {
                                         {notifications.map((notif) => (
                                             <div
                                                 key={notif._id}
-                                                className={`p-6 hover:bg-black/[0.02] transition-colors flex gap-4 ${!notif.isRead ? 'bg-rose-600/[0.03]' : 'opacity-60'}`}
+                                                className={`p-6 hover:bg-black/[0.02] transition-colors flex gap-4 ${!notif.isRead ? 'bg-orange-600/[0.03]' : 'opacity-60'}`}
                                             >
                                                 <div className="mt-1">
                                                     {notif.type === 'Order' ? (
@@ -119,14 +123,14 @@ const NotificationTray = () => {
                                                             Sent at: {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                         </p>
                                                         {!notif.isRead && (
-                                                            <div className="w-1 h-1 bg-rose-600 rounded-full"></div>
+                                                            <div className="w-1 h-1 bg-orange-600 rounded-full"></div>
                                                         )}
                                                     </div>
                                                 </div>
                                                 {!notif.isRead && (
                                                     <button
                                                         onClick={() => handleMarkRead(notif._id)}
-                                                        className="h-2 w-2 bg-rose-600 rounded-full mt-3 flex-shrink-0 animate-pulse shadow-lg shadow-rose-600/40"
+                                                        className="h-2 w-2 bg-orange-600 rounded-full mt-3 flex-shrink-0 animate-pulse shadow-lg shadow-orange-600/40"
                                                         title="Acknowledge Signal"
                                                     />
                                                 )}
@@ -139,8 +143,10 @@ const NotificationTray = () => {
                                 <div className="p-6 bg-black/[0.02] border-t border-black/5 text-center">
                                     <button 
                                         onClick={handleClearAll}
-                                        className="text-[10px] font-bold uppercase tracking-wider opacity-50 hover:opacity-100 hover:text-rose-600 transition-all"
+                                        disabled={isClearing}
+                                        className="text-[10px] font-bold uppercase tracking-wider opacity-50 hover:opacity-100 hover:text-orange-600 transition-all flex items-center justify-center gap-2 mx-auto disabled:opacity-20"
                                     >
+                                        {isClearing && <div className="w-3 h-3 border-2 border-orange-600 border-t-transparent rounded-full animate-spin"></div>}
                                         Clear Notifications
                                     </button>
                                 </div>

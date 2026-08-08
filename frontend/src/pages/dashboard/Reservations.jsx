@@ -18,6 +18,7 @@ const Reservations = () => {
     const { user, selectedRestaurant } = useContext(AuthContext);
     const [reservations, setReservations] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [processingId, setProcessingId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
@@ -92,11 +93,14 @@ const Reservations = () => {
 
     const handleStatusUpdate = async (id, status) => {
         try {
+            setProcessingId(id);
             await updateReservationStatus(id, status);
             fetchReservations();
         } catch (error) {
             console.error('Status Update Error:', error.response?.data || error);
             alert(`Failed to update status: ${error.response?.data?.message || error.message}`);
+        } finally {
+            setProcessingId(null);
         }
     };
 
@@ -128,7 +132,7 @@ const Reservations = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => { setIsModalOpen(true); setErrorMsg(''); }}
-                    className="flex items-center px-8 py-4 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-rose-600/30 hover:bg-rose-700 transition-all group"
+                    className="flex items-center px-8 py-4 bg-orange-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-orange-600/30 hover:bg-orange-700 transition-all group"
                 >
                     <PlusIcon className="h-5 w-5 mr-3 group-hover:rotate-90 transition-transform duration-500" />
                     New Reservation
@@ -139,7 +143,7 @@ const Reservations = () => {
             {loading ? (
                 <div className="space-y-4">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="h-24 bg-rose-500/5 rounded-3xl animate-pulse" />
+                        <div key={i} className="h-24 bg-orange-500/5 rounded-3xl animate-pulse" />
                     ))}
                 </div>
             ) : reservations.length === 0 ? (
@@ -147,7 +151,7 @@ const Reservations = () => {
                     {...fadeInUp}
                     className="theme-card border-2 border-dashed border-black/5 rounded-3xl p-16 text-center"
                 >
-                    <CalendarIcon className="h-16 w-16 text-rose-500/20 mx-auto mb-4" />
+                    <CalendarIcon className="h-16 w-16 text-orange-500/20 mx-auto mb-4" />
                     <h3 className="text-xl font-bold mb-2">No Reservations Found</h3>
                     <p className="opacity-50 max-w-xs mx-auto mb-8">It looks like there are no bookings scheduled here yet.</p>
                 </motion.div>
@@ -161,11 +165,11 @@ const Reservations = () => {
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
-                                className="group theme-card border border-black/5 hover:border-rose-500/30 rounded-3xl p-6 transition-all"
+                                className="group theme-card border border-black/5 hover:border-orange-500/30 rounded-3xl p-6 transition-all"
                             >
                                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                                     <div className="flex items-center gap-6 flex-1 w-full">
-                                        <div className="w-16 h-16 bg-gradient-to-br from-rose-600 to-purple-600 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-rose-600/20 text-white">
+                                        <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-purple-600 rounded-2xl flex items-center justify-center text-xl font-bold shadow-lg shadow-orange-600/20 text-white">
                                             {res.tableNumber ? `T${res.tableNumber}` : res.name.charAt(0)}
                                         </div>
                                         <div className="flex-1 min-w-0">
@@ -173,13 +177,13 @@ const Reservations = () => {
                                                 <h3 className="text-lg font-bold truncate">{res.name}</h3>
                                                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-[0.1em] ${res.status === 'Confirmed' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20' :
                                                     res.status === 'Cancelled' ? 'bg-orange-500/10 text-[#f97316] dark:text-red-400 border border-red-500/20' :
-                                                        'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+                                                        'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20'
                                                     }`}>
                                                     {res.status}
                                                 </span>
                                             </div>
                                             <div className="flex flex-wrap items-center gap-4 text-xs font-bold opacity-60 uppercase tracking-widest">
-                                                <div className="flex items-center gap-1.5 text-rose-500">
+                                                <div className="flex items-center gap-1.5 text-orange-500">
                                                     <CalendarIcon className="w-4 h-4" />
                                                     {new Date(res.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                                                 </div>
@@ -204,15 +208,19 @@ const Reservations = () => {
                                             {(user?.role === 'admin' || user?.role === 'owner') && res.status === 'Pending' && (
                                                 <button
                                                     onClick={() => handleStatusUpdate(res._id, 'Confirmed')}
-                                                    className="flex-1 md:flex-none px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-black text-[9px] uppercase tracking-widest shadow-xl shadow-emerald-600/20"
+                                                    disabled={processingId === res._id}
+                                                    className="flex-1 md:flex-none px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-black text-[9px] uppercase tracking-widest shadow-xl shadow-emerald-600/20 flex items-center justify-center gap-2 disabled:opacity-50"
                                                 >
+                                                    {processingId === res._id && <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>}
                                                     Confirm
                                                 </button>
                                             )}
                                             <button
                                                 onClick={() => handleStatusUpdate(res._id, 'Cancelled')}
-                                                className="flex-1 md:flex-none px-6 py-3 theme-card-item border border-red-500/20 text-orange-500 rounded-xl hover:bg-orange-500 hover:text-white transition-all font-black text-[9px] uppercase tracking-widest"
+                                                disabled={processingId === res._id}
+                                                className="flex-1 md:flex-none px-6 py-3 theme-card-item border border-red-500/20 text-orange-500 rounded-xl hover:bg-orange-500 hover:text-white transition-all font-black text-[9px] uppercase tracking-widest flex items-center justify-center gap-2 disabled:opacity-50"
                                             >
+                                                {processingId === res._id && <div className="w-3 h-3 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>}
                                                 Cancel
                                             </button>
                                         </div>
@@ -241,10 +249,10 @@ const Reservations = () => {
                             className="theme-card rounded-[2rem] sm:rounded-[3rem] w-full max-w-lg max-h-[85vh] sm:max-h-[90vh] flex flex-col overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-white/10"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="p-6 sm:p-10 border-b border-black/5 flex justify-between items-center bg-rose-500/5 flex-shrink-0">
+                            <div className="p-6 sm:p-10 border-b border-black/5 flex justify-between items-center bg-orange-500/5 flex-shrink-0">
                                 <div>
                                     <h2 className="text-2xl font-black uppercase tracking-tighter">Reserve Table</h2>
-                                    <p className="text-xs text-rose-500 font-bold uppercase tracking-widest">{selectedRestaurant?.name}</p>
+                                    <p className="text-xs text-orange-500 font-bold uppercase tracking-widest">{selectedRestaurant?.name}</p>
                                 </div>
                                 <button onClick={() => setIsModalOpen(false)} className="p-2 opacity-60 hover:opacity-100 theme-card-item rounded-xl transition">
                                     <XMarkIcon className="w-6 h-6" />
@@ -263,12 +271,12 @@ const Reservations = () => {
                                 <div className="space-y-5">
                                     <div>
                                         <div className="relative group">
-                                            <UserGroupIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-rose-500 transition-transform group-focus-within:scale-110" />
+                                            <UserGroupIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-orange-500 transition-transform group-focus-within:scale-110" />
                                             <input
                                                 type="text"
                                                 required
                                                 placeholder="Guest Name"
-                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all font-bold placeholder:opacity-30"
                                                 value={formData.name}
                                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             />
@@ -276,12 +284,12 @@ const Reservations = () => {
                                     </div>
                                     <div>
                                         <div className="relative group">
-                                            <PhoneIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-rose-500 transition-transform group-focus-within:scale-110" />
+                                            <PhoneIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-orange-500 transition-transform group-focus-within:scale-110" />
                                             <input
                                                 type="tel"
                                                 required
                                                 placeholder="Phone Number"
-                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30"
+                                                className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all font-bold placeholder:opacity-30"
                                                 value={formData.phone}
                                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                             />
@@ -304,7 +312,7 @@ const Reservations = () => {
                                                         type="button"
                                                         onClick={() => setFormData({ ...formData, date: dateString })}
                                                         className={`flex-shrink-0 snap-start w-16 h-20 rounded-2xl flex flex-col items-center justify-center transition-all ${
-                                                            isSelected ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30 scale-105' : 'theme-card-item border border-black/5 hover:border-rose-500/30'
+                                                            isSelected ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30 scale-105' : 'theme-card-item border border-black/5 hover:border-orange-500/30'
                                                         }`}
                                                     >
                                                         <span className={`text-[9px] font-black uppercase tracking-widest ${isSelected ? 'opacity-80' : 'opacity-40'}`}>{dayName}</span>
@@ -353,9 +361,9 @@ const Reservations = () => {
                                         </motion.div>
                                     )}
                                     <div className="relative group">
-                                        <UserGroupIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-rose-500 transition-transform group-focus-within:scale-110" />
+                                        <UserGroupIcon className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-orange-500 transition-transform group-focus-within:scale-110" />
                                         <select
-                                            className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all appearance-none font-bold"
+                                            className="w-full theme-card-item border border-black/5 rounded-2xl pl-14 pr-6 py-5 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all appearance-none font-bold"
                                             value={formData.partySize}
                                             onChange={(e) => setFormData({ ...formData, partySize: e.target.value })}
                                         >
@@ -372,7 +380,7 @@ const Reservations = () => {
                                                 <span>Restaurant Floor Plan</span>
                                                 <span className="flex gap-3">
                                                     <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span> Available</span>
-                                                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Booked</span>
+                                                    <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-500"></span> Booked</span>
                                                 </span>
                                             </label>
                                             
@@ -406,7 +414,7 @@ const Reservations = () => {
                                                                     disabled={isDisabled}
                                                                     onClick={() => setFormData({ ...formData, tableNumber: table.number.toString() })}
                                                                     className={`absolute w-12 h-12 sm:w-16 sm:h-16 rounded-2xl transition-all flex flex-col items-center justify-center shadow-lg ${
-                                                                        isOccupied ? 'bg-rose-500/20 border-2 border-rose-500/30 text-rose-500 cursor-not-allowed' :
+                                                                        isOccupied ? 'bg-orange-500/20 border-2 border-orange-500/30 text-orange-500 cursor-not-allowed' :
                                                                         capacityTooSmall ? 'bg-gray-500/10 border-2 border-gray-500/20 text-gray-500 opacity-50 cursor-not-allowed' :
                                                                         isSelected ? 'bg-emerald-500 border-2 border-emerald-600 text-white shadow-emerald-500/40 scale-110 z-10' :
                                                                         'bg-white dark:bg-gray-800 border-2 border-black/10 hover:border-emerald-500 text-black dark:text-white hover:scale-105'
@@ -431,7 +439,7 @@ const Reservations = () => {
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     type="submit"
-                                    className="w-full py-6 bg-rose-600 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-rose-600/40 active:scale-95 transition-all"
+                                    className="w-full py-6 bg-orange-600 text-white rounded-[1.5rem] font-black text-[10px] uppercase tracking-[0.3em] shadow-2xl shadow-orange-600/40 active:scale-95 transition-all"
                                 >
                                     Confirm Booking
                                 </motion.button>

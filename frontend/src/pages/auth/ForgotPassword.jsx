@@ -209,7 +209,7 @@ const ForgotPassword = () => {
             
             {/* Top Navigation Bar */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="absolute top-8 left-8">
-                <Link to="/login" className="flex items-center space-x-2 text-sm font-semibold text-rose-500 hover:text-rose-600 transition group">
+                <Link to="/login" className="flex items-center space-x-2 text-sm font-semibold text-orange-500 hover:text-orange-600 transition group">
                     <ArrowRight className="w-4 h-4 rotate-180 group-hover:-translate-x-1 transition" />
                     <span>Back to Login</span>
                 </Link>
@@ -217,8 +217,8 @@ const ForgotPassword = () => {
 
             <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="absolute top-8 right-8">
                 <Link to="/" className="flex items-center space-x-3 group">
-                    <div className="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center border border-rose-500/20 group-hover:scale-105 transition-transform">
-                        <ChefHat className="w-5 h-5 text-rose-500" />
+                    <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center border border-orange-500/20 group-hover:scale-105 transition-transform">
+                        <ChefHat className="w-5 h-5 text-orange-500" />
                     </div>
                 </Link>
             </motion.div>
@@ -227,17 +227,17 @@ const ForgotPassword = () => {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md relative z-10">
                 {/* Clear Title & Header */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 mb-4 shadow-lg shadow-rose-500/10">
-                        <KeyRound className="w-8 h-8 text-rose-500" />
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/20 mb-4 shadow-lg shadow-orange-500/10">
+                        <KeyRound className="w-8 h-8 text-orange-500" />
                     </div>
-                    <h1 className="text-3xl font-bold mb-2 text-rose-500">Reset Your Password</h1>
+                    <h1 className="text-3xl font-bold mb-2 text-orange-500">Reset Your Password</h1>
                     <p className="text-sm text-gray-700 dark:text-gray-400 max-w-xs mx-auto">
                         {step === 1 ? 'Enter your email or phone number to receive a 6-digit OTP verification code.' : 'Enter the 6-digit code and choose your new password.'}
                     </p>
                 </div>
 
-                <div className="theme-card-item rounded-3xl p-8 border border-rose-500/20 shadow-2xl relative overflow-hidden" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 blur-3xl -z-10" />
+                <div className="theme-card-item rounded-3xl p-8 border border-orange-500/20 shadow-2xl relative overflow-hidden" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 blur-3xl -z-10" />
 
                     {/* Step 3: Success View */}
                     {step === 3 && (
@@ -267,10 +267,10 @@ const ForgotPassword = () => {
                                     Email Address or Phone Number
                                 </label>
                                 <div className="relative group">
-                                    <div className="relative flex items-center theme-card-item border border-black/10 dark:border-white/10 rounded-2xl focus-within:border-rose-500 transition-all overflow-hidden">
+                                    <div className="relative flex items-center theme-card-item border border-black/10 dark:border-white/10 rounded-2xl focus-within:border-orange-500 transition-all overflow-hidden">
                                         {!identifier.includes('@') ? (
                                             <div className="flex items-center pl-4 border-r border-black/10 dark:border-white/10 shrink-0">
-                                                <Smartphone className={`w-4 h-4 mr-2 transition-colors duration-300 ${focusedField === 'identifier' ? 'text-rose-500' : 'text-gray-400'}`} />
+                                                <Smartphone className={`w-4 h-4 mr-2 transition-colors duration-300 ${focusedField === 'identifier' ? 'text-orange-500' : 'text-gray-400'}`} />
                                                 <select
                                                     name="countryCode"
                                                     value={countryCode}
@@ -288,7 +288,7 @@ const ForgotPassword = () => {
                                             </div>
                                         ) : (
                                             <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
-                                                <Mail className={`w-4 h-4 transition-colors duration-300 ${focusedField === 'identifier' ? 'text-rose-500' : 'text-gray-400'}`} />
+                                                <Mail className={`w-4 h-4 transition-colors duration-300 ${focusedField === 'identifier' ? 'text-orange-500' : 'text-gray-400'}`} />
                                             </div>
                                         )}
                                         <input
@@ -310,7 +310,7 @@ const ForgotPassword = () => {
                             <button
                                 type="submit"
                                 disabled={status === 'loading'}
-                                className="w-full py-4 bg-rose-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-rose-500/25 hover:bg-rose-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                                className="w-full py-4 bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-500/25 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                             >
                                 {status === 'loading' ? (
                                     <div className="flex items-center gap-2">
@@ -331,11 +331,11 @@ const ForgotPassword = () => {
                     {step === 2 && (
                         <form onSubmit={handleResetPassword} className="space-y-6">
                             {/* Target Contact Display */}
-                            <div className="bg-rose-500/5 p-4 rounded-2xl border border-rose-500/20 text-center">
+                            <div className="bg-orange-500/5 p-4 rounded-2xl border border-orange-500/20 text-center">
                                 <p className="text-xs text-gray-700 dark:text-gray-400">
                                     We sent a 6-digit verification code to your {method === 'email' ? 'email' : 'phone'}:
                                 </p>
-                                <p className="font-bold text-base text-rose-500 tracking-wide mt-1">
+                                <p className="font-bold text-base text-orange-500 tracking-wide mt-1">
                                     {targetContact}
                                 </p>
                             </div>
@@ -364,7 +364,7 @@ const ForgotPassword = () => {
                                             value={digit}
                                             onChange={(e) => handleOtpChange(index, e.target.value)}
                                             onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                                            className="w-10 sm:w-12 h-12 sm:h-14 text-center text-lg sm:text-xl font-bold rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 transition-all shrink-0"
+                                            className="w-10 sm:w-12 h-12 sm:h-14 text-center text-lg sm:text-xl font-bold rounded-2xl border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all shrink-0"
                                         />
                                     ))}
                                 </div>
@@ -373,17 +373,17 @@ const ForgotPassword = () => {
                             {/* 2-Minute Timer & Resend Button */}
                             <div className="flex flex-col items-center justify-center gap-2">
                                 {timeLeft > 0 ? (
-                                    <div className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-400 bg-rose-500/5 px-4 py-2 rounded-xl border border-rose-500/10">
-                                        <Clock className="w-4 h-4 text-rose-500 animate-pulse" />
+                                    <div className="flex items-center gap-2 text-xs font-medium text-gray-700 dark:text-gray-400 bg-orange-500/5 px-4 py-2 rounded-xl border border-orange-500/10">
+                                        <Clock className="w-4 h-4 text-orange-500 animate-pulse" />
                                         <span>Resend code in</span>
-                                        <span className="font-mono font-bold text-rose-500">{formatTime(timeLeft)}</span>
+                                        <span className="font-mono font-bold text-orange-500">{formatTime(timeLeft)}</span>
                                     </div>
                                 ) : (
                                     <button
                                         type="button"
                                         onClick={handleResendOtp}
                                         disabled={isResending}
-                                        className="px-4 py-2 rounded-xl text-xs font-bold text-rose-500 hover:text-rose-600 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                                        className="px-4 py-2 rounded-xl text-xs font-bold text-orange-500 hover:text-orange-600 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
                                     >
                                         <RotateCcw className={`w-4 h-4 ${isResending ? 'animate-spin' : ''}`} />
                                         <span>{isResending ? 'Sending...' : 'Send Code Again'}</span>
@@ -398,7 +398,7 @@ const ForgotPassword = () => {
                                 </label>
                                 <div className="relative group">
                                     <div className="relative">
-                                        <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${focusedField === 'password' ? 'text-rose-500' : 'text-gray-400'}`} />
+                                        <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${focusedField === 'password' ? 'text-orange-500' : 'text-gray-400'}`} />
                                         <input
                                             id="password"
                                             name="password"
@@ -408,13 +408,13 @@ const ForgotPassword = () => {
                                             onChange={onChange}
                                             onFocus={() => setFocusedField('password')}
                                             onBlur={() => setFocusedField(null)}
-                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                             placeholder="Enter new password"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-rose-500 transition cursor-pointer"
+                                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-500 transition cursor-pointer"
                                         >
                                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -429,7 +429,7 @@ const ForgotPassword = () => {
                                 </label>
                                 <div className="relative group">
                                     <div className="relative">
-                                        <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${focusedField === 'confirmPassword' ? 'text-rose-500' : 'text-gray-400'}`} />
+                                        <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${focusedField === 'confirmPassword' ? 'text-orange-500' : 'text-gray-400'}`} />
                                         <input
                                             id="confirmPassword"
                                             name="confirmPassword"
@@ -439,13 +439,13 @@ const ForgotPassword = () => {
                                             onChange={onChange}
                                             onFocus={() => setFocusedField('confirmPassword')}
                                             onBlur={() => setFocusedField(null)}
-                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                             placeholder="Confirm new password"
                                         />
                                         <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-rose-500 transition cursor-pointer"
+                                            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-orange-500 transition cursor-pointer"
                                         >
                                             {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                         </button>
@@ -457,7 +457,7 @@ const ForgotPassword = () => {
                             <button
                                 type="submit"
                                 disabled={status === 'loading'}
-                                className="w-full py-4 bg-rose-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-rose-500/25 hover:bg-rose-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                                className="w-full py-4 bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-500/25 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                             >
                                 {status === 'loading' ? (
                                     <div className="flex items-center gap-2">

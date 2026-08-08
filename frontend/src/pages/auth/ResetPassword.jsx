@@ -60,22 +60,22 @@ const ResetPassword = () => {
             {/* Logo */}
             <div className="absolute top-8 right-8">
                 <Link to="/" className="flex items-center space-x-2 group">
-                    <div className="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center border border-rose-500/20 group-hover:scale-105 transition-transform">
-                        <ChefHat className="w-5 h-5 text-rose-500" />
+                    <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center border border-orange-500/20 group-hover:scale-105 transition-transform">
+                        <ChefHat className="w-5 h-5 text-orange-500" />
                     </div>
                 </Link>
             </div>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md relative z-10">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 mb-4 shadow-lg shadow-rose-500/10">
-                        <Lock className="w-8 h-8 text-rose-500" />
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/20 mb-4 shadow-lg shadow-orange-500/10">
+                        <Lock className="w-8 h-8 text-orange-500" />
                     </div>
-                    <h1 className="text-3xl font-bold mb-2 text-rose-500">Choose New Password</h1>
+                    <h1 className="text-3xl font-bold mb-2 text-orange-500">Choose New Password</h1>
                     <p className="text-sm text-gray-500 dark:text-gray-400">Enter and confirm your new password below.</p>
                 </div>
 
-                <div className="theme-card-item rounded-3xl p-8 border border-rose-500/20 shadow-2xl relative overflow-hidden" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>
+                <div className="theme-card-item rounded-3xl p-8 border border-orange-500/20 shadow-2xl relative overflow-hidden" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>
                     {status === 'success' ? (
                         <div className="text-center space-y-6 py-4">
                             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
@@ -85,7 +85,7 @@ const ResetPassword = () => {
                                 <h3 className="text-2xl font-bold mb-2">Password Updated!</h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400">Your password has been changed successfully. Redirecting to login...</p>
                             </div>
-                            <Link to="/login" className="w-full flex items-center justify-center gap-2 py-4 bg-rose-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-rose-500/25 hover:bg-rose-600 transition-all">
+                            <Link to="/login" className="w-full flex items-center justify-center gap-2 py-4 bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-500/25 hover:bg-orange-600 transition-all">
                                 <span>Go to Login</span>
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
@@ -111,10 +111,10 @@ const ResetPassword = () => {
                                                     required
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
-                                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                                     placeholder="At least 6 characters"
                                                 />
-                                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-500 transition cursor-pointer">
+                                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-500 transition cursor-pointer">
                                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                                 </button>
                                             </div>
@@ -129,7 +129,7 @@ const ResetPassword = () => {
                                                     required
                                                     value={confirmPassword}
                                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                                     placeholder="Confirm new password"
                                                 />
                                             </div>
@@ -139,7 +139,7 @@ const ResetPassword = () => {
                                     <button
                                         type="submit"
                                         disabled={status === 'loading'}
-                                        className="w-full py-4 bg-rose-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-rose-500/25 hover:bg-rose-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                                        className="w-full py-4 bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-500/25 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                                     >
                                         {status === 'loading' ? 'Resetting Password...' : (
                                             <>Save New Password <ArrowRight className="w-4 h-4" /></>
@@ -147,7 +147,7 @@ const ResetPassword = () => {
                                     </button>
                                 </>
                             ) : (
-                                <Link to="/forgot-password" className="w-full block text-center py-4 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-2xl text-sm font-bold hover:bg-rose-500/20 transition-all">Request Password Reset</Link>
+                                <Link to="/forgot-password" className="w-full block text-center py-4 bg-orange-500/10 text-orange-500 border border-orange-500/20 rounded-2xl text-sm font-bold hover:bg-orange-500/20 transition-all">Request Password Reset</Link>
                             )}
                         </form>
                     )}

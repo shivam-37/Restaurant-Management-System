@@ -37,7 +37,7 @@ const Analytics = () => {
 
     if (loading) return (
         <div className="space-y-8 animate-pulse">
-            <div className="h-10 bg-rose-500/10 rounded-2xl w-1/3" />
+            <div className="h-10 bg-orange-500/10 rounded-2xl w-1/3" />
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[...Array(4)].map((_, i) => <div key={i} className="h-32 theme-card-item rounded-3xl" />)}
             </div>
@@ -85,7 +85,7 @@ const Analytics = () => {
             label: 'Active Orders',
             value: data.activeOrders ?? 0,
             icon: ClockIcon,
-            color: 'from-orange-500 to-rose-500',
+            color: 'from-orange-500 to-orange-500',
             bg: 'bg-orange-500/10',
             textColor: 'text-orange-600 dark:text-orange-400'
         },
@@ -109,7 +109,7 @@ const Analytics = () => {
                 </div>
                 <button
                     onClick={fetchAnalytics}
-                    className="flex items-center gap-3 px-6 py-3 bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-600 hover:text-white transition-all shadow-lg shadow-rose-500/5 group"
+                    className="flex items-center gap-3 px-6 py-3 bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all shadow-lg shadow-orange-500/5 group"
                 >
                     <ArrowUpIcon className="w-4 h-4 rotate-[135deg] group-hover:scale-110 transition-transform" />
                     Refresh Data
@@ -137,7 +137,7 @@ const Analytics = () => {
 
             {/* Daily Sales Bar Chart */}
             <div className="theme-card border border-black/5 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-transparent pointer-events-none"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent pointer-events-none"></div>
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8 relative z-10">
                     <div>
                         <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-2">Weekly Sales</p>
@@ -145,7 +145,7 @@ const Analytics = () => {
                     </div>
                     <div className="bg-black/5 dark:bg-white/5 p-4 rounded-2xl border border-black/5">
                         <p className="text-[9px] font-black uppercase tracking-widest opacity-30 mb-1">Average Order Value</p>
-                        <p className="text-xl font-black text-rose-600 dark:text-rose-400 tracking-tight">₹{avgOrderValue.toFixed(2)}</p>
+                        <p className="text-xl font-black text-orange-600 dark:text-orange-400 tracking-tight">₹{avgOrderValue.toFixed(2)}</p>
                     </div>
                 </div>
 
@@ -163,7 +163,7 @@ const Analytics = () => {
                                         initial={{ height: 0 }}
                                         animate={{ height: `${(day.sales / maxSales) * 100}%` }}
                                         transition={{ delay: idx * 0.05, type: 'spring', stiffness: 50 }}
-                                        className="bg-gradient-to-t from-rose-600 to-rose-400 rounded-2xl group-hover:from-rose-500 group-hover:to-purple-500 transition-all relative min-h-[6px] shadow-lg shadow-rose-500/10"
+                                        className="bg-gradient-to-t from-orange-600 to-orange-400 rounded-2xl group-hover:from-orange-500 group-hover:to-purple-500 transition-all relative min-h-[6px] shadow-lg shadow-orange-500/10"
                                     >
                                         <div className="absolute -top-12 left-1/2 -translate-x-1/2 theme-card border border-black/5 text-[10px] font-black px-3 py-2 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-2xl pointer-events-none">
                                             ₹{(day.sales || 0).toLocaleString('en-IN')}
@@ -180,7 +180,7 @@ const Analytics = () => {
             {/* Restaurant Stats Table (Admin only - when no restaurant filter) */}
             {data.restaurantStats && data.restaurantStats.length > 0 && (
                 <div className="theme-card border border-black/5 rounded-[2rem] overflow-hidden shadow-2xl">
-                    <div className="p-8 border-b border-black/5 bg-rose-500/5">
+                    <div className="p-8 border-b border-black/5 bg-orange-500/5">
                         <h3 className="text-xl font-black uppercase tracking-tighter">Restaurant Stats</h3>
                     </div>
                     <div className="overflow-x-auto">

@@ -89,13 +89,13 @@ const KitchenDisplay = () => {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, x: 100 }}
                             className={`flex flex-col rounded-[2rem] border-2 transition-all duration-500 shadow-xl ${order.status === 'Pending' ? 'border-orange-500/50 bg-orange-500/5' :
-                                order.status === 'Preparing' ? 'border-rose-500/50 bg-rose-500/5' :
+                                order.status === 'Preparing' ? 'border-orange-500/50 bg-orange-500/5' :
                                     'border-green-500/50 bg-green-500/5'
                                 }`}
                         >
                             {/* Ticket Header */}
                             <div className={`p-5 rounded-t-[1.8rem] flex justify-between items-center ${order.status === 'Pending' ? 'bg-orange-500 text-white' :
-                                order.status === 'Preparing' ? 'bg-rose-600 text-white' :
+                                order.status === 'Preparing' ? 'bg-orange-600 text-white' :
                                     'bg-green-600 text-white'
                                 }`}>
                                 <h2 className="text-xl font-black">TABLE {order.tableNumber}</h2>
@@ -132,11 +132,16 @@ const KitchenDisplay = () => {
                                     onClick={() => handleStatusMove(order._id, order.status)}
                                     disabled={updating === order._id}
                                     className={`w-full py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all disabled:opacity-60 disabled:cursor-not-allowed ${order.status === 'Pending' ? 'bg-orange-500 hover:bg-orange-600 text-white shadow-lg shadow-orange-500/30' :
-                                        order.status === 'Preparing' ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-lg shadow-rose-600/30' :
+                                        order.status === 'Preparing' ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-600/30' :
                                             'bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/30'
                                         }`}
                                 >
-                                    {updating === order._id ? '⏳ Processing...' :
+                                    {updating === order._id ? (
+                                        <div className="flex items-center justify-center gap-2">
+                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                            Processing...
+                                        </div>
+                                    ) :
                                         order.status === 'Pending' ? 'Start Cooking' :
                                             order.status === 'Preparing' ? 'Ready for Pickup' : 'Done'}
                                 </button>

@@ -182,12 +182,12 @@ const Login = () => {
                         className="flex items-center space-x-3"
                     >
                         <Link to="/" className="flex items-center space-x-3 group cursor-pointer">
-                            <div className="w-14 h-14 bg-rose-500/10 backdrop-blur-lg rounded-2xl flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500/20 transition-colors">
-                                <ChefHat className="w-7 h-7 text-rose-500" />
+                            <div className="w-14 h-14 bg-orange-500/10 backdrop-blur-lg rounded-2xl flex items-center justify-center border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
+                                <ChefHat className="w-7 h-7 text-orange-500" />
                             </div>
                             <div>
                                 <span className="text-2xl font-light tracking-wider text-white">DINE</span>
-                                <span className="text-2xl font-bold text-rose-500 ml-2">FLOW</span>
+                                <span className="text-2xl font-bold text-orange-500 ml-2">FLOW</span>
                             </div>
                         </Link>
                     </motion.div>
@@ -202,7 +202,7 @@ const Login = () => {
                             <h1 className="text-7xl font-black mb-4 leading-none">
                                 WELCOME
                                 <br />
-                                <span className="text-rose-500">BACK</span>
+                                <span className="text-orange-500">BACK</span>
                             </h1>
                             <p className="text-xl text-gray-400 leading-relaxed">
                                 Sign in to manage your restaurant operations, track performance, and deliver exceptional dining experiences.
@@ -222,7 +222,7 @@ const Login = () => {
                                 { icon: <Star className="w-5 h-5" />, value: "4.9", label: "Rating" }
                             ].map((stat, idx) => (
                                 <div key={idx} className="text-center">
-                                    <div className="flex justify-center text-rose-500 mb-2">{stat.icon}</div>
+                                    <div className="flex justify-center text-orange-500 mb-2">{stat.icon}</div>
                                     <div className="text-white font-bold">{stat.value}</div>
                                     <div className="text-xs text-gray-500">{stat.label}</div>
                                 </div>
@@ -245,12 +245,12 @@ const Login = () => {
                     {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                 </button>
                 {/* Subtle Glow Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-transparent to-transparent"></div>
                 
                 {/* Animated Dots */}
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-20 right-20 w-64 h-64 bg-rose-500/5 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-20 left-20 w-64 h-64 bg-rose-500/5 rounded-full blur-3xl"></div>
+                    <div className="absolute top-20 right-20 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-20 left-20 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl"></div>
                 </div>
 
                 <motion.div 
@@ -262,11 +262,11 @@ const Login = () => {
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex justify-center mb-8">
                         <Link to="/" className="flex items-center space-x-2 group cursor-pointer">
-                            <div className="w-12 h-12 bg-rose-500/10 rounded-xl flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500/20 transition-colors">
-                                <ChefHat className="w-6 h-6 text-rose-500" />
+                            <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
+                                <ChefHat className="w-6 h-6 text-orange-500" />
                             </div>
                             <span className="text-2xl font-light text-gray-900 dark:text-white">DINE</span>
-                            <span className="text-2xl font-bold text-rose-500 ml-1">FLOW</span>
+                            <span className="text-2xl font-bold text-orange-500 ml-1">FLOW</span>
                         </Link>
                     </div>
 
@@ -276,7 +276,7 @@ const Login = () => {
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="text-3xl font-bold mb-2 text-rose-500"
+                            className="text-3xl font-bold mb-2 text-orange-500"
                         >
                             Sign In
                         </motion.h2>
@@ -295,13 +295,13 @@ const Login = () => {
                         <motion.div
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 mb-6 relative group"
+                            className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-4 mb-6 relative group"
                         >
-                            <div className="absolute inset-0 bg-rose-500/5 blur-xl opacity-50"></div>
-                            <p className="text-sm text-rose-500 text-center relative z-10">{successMessage}</p>
+                            <div className="absolute inset-0 bg-orange-500/5 blur-xl opacity-50"></div>
+                            <p className="text-sm text-orange-500 text-center relative z-10">{successMessage}</p>
                             <button 
                                 onClick={() => setSuccessMessage(null)}
-                                className="absolute top-2 right-2 text-rose-500/50 hover:text-rose-500 transition"
+                                className="absolute top-2 right-2 text-orange-500/50 hover:text-orange-500 transition"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -332,17 +332,17 @@ const Login = () => {
                             <label 
                                 htmlFor="identifier" 
                                 className={`text-sm font-bold mb-2 block transition-colors duration-300 ${
-                                    focusedField === 'identifier' ? 'text-rose-500' : 'text-gray-900 dark:text-gray-100'
+                                    focusedField === 'identifier' ? 'text-orange-500' : 'text-gray-900 dark:text-gray-100'
                                 }`}
                             >
                                 Email Address or Phone Number
                             </label>
                             <div className="relative group">
-                                <div className={`relative flex items-center theme-card-item border border-black/5 rounded-2xl focus-within:border-rose-500/30 transition-all overflow-hidden`}>
+                                <div className={`relative flex items-center theme-card-item border border-black/5 rounded-2xl focus-within:border-orange-500/30 transition-all overflow-hidden`}>
                                     {!identifier.includes('@') ? (
                                         <div className="flex items-center pl-4 border-r border-black/10 dark:border-white/10 shrink-0">
                                             <Smartphone className={`w-4 h-4 mr-2 transition-colors duration-300 ${
-                                                focusedField === 'identifier' ? 'text-rose-500' : 'opacity-20'
+                                                focusedField === 'identifier' ? 'text-orange-500' : 'opacity-20'
                                             }`} />
                                             <select
                                                 name="countryCode"
@@ -362,7 +362,7 @@ const Login = () => {
                                     ) : (
                                         <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
                                             <Mail className={`w-4 h-4 transition-colors duration-300 ${
-                                                focusedField === 'identifier' ? 'text-rose-500' : 'opacity-20'
+                                                focusedField === 'identifier' ? 'text-orange-500' : 'opacity-20'
                                             }`} />
                                         </div>
                                     )}
@@ -393,7 +393,7 @@ const Login = () => {
                                 <label 
                                     htmlFor="password" 
                                     className={`text-sm font-bold mb-2 block transition-colors duration-300 ${
-                                        focusedField === 'password' ? 'text-rose-500' : 'text-gray-900 dark:text-gray-100'
+                                        focusedField === 'password' ? 'text-orange-500' : 'text-gray-900 dark:text-gray-100'
                                     }`}
                                 >
                                     Password
@@ -401,7 +401,7 @@ const Login = () => {
                                 <div className="relative group">
                                     <div className="relative">
                                         <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${
-                                            focusedField === 'password' ? 'text-rose-500' : 'opacity-20'
+                                            focusedField === 'password' ? 'text-orange-500' : 'opacity-20'
                                         }`} />
                                         <input
                                             id="password"
@@ -413,7 +413,7 @@ const Login = () => {
                                             onChange={onChange}
                                             onFocus={() => setFocusedField('password')}
                                             onBlur={() => setFocusedField(null)}
-                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                             placeholder="••••••••"
                                         />
                                     </div>
@@ -429,7 +429,7 @@ const Login = () => {
                         >
                             <Link
                                 to="/forgot-password"
-                                className="text-xs font-semibold text-rose-500 hover:text-rose-600 transition-all"
+                                className="text-xs font-semibold text-orange-500 hover:text-orange-600 transition-all"
                             >
                                 Forgot password?
                             </Link>
@@ -444,7 +444,7 @@ const Login = () => {
                                 <button
                                     type="submit"
                                     disabled={isLoading}
-                                    className="w-full py-4 bg-rose-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-rose-500/25 hover:bg-rose-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                                    className="w-full py-4 bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-500/25 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                                 >
                                     {isLoading ? 'Signing In...' : 'Sign In'}
                                 </button>
@@ -458,11 +458,11 @@ const Login = () => {
                             className="text-xs text-center text-gray-500 mt-6"
                         >
                             By signing in, you agree to our{' '}
-                            <Link to="/terms" className="text-rose-500 hover:text-rose-600 font-semibold">
+                            <Link to="/terms" className="text-orange-500 hover:text-orange-600 font-semibold">
                                 Terms of Service
                             </Link>{' '}
                             and{' '}
-                            <Link to="/privacy" className="text-rose-500 hover:text-rose-600 font-semibold">
+                            <Link to="/privacy" className="text-orange-500 hover:text-orange-600 font-semibold">
                                 Privacy Policy
                             </Link>
                         </motion.p>
@@ -478,7 +478,7 @@ const Login = () => {
                                 Don't have an account?{' '}
                                 <Link
                                     to="/register"
-                                    className="text-rose-500 hover:text-rose-600 font-bold ml-1"
+                                    className="text-orange-500 hover:text-orange-600 font-bold ml-1"
                                 >
                                     Create Account
                                 </Link>
@@ -524,12 +524,12 @@ const Login = () => {
                         className="flex justify-center space-x-6 mt-8"
                     >
                         {[
-                            { icon: <Coffee className="w-4 h-4 text-rose-500" />, text: "Fine Dining" },
-                            { icon: <Sparkles className="w-4 h-4 text-rose-500" />, text: "Premium" },
-                            { icon: <Star className="w-4 h-4 text-rose-500" />, text: "5-Star" }
+                            { icon: <Coffee className="w-4 h-4 text-orange-500" />, text: "Fine Dining" },
+                            { icon: <Sparkles className="w-4 h-4 text-orange-500" />, text: "Premium" },
+                            { icon: <Star className="w-4 h-4 text-orange-500" />, text: "5-Star" }
                         ].map((feature, idx) => (
                             <div key={idx} className="flex items-center space-x-2 text-xs font-semibold text-gray-700 dark:text-gray-300">
-                                <span className="text-rose-500">{feature.icon}</span>
+                                <span className="text-orange-500">{feature.icon}</span>
                                 <span>{feature.text}</span>
                             </div>
                         ))}

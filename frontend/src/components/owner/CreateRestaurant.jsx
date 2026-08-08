@@ -106,17 +106,17 @@ const CreateRestaurant = () => {
             >
                 {/* Header */}
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/20 mb-4 shadow-lg shadow-rose-500/10">
-                        <ChefHat className="w-8 h-8 text-rose-500" />
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/20 mb-4 shadow-lg shadow-orange-500/10">
+                        <ChefHat className="w-8 h-8 text-orange-500" />
                     </div>
-                    <h1 className="text-3xl font-bold mb-2 text-rose-500">Create Your Restaurant</h1>
+                    <h1 className="text-3xl font-bold mb-2 text-orange-500">Create Your Restaurant</h1>
                     <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
                         Enter your restaurant details below to set up your management dashboard.
                     </p>
                 </div>
 
                 {/* Main Form Card */}
-                <div className="theme-card-item rounded-3xl p-6 sm:p-10 border border-rose-500/20 shadow-2xl relative overflow-hidden" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>
+                <div className="theme-card-item rounded-3xl p-6 sm:p-10 border border-orange-500/20 shadow-2xl relative overflow-hidden" style={{ background: 'var(--bg-card)', color: 'var(--text-primary)' }}>
                     {error && (
                         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-orange-500/10 border border-red-500/30 rounded-2xl p-4 mb-6 flex items-center gap-3">
                             <AlertCircle className="w-5 h-5 text-orange-500 shrink-0" />
@@ -136,7 +136,7 @@ const CreateRestaurant = () => {
                                     type="text"
                                     required
                                     placeholder="e.g. Royal Spice Bistro"
-                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 />
@@ -155,7 +155,7 @@ const CreateRestaurant = () => {
                                         type="text"
                                         required
                                         placeholder="e.g. Indian, Italian, Chinese"
-                                        className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                        className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                         value={formData.cuisine}
                                         onChange={(e) => setFormData({ ...formData, cuisine: e.target.value })}
                                     />
@@ -171,7 +171,7 @@ const CreateRestaurant = () => {
                                     <input
                                         type="text"
                                         placeholder="e.g. Authentic North Indian Delicacies"
-                                        className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                        className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                         value={formData.description}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     />
@@ -190,7 +190,7 @@ const CreateRestaurant = () => {
                                     type="text"
                                     required
                                     placeholder="e.g. 104 Main Street, Gourmet Avenue"
-                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                     value={formData.address}
                                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                 />
@@ -206,7 +206,7 @@ const CreateRestaurant = () => {
                                 <input
                                     type="time"
                                     required
-                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 px-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 px-4 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                     value={formData.openingTime}
                                     onChange={(e) => setFormData({ ...formData, openingTime: e.target.value })}
                                 />
@@ -218,7 +218,7 @@ const CreateRestaurant = () => {
                                 <input
                                     type="time"
                                     required
-                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 px-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 px-4 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                     value={formData.closingTime}
                                     onChange={(e) => setFormData({ ...formData, closingTime: e.target.value })}
                                 />
@@ -237,7 +237,7 @@ const CreateRestaurant = () => {
                                     min="1"
                                     max="50"
                                     required
-                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                     value={formData.tablesCount}
                                     onChange={(e) => setFormData({ ...formData, tablesCount: parseInt(e.target.value) || 1 })}
                                 />
@@ -251,7 +251,7 @@ const CreateRestaurant = () => {
                             </label>
                             <div className="space-y-3">
                                 <div className="flex flex-col sm:flex-row gap-3">
-                                    <label className="flex items-center justify-center gap-2 px-5 py-3.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-2xl border border-rose-500/20 text-xs font-bold cursor-pointer transition shrink-0">
+                                    <label className="flex items-center justify-center gap-2 px-5 py-3.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-500 rounded-2xl border border-orange-500/20 text-xs font-bold cursor-pointer transition shrink-0">
                                         <Upload className="w-4 h-4" />
                                         <span>Upload from Device</span>
                                         <input
@@ -272,7 +272,7 @@ const CreateRestaurant = () => {
                                         <input
                                             type="text"
                                             placeholder="Or paste image URL..."
-                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-rose-500 transition-all"
+                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                             value={formData.image}
                                             onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                                         />
@@ -299,7 +299,7 @@ const CreateRestaurant = () => {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full py-4 bg-rose-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-rose-500/25 hover:bg-rose-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                            className="w-full py-4 bg-orange-500 text-white rounded-2xl text-sm font-bold shadow-lg shadow-orange-500/25 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                         >
                             {isLoading ? (
                                 <div className="flex items-center gap-2">

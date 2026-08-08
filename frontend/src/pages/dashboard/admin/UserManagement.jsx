@@ -71,10 +71,10 @@ const UserManagement = () => {
 
     return (
         <div className="space-y-8">
-            <div className="flex justify-between items-center bg-rose-500/5 p-6 rounded-3xl border border-rose-500/10">
+            <div className="flex justify-between items-center bg-orange-500/5 p-6 rounded-3xl border border-orange-500/10">
                 <div>
                     <h1 className="text-3xl font-black flex items-center gap-3 uppercase tracking-tighter">
-                        <ShieldExclamationIcon className="w-8 h-8 text-rose-500" />
+                        <ShieldExclamationIcon className="w-8 h-8 text-orange-500" />
                         System Users
                     </h1>
                     <p className="opacity-60 text-sm font-bold uppercase tracking-widest mt-1">Manage all users, owners, and system settings.</p>
@@ -87,14 +87,14 @@ const UserManagement = () => {
                     { label: 'Total Users', value: stats.total, icon: <UsersIcon className="w-6 h-6" />, color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-500/10', textColor: 'text-blue-600 dark:text-blue-400' },
                     { label: 'Restaurant Owners', value: stats.owners, icon: <BuildingOfficeIcon className="w-6 h-6" />, color: 'from-indigo-500 to-purple-500', bgColor: 'bg-orange-500/10', textColor: 'text-[#f97316] dark:text-indigo-400' },
                     { label: 'Customers', value: stats.customers, icon: <ChartBarIcon className="w-6 h-6" />, color: 'from-emerald-500 to-teal-500', bgColor: 'bg-emerald-500/10', textColor: 'text-emerald-600 dark:text-emerald-400' },
-                    { label: 'Administrators', value: stats.admins, icon: <ShieldCheckIcon className="w-6 h-6" />, color: 'from-rose-500 to-pink-500', bgColor: 'bg-rose-500/10', textColor: 'text-rose-600 dark:text-rose-400' }
+                    { label: 'Administrators', value: stats.admins, icon: <ShieldCheckIcon className="w-6 h-6" />, color: 'from-orange-500 to-pink-500', bgColor: 'bg-orange-500/10', textColor: 'text-orange-600 dark:text-orange-400' }
                 ].map((stat, i) => (
                     <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
                         key={i} 
-                        className="theme-card rounded-2xl p-6 border border-black/5 hover:border-rose-500/30 transition-all shadow-sm group relative overflow-hidden"
+                        className="theme-card rounded-2xl p-6 border border-black/5 hover:border-orange-500/30 transition-all shadow-sm group relative overflow-hidden"
                     >
                         <div className={`absolute inset-0 ${stat.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
                         <div className="flex items-start justify-between relative z-10">
@@ -112,9 +112,9 @@ const UserManagement = () => {
 
             {/* Users Table */}
             <div className="theme-card rounded-[2rem] shadow-sm border border-black/5 overflow-hidden">
-                <div className="p-6 border-b border-black/5 flex justify-between items-center bg-rose-500/5">
+                <div className="p-6 border-b border-black/5 flex justify-between items-center bg-orange-500/5">
                     <h2 className="text-xl font-black uppercase tracking-tighter">User Management Table</h2>
-                    <button onClick={fetchAllUsers} className="text-xs font-black uppercase tracking-widest text-rose-500 hover:text-rose-600 transition">
+                    <button onClick={fetchAllUsers} className="text-xs font-black uppercase tracking-widest text-orange-500 hover:text-orange-600 transition">
                         Refresh Data
                     </button>
                 </div>
@@ -142,7 +142,7 @@ const UserManagement = () => {
                                 <tr key={u._id} className="group hover:bg-black/5 transition-all">
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-rose-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-rose-500/20">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-orange-500/20">
                                                 {u.name?.charAt(0)}
                                             </div>
                                             <div>
@@ -152,8 +152,8 @@ const UserManagement = () => {
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="flex flex-col space-y-1">
-                                            {u.email && <span className="flex items-center text-[10px] font-bold opacity-60 tracking-tight"><EnvelopeIcon className="w-3 h-3 mr-1 text-rose-500" /> {u.email}</span>}
-                                            {u.phone && <span className="flex items-center text-[10px] font-bold opacity-60 tracking-tight"><PhoneIcon className="w-3 h-3 mr-1 text-rose-500" /> {u.phone}</span>}
+                                            {u.email && <span className="flex items-center text-[10px] font-bold opacity-60 tracking-tight"><EnvelopeIcon className="w-3 h-3 mr-1 text-orange-500" /> {u.email}</span>}
+                                            {u.phone && <span className="flex items-center text-[10px] font-bold opacity-60 tracking-tight"><PhoneIcon className="w-3 h-3 mr-1 text-orange-500" /> {u.phone}</span>}
                                         </div>
                                     </td>
                                     <td className="px-8 py-6 text-center">

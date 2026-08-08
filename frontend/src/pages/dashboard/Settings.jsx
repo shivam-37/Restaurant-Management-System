@@ -56,14 +56,14 @@ const InputField = ({ label, icon: Icon, type = 'text', name, value, onChange, p
     <div className="space-y-2">
         <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">{label}</label>
         <div className="relative group">
-            {Icon && <Icon className="absolute left-5 w-5 h-5 text-rose-500 transition-transform group-focus-within:scale-110" />}
+            {Icon && <Icon className="absolute left-5 w-5 h-5 text-orange-500 transition-transform group-focus-within:scale-110" />}
             <input
                 type={type}
                 name={name}
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className={`w-full theme-card-item border border-black/5 rounded-2xl py-4 ${Icon ? 'pl-14' : 'px-6'} pr-4 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30`}
+                className={`w-full theme-card-item border border-black/5 rounded-2xl py-4 ${Icon ? 'pl-14' : 'px-6'} pr-4 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all font-bold placeholder:opacity-30`}
             />
         </div>
     </div>
@@ -75,14 +75,14 @@ const PasswordField = ({ label, icon: Icon, name, value, onChange, placeholder }
         <div className="space-y-2">
             <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1">{label}</label>
             <div className="relative group">
-                {Icon && <Icon className="absolute left-5 w-5 h-5 text-rose-500 transition-transform group-focus-within:scale-110" />}
+                {Icon && <Icon className="absolute left-5 w-5 h-5 text-orange-500 transition-transform group-focus-within:scale-110" />}
                 <input
                     type={show ? 'text' : 'password'}
                     name={name}
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className="w-full theme-card-item border border-black/5 rounded-2xl py-4 pl-14 pr-14 focus:outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-bold placeholder:opacity-30"
+                    className="w-full theme-card-item border border-black/5 rounded-2xl py-4 pl-14 pr-14 focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all font-bold placeholder:opacity-30"
                 />
                 <button type="button" onClick={() => setShow(s => !s)} className="absolute right-5 opacity-30 hover:opacity-100 transition-all">
                     {show ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
@@ -99,7 +99,7 @@ const SaveButton = ({ isLoading, label = 'Apply Changes' }) => (
         whileTap={{ scale: 0.98 }}
         type="submit"
         disabled={isLoading}
-        className="px-10 py-4 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-rose-700 transition-all shadow-xl shadow-rose-600/30 disabled:opacity-50 flex items-center gap-3 active:scale-95"
+        className="px-10 py-4 bg-orange-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-orange-700 transition-all shadow-xl shadow-orange-600/30 disabled:opacity-50 flex items-center gap-3 active:scale-95"
     >
         {isLoading ? (
             <>
@@ -174,7 +174,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
             {/* Avatar */}
             <div className="flex items-center gap-5 pb-6 border-b border-black/5">
                 <div className="relative">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-rose-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg overflow-hidden">
+                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg overflow-hidden">
                         {(avatar || user?.avatar) ? (
                             <img src={avatar || user?.avatar} alt="avatar" className="w-full h-full object-cover" />
                         ) : (
@@ -184,7 +184,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                     <button
                         type="button"
                         onClick={() => { setAvatarInput(avatar); setShowAvatarModal(true); }}
-                        className="absolute -bottom-2 -right-2 p-1.5 bg-rose-600 hover:bg-rose-500 rounded-lg border border-rose-500 transition shadow"
+                        className="absolute -bottom-2 -right-2 p-1.5 bg-orange-600 hover:bg-orange-500 rounded-lg border border-orange-500 transition shadow"
                         title="Change profile photo"
                     >
                         <CameraIcon className="w-4 h-4 text-white" />
@@ -196,7 +196,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                     <button
                         type="button"
                         onClick={() => { setAvatarInput(avatar); setShowAvatarModal(true); }}
-                        className="text-xs text-rose-500 hover:opacity-80 mt-1.5 transition"
+                        className="text-xs text-orange-500 hover:opacity-80 mt-1.5 transition"
                     >
                         Change photo
                     </button>
@@ -223,7 +223,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                             <h3 className="font-bold text-lg mb-1">Profile Photo</h3>
                             <p className="text-sm opacity-60 mb-4">Upload a photo from your device or paste an image URL.</p>
                             
-                            <label className="flex items-center justify-center gap-2 px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl border border-rose-500/20 text-xs font-bold cursor-pointer transition mb-4">
+                            <label className="flex items-center justify-center gap-2 px-4 py-3 bg-orange-500/10 hover:bg-orange-500/20 text-orange-500 rounded-xl border border-orange-500/20 text-xs font-bold cursor-pointer transition mb-4">
                                 <span>Upload Photo from Device</span>
                                 <input
                                     type="file"
@@ -269,7 +269,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                                 value={avatarInput}
                                 onChange={e => setAvatarInput(e.target.value)}
                                 placeholder="Or paste image URL..."
-                                className="w-full theme-card-item border-transparent rounded-xl px-4 py-3 placeholder:opacity-40 focus:outline-none focus:border-rose-500 mb-4 text-sm"
+                                className="w-full theme-card-item border-transparent rounded-xl px-4 py-3 placeholder:opacity-40 focus:outline-none focus:border-orange-500 mb-4 text-sm"
                             />
                             <div className="flex gap-3">
                                 <button
@@ -311,7 +311,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                                             showMessage('error', err?.response?.data?.message || 'Failed to update profile photo');
                                         }
                                     }}
-                                    className="flex-1 py-2.5 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition text-sm font-medium"
+                                    className="flex-1 py-2.5 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition text-sm font-medium"
                                 >
                                     Apply
                                 </button>
@@ -345,7 +345,7 @@ const ProfileTab = ({ user, setUser, showMessage }) => {
                                 <div key={lvl} className={`flex-1 rounded-full transition-all ${strengthMap.indexOf(strength) >= i ? strengthColor : 'opacity-20 bg-gray-500'}`} />
                             ))}
                         </div>
-                        <p className="text-xs opacity-40">Strength: <span className="text-rose-500 font-bold">{strength}</span></p>
+                        <p className="text-xs opacity-40">Strength: <span className="text-orange-500 font-bold">{strength}</span></p>
                     </div>
                 )}
                 <div className="flex justify-end">
@@ -415,14 +415,14 @@ const RestaurantTab = ({ selectedRestaurant, updateRestaurantInList, showMessage
                     value={form.description}
                     onChange={e => setForm({ ...form, description: e.target.value })}
                     placeholder="Describe your restaurant..."
-                    className="w-full theme-card-item border-transparent rounded-xl py-3 px-4 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-500 transition resize-none"
+                    className="w-full theme-card-item border-transparent rounded-xl py-3 px-4 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition resize-none"
                 />
             </div>
 
             <div>
                 <label className="block text-xs font-semibold opacity-80 mb-2">Cover Image (Upload from device or enter URL)</label>
                 <div className="flex flex-col sm:flex-row gap-3 mb-3">
-                    <label className="flex items-center justify-center gap-2 px-4 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl border border-rose-500/20 text-xs font-bold cursor-pointer transition shrink-0">
+                    <label className="flex items-center justify-center gap-2 px-4 py-3 bg-orange-500/10 hover:bg-orange-500/20 text-orange-500 rounded-xl border border-orange-500/20 text-xs font-bold cursor-pointer transition shrink-0">
                         <span>Upload from Device</span>
                         <input
                             type="file"
@@ -462,7 +462,7 @@ const RestaurantTab = ({ selectedRestaurant, updateRestaurantInList, showMessage
                         value={form.image} 
                         onChange={e => setForm({ ...form, image: e.target.value })} 
                         placeholder="Or paste cover image URL..." 
-                        className="w-full theme-card-item border-transparent rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-rose-500" 
+                        className="w-full theme-card-item border-transparent rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-orange-500" 
                     />
                 </div>
             </div>
@@ -566,13 +566,13 @@ const NotificationsTab = ({ user, showMessage }) => {
                 <div
                     key={key}
                     onClick={() => toggle(key)}
-                    className="flex items-center justify-between p-5 theme-card-item border border-black/5 hover:border-rose-500/30 rounded-2xl cursor-pointer transition"
+                    className="flex items-center justify-between p-5 theme-card-item border border-black/5 hover:border-orange-500/30 rounded-2xl cursor-pointer transition"
                 >
                     <div>
                         <p className="text-sm font-bold">{label}</p>
                         <p className="text-xs opacity-60 mt-0.5">{desc}</p>
                     </div>
-                    <div className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ml-4 ${prefs[key] ? 'bg-rose-600' : 'bg-gray-400/20'}`}>
+                    <div className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 ml-4 ${prefs[key] ? 'bg-orange-600' : 'bg-gray-400/20'}`}>
                         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${prefs[key] ? 'translate-x-7' : 'translate-x-1'}`} />
                     </div>
                 </div>
@@ -584,7 +584,7 @@ const NotificationsTab = ({ user, showMessage }) => {
                     onClick={handleSave}
                     disabled={loading}
                     type="button"
-                    className="px-10 py-4 bg-rose-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-rose-600/30 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3"
+                    className="px-10 py-4 bg-orange-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-orange-600/30 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-3"
                 >
                     {loading ? 'Saving...' : <><CheckCircleIcon className="w-5 h-5" /> Save Preferences</>}
                 </motion.button>
@@ -702,22 +702,22 @@ const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) 
         <form onSubmit={handleSave} className="p-6 space-y-6">
             <div className="flex items-center justify-between pb-6 border-b border-black/5">
                 <div>
-                    <h3 className="font-semibold flex items-center gap-2"><Squares2X2Icon className="w-5 h-5 text-rose-500" /> Table Floor Plan</h3>
+                    <h3 className="font-semibold flex items-center gap-2"><Squares2X2Icon className="w-5 h-5 text-orange-500" /> Table Floor Plan</h3>
                     <p className="text-sm opacity-60">Manage your seating arrangement and capacity</p>
                 </div>
                 <button
                     type="button"
                     onClick={handleAddTable}
-                    className="flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-rose-600/20 hover:bg-rose-700 transition"
+                    className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-orange-600/20 hover:bg-orange-700 transition"
                 >
                     <PlusIcon className="w-4 h-4" /> Add Table
                 </button>
             </div>
 
             {/* AI Auto-Generator */}
-            <div className="p-6 rounded-[2rem] bg-gradient-to-r from-rose-500/10 to-purple-500/10 border border-purple-500/20 relative overflow-hidden">
+            <div className="p-6 rounded-[2rem] bg-gradient-to-r from-orange-500/10 to-purple-500/10 border border-purple-500/20 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-32 h-32 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-blob"></div>
-                <div className="absolute bottom-0 right-0 w-32 h-32 bg-rose-500/20 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-blob animation-delay-2000"></div>
+                <div className="absolute bottom-0 right-0 w-32 h-32 bg-orange-500/20 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-blob animation-delay-2000"></div>
                 
                 <div className="relative z-10 flex flex-col sm:flex-row gap-4 items-center">
                     <div className="flex-1 w-full relative">
@@ -737,7 +737,7 @@ const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) 
                         type="button"
                         onClick={handleAIGenerate}
                         disabled={aiLoading || !aiPrompt.trim()}
-                        className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-rose-600 to-purple-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-purple-600/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-orange-600 to-purple-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-purple-600/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {aiLoading ? (
                             <>
@@ -797,7 +797,7 @@ const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) 
                         tables.map((table, idx) => (
                             <div key={idx} className="theme-card-item border border-black/5 rounded-2xl p-4 space-y-4">
                                 <div className="flex items-center justify-between">
-                                    <h4 className="font-bold text-sm text-rose-500">Table {table.number}</h4>
+                                    <h4 className="font-bold text-sm text-orange-500">Table {table.number}</h4>
                                     <button type="button" onClick={() => handleRemoveTable(idx)} className="p-1 text-orange-500 hover:bg-orange-500/10 rounded-lg transition" title="Remove Table">
                                         <TrashIcon className="w-4 h-4" />
                                     </button>
@@ -805,11 +805,11 @@ const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
                                         <label className="text-[9px] font-bold uppercase tracking-widest opacity-40">Table No.</label>
-                                        <input type="number" value={table.number} onChange={e => updateTable(idx, 'number', parseInt(e.target.value) || 0)} className="w-full theme-card border border-black/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-rose-500" />
+                                        <input type="number" value={table.number} onChange={e => updateTable(idx, 'number', parseInt(e.target.value) || 0)} className="w-full theme-card border border-black/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-orange-500" />
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-[9px] font-bold uppercase tracking-widest opacity-40">Capacity</label>
-                                        <input type="number" min="1" value={table.capacity} onChange={e => updateTable(idx, 'capacity', parseInt(e.target.value) || 1)} className="w-full theme-card border border-black/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-rose-500" />
+                                        <input type="number" min="1" value={table.capacity} onChange={e => updateTable(idx, 'capacity', parseInt(e.target.value) || 1)} className="w-full theme-card border border-black/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-orange-500" />
                                     </div>
                                 </div>
                                 <div className="space-y-2">
@@ -818,8 +818,8 @@ const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) 
                                         <span>Y Position: {Math.round(table.y)}%</span>
                                     </div>
                                     <div className="flex gap-4">
-                                        <input type="range" min="0" max="100" value={table.x} onChange={e => updateTable(idx, 'x', parseFloat(e.target.value))} className="w-full accent-rose-500" />
-                                        <input type="range" min="0" max="100" value={table.y} onChange={e => updateTable(idx, 'y', parseFloat(e.target.value))} className="w-full accent-rose-500" />
+                                        <input type="range" min="0" max="100" value={table.x} onChange={e => updateTable(idx, 'x', parseFloat(e.target.value))} className="w-full accent-orange-500" />
+                                        <input type="range" min="0" max="100" value={table.y} onChange={e => updateTable(idx, 'y', parseFloat(e.target.value))} className="w-full accent-orange-500" />
                                     </div>
                                 </div>
                             </div>
@@ -888,7 +888,7 @@ const Settings = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-3 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] transition-all ${activeTab === tab.id
-                                ? 'bg-rose-600 text-white shadow-xl shadow-rose-600/30'
+                                ? 'bg-orange-600 text-white shadow-xl shadow-orange-600/30'
                                 : 'opacity-40 hover:opacity-100 hover:bg-black/5'
                                 }`}
                         >

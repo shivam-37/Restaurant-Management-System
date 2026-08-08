@@ -10,30 +10,30 @@ const TermsOfService = () => {
     return (
         <div className="min-h-screen font-sans p-6 md:p-12 relative overflow-hidden" style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
             {/* Background Accent Glows */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="max-w-4xl mx-auto relative z-10">
                 {/* Header Nav */}
                 <div className="flex items-center justify-between mb-8 pb-6 border-b border-black/10 dark:border-white/10">
                     <button
                         onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-rose-500 hover:text-rose-600 transition cursor-pointer"
+                        className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-orange-500 hover:text-orange-600 transition cursor-pointer"
                     >
                         <ArrowLeft className="w-4 h-4" /> Back
                     </button>
 
                     <Link to="/" className="flex items-center space-x-2 group cursor-pointer">
-                        <div className="w-10 h-10 bg-rose-500/10 rounded-xl flex items-center justify-center border border-rose-500/20 group-hover:bg-rose-500/20 transition-colors">
-                            <ChefHat className="w-5 h-5 text-rose-500" />
+                        <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center border border-orange-500/20 group-hover:bg-orange-500/20 transition-colors">
+                            <ChefHat className="w-5 h-5 text-orange-500" />
                         </div>
                         <span className="text-lg font-light tracking-wider" style={{ color: 'var(--text-primary)' }}>DINE</span>
-                        <span className="text-lg font-bold text-rose-500 ml-1">FLOW</span>
+                        <span className="text-lg font-bold text-orange-500 ml-1">FLOW</span>
                     </Link>
 
                     <button
                         onClick={toggleTheme}
-                        className="p-2 rounded-xl border border-black/10 dark:border-white/10 hover:bg-rose-500/10 transition cursor-pointer"
+                        className="p-2 rounded-xl border border-black/10 dark:border-white/10 hover:bg-orange-500/10 transition cursor-pointer"
                         title="Toggle theme"
                     >
                         {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
@@ -47,7 +47,7 @@ const TermsOfService = () => {
                     transition={{ duration: 0.5 }}
                     className="text-center mb-12"
                 >
-                    <div className="inline-flex items-center justify-center w-14 h-14 bg-rose-500/10 rounded-2xl border border-rose-500/20 mb-4 text-rose-500">
+                    <div className="inline-flex items-center justify-center w-14 h-14 bg-orange-500/10 rounded-2xl border border-orange-500/20 mb-4 text-orange-500">
                         <FileText className="w-7 h-7" />
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight mb-3">Terms of Service</h1>
@@ -62,7 +62,7 @@ const TermsOfService = () => {
                     className="theme-card-item rounded-3xl p-8 md:p-12 border border-black/5 shadow-2xl space-y-8 text-sm leading-relaxed"
                 >
                     <section className="space-y-3">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-rose-500 flex items-center gap-2">
+                        <h2 className="text-lg font-black uppercase tracking-wider text-orange-500 flex items-center gap-2">
                             1. Acceptance of Terms
                         </h2>
                         <p className="opacity-80">
@@ -71,7 +71,7 @@ const TermsOfService = () => {
                     </section>
 
                     <section className="space-y-3">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-rose-500 flex items-center gap-2">
+                        <h2 className="text-lg font-black uppercase tracking-wider text-orange-500 flex items-center gap-2">
                             2. Account Registration & Security
                         </h2>
                         <p className="opacity-80">
@@ -80,7 +80,7 @@ const TermsOfService = () => {
                     </section>
 
                     <section className="space-y-3">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-rose-500 flex items-center gap-2">
+                        <h2 className="text-lg font-black uppercase tracking-wider text-orange-500 flex items-center gap-2">
                             3. Use of Restaurant Services
                         </h2>
                         <p className="opacity-80">
@@ -89,7 +89,7 @@ const TermsOfService = () => {
                     </section>
 
                     <section className="space-y-3">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-rose-500 flex items-center gap-2">
+                        <h2 className="text-lg font-black uppercase tracking-wider text-orange-500 flex items-center gap-2">
                             4. Orders, Payments, & Cancellations
                         </h2>
                         <p className="opacity-80">
@@ -98,7 +98,7 @@ const TermsOfService = () => {
                     </section>
 
                     <section className="space-y-3">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-rose-500 flex items-center gap-2">
+                        <h2 className="text-lg font-black uppercase tracking-wider text-orange-500 flex items-center gap-2">
                             5. Limitation of Liability
                         </h2>
                         <p className="opacity-80">
@@ -107,7 +107,7 @@ const TermsOfService = () => {
                     </section>
 
                     <section className="space-y-3">
-                        <h2 className="text-lg font-black uppercase tracking-wider text-rose-500 flex items-center gap-2">
+                        <h2 className="text-lg font-black uppercase tracking-wider text-orange-500 flex items-center gap-2">
                             6. Modifications to Terms
                         </h2>
                         <p className="opacity-80">
@@ -119,13 +119,13 @@ const TermsOfService = () => {
                     <div className="pt-6 border-t border-black/10 dark:border-white/10 flex justify-between items-center">
                         <Link
                             to="/login"
-                            className="px-6 py-3 bg-rose-500 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-rose-600 transition"
+                            className="px-6 py-3 bg-orange-500 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-orange-600 transition"
                         >
                             Return to Sign In
                         </Link>
                         <Link
                             to="/register"
-                            className="px-6 py-3 border border-rose-500/30 text-rose-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-rose-500/10 transition"
+                            className="px-6 py-3 border border-orange-500/30 text-orange-500 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-orange-500/10 transition"
                         >
                             Create Account
                         </Link>
