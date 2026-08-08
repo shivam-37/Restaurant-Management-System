@@ -15,6 +15,9 @@ const RestaurantStorefront = () => {
     
     const [restaurant, setRestaurant] = useState(null);
     const [menuItems, setMenuItems] = useState([]);
+    const [reviews, setReviews] = useState([]);
+    const [newReviewText, setNewReviewText] = useState('');
+    const [newReviewRating, setNewReviewRating] = useState(5);
     const [loading, setLoading] = useState(true);
     const [cart, setCart] = useState(() => {
         const saved = localStorage.getItem('cart');
@@ -34,6 +37,12 @@ const RestaurantStorefront = () => {
                 
                 const menuData = await getMenu(id);
                 setMenuItems(menuData.data);
+
+                const reviewRes = await fetch(`http://localhost:5000/api/reviews?restaurantId=${id}`);
+                const reviewData = await reviewRes.json();
+                if (reviewData.success) {
+                    setReviews(reviewData.data);
+                }
             } catch (error) {
                 console.error("Failed to fetch restaurant data", error);
             } finally {
@@ -42,6 +51,37 @@ const RestaurantStorefront = () => {
         };
         fetchData();
     }, [id]);
+
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+        if (!newReviewText.trim()) return;
+        
+        try {
+            const token = localStorage.getItem('token');
+            const res = await fetch('http://localhost:5000/api/reviews', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    restaurantId: id,
+                    rating: newReviewRating,
+                    comment: newReviewText
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setReviews([data.data, ...reviews]);
+                setNewReviewText('');
+                setNewReviewRating(5);
+            } else {
+                alert(data.error || 'Failed to submit review');
+            }
+        } catch (err) {
+            console.error('Submit review error:', err);
+        }
+    };
 
     const addToCart = (item) => {
         setCart(prev => {
@@ -160,9 +200,11 @@ const RestaurantStorefront = () => {
                                 </div>
                             </div>
                             <div>
-                                <p className="text-sm text-white/60 mb-1">Reviews</p>
+                                <p className="text-sm text-white/60 mb-1">Reviews ({reviews.length})</p>
                                 <div className="flex text-yellow-400">
-                                    {[...Array(5)].map((_, i) => <StarSolid key={i} className="w-4 h-4" />)}
+                                    {[...Array(5)].map((_, i) => (
+                                        <StarSolid key={i} className={`w-4 h-4 ${i < (restaurant.rating || 5) ? 'text-yellow-400' : 'text-white/20'}`} />
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -257,6 +299,78 @@ const RestaurantStorefront = () => {
                     {menuItems.length === 0 && (
                         <p className="text-center text-white/40">No menu items available.</p>
                     )}
+                </div>
+            </section>
+
+            {/* Reviews Section */}
+            <section id="reviews" className="py-20 bg-[#111] relative z-10">
+                <div className="container mx-auto px-10 max-w-4xl">
+                    <h2 className="text-4xl font-serif mb-16 text-center">Customer Reviews</h2>
+                    
+                    {/* Review Form */}
+                    {user ? (
+                        <form onSubmit={handleReviewSubmit} className="bg-[#1a1a1a] p-6 rounded-2xl mb-12 shadow-xl border border-white/5">
+                            <h3 className="text-xl font-bold mb-4">Write a Review</h3>
+                            <div className="flex items-center mb-4">
+                                <label className="text-sm text-white/60 mr-4">Rating:</label>
+                                <div className="flex gap-1 cursor-pointer">
+                                    {[1, 2, 3, 4, 5].map(star => (
+                                        <StarSolid 
+                                            key={star} 
+                                            onClick={() => setNewReviewRating(star)}
+                                            className={`w-6 h-6 ${star <= newReviewRating ? 'text-yellow-400' : 'text-white/20'}`} 
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            <textarea 
+                                value={newReviewText}
+                                onChange={(e) => setNewReviewText(e.target.value)}
+                                placeholder="Share your experience..."
+                                className="w-full bg-[#222] border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-red-600 resize-none h-24 mb-4"
+                                required
+                            />
+                            <div className="flex justify-end">
+                                <button type="submit" className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full transition-colors">
+                                    Submit Review
+                                </button>
+                            </div>
+                        </form>
+                    ) : (
+                        <div className="bg-[#1a1a1a] p-6 rounded-2xl mb-12 text-center border border-white/5">
+                            <p className="text-white/60 mb-4">Please log in to leave a review.</p>
+                            <button onClick={() => navigate('/login')} className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full">
+                                Log In
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Review List */}
+                    <div className="space-y-6">
+                        {reviews.length > 0 ? (
+                            reviews.map(review => (
+                                <div key={review._id} className="bg-[#151515] p-6 rounded-2xl border border-white/5">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div className="flex items-center gap-4">
+                                            <img src={review.user?.avatar || `https://ui-avatars.com/api/?name=${review.user?.name || 'User'}&background=dc2626&color=fff`} className="w-10 h-10 rounded-full" alt="User" />
+                                            <div>
+                                                <h4 className="font-bold">{review.user?.name || 'Anonymous'}</h4>
+                                                <p className="text-xs text-white/40">{new Date(review.createdAt).toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex text-yellow-400">
+                                            {[...Array(5)].map((_, i) => (
+                                                <StarSolid key={i} className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400' : 'text-white/20'}`} />
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <p className="text-white/80 text-sm leading-relaxed">{review.comment}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-center text-white/40 py-10">No reviews yet. Be the first to review!</p>
+                        )}
+                    </div>
                 </div>
             </section>
             

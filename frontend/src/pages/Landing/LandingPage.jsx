@@ -10,9 +10,24 @@ const LandingPage = () => {
   const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { refreshRestaurants } = useContext(AuthContext);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     refreshRestaurants();
+    
+    // Fetch live reviews
+    const fetchReviews = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/reviews');
+        const data = await res.json();
+        if (data.success) {
+          setReviews(data.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch reviews:', err);
+      }
+    };
+    fetchReviews();
   }, []);
 
   const fadeInUp = {
@@ -99,8 +114,8 @@ const LandingPage = () => {
         <div className="flex-1 relative">
           <motion.img 
             initial={{ opacity: 0, scale: 0.9, rotate: -10 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 0.8 }}
-            src="https://images.unsplash.com/photo-1552611052-33e04de081de?q=80&w=1000&auto=format&fit=crop" 
-            alt="Ramen Bowl" 
+            src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop" 
+            alt="Restaurant Interior" 
             className="w-full max-w-[500px] mx-auto rounded-full object-cover shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-8 border-[#111]"
             style={{ aspectRatio: '1/1' }}
           />
@@ -128,19 +143,6 @@ const LandingPage = () => {
           <h2 className="text-3xl font-bold inline-block border-x-4 border-[#f97316] px-6 py-2">Top <span className="text-[#f97316]">Restaurants</span></h2>
         </div>
 
-        {/* Example featured item card styled like the image */}
-        <div className={`border rounded-[3rem] p-4 lg:p-8 flex flex-col md:flex-row items-center gap-8 mb-20 max-w-4xl mx-auto relative overflow-hidden ${theme === 'dark' ? 'bg-[#111]/80 border-white/5' : 'bg-white shadow-xl border-black/5'}`}>
-           <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop" className={`w-64 h-64 object-cover rounded-[3rem] shadow-2xl border-4 ${theme === 'dark' ? 'border-[#1a1a1a]' : 'border-gray-50'}`} alt="Breakfast Specials" />
-           <div className="flex-1 text-left">
-             <h3 className="text-3xl font-bold mb-3">Breakfast Specials</h3>
-             <p className={`text-sm mb-6 max-w-sm leading-relaxed ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Explore our top-rated food categories, crafted to satisfy every craving. From delicious breakfasts to late night snacks.</p>
-             <div className="flex items-center justify-between">
-                <span className="text-4xl font-bold">$99/-</span>
-                <Link to="/login" className="px-6 py-3 bg-[#f97316] text-white font-bold rounded-full hover:bg-orange-600 transition-colors">Order Now</Link>
-             </div>
-           </div>
-        </div>
-
         {/* Existing Restaurants List (integrated to keep functionality) */}
         <div className="mt-12">
            <h3 className="text-xl font-bold mb-8 text-center text-white/60 uppercase tracking-widest">Explore Restaurants Near You</h3>
@@ -153,18 +155,24 @@ const LandingPage = () => {
         <h2 className="text-3xl font-bold inline-block border-x-4 border-[#f97316] px-6 py-2 mb-16">What They <span className="text-[#f97316]">Say?</span></h2>
         
         <div className="grid md:grid-cols-3 gap-6">
-          {[1,2,3].map(i => (
-             <div key={i} className={`border rounded-3xl p-8 text-left ${theme === 'dark' ? 'bg-[#111]/80 border-white/5' : 'bg-white shadow-xl border-black/5'}`}>
+          {reviews.length > 0 ? reviews.map(review => (
+             <div key={review._id} className={`border rounded-3xl p-8 text-left ${theme === 'dark' ? 'bg-[#111]/80 border-white/5' : 'bg-white shadow-xl border-black/5'}`}>
                 <div className="flex items-center gap-4 mb-6">
-                  <img src={`https://i.pravatar.cc/100?img=${i+12}`} className="w-12 h-12 rounded-full" alt="User" />
+                  <img src={review.user?.avatar || `https://ui-avatars.com/api/?name=${review.user?.name || 'User'}&background=f97316&color=fff`} className="w-12 h-12 rounded-full" alt="User" />
                   <div>
-                    <h4 className="font-bold">John Smith</h4>
-                    <div className="flex text-[#f97316] text-sm">★★★★★</div>
+                    <h4 className="font-bold">{review.user?.name || 'Anonymous'}</h4>
+                    <div className="flex text-[#f97316] text-sm">
+                        {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                    </div>
                   </div>
                 </div>
-                <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Absolutely loved the platform! The operations are so smooth and our sales went up instantly. Highly recommend!</p>
+                <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{review.comment}</p>
              </div>
-          ))}
+          )) : (
+             <div className="col-span-3 text-center text-gray-500 py-10">
+                <p>No reviews yet. Join us and be the first to leave a review!</p>
+             </div>
+          )}
         </div>
       </section>
 
