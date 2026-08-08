@@ -11,7 +11,7 @@ import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import Dashboard from './pages/dashboard/Dashboard';
 import TableRedirect from './components/TableRedirect';
 import OwnerLogin from './pages/auth/OwnerLogin';
-import RestaurantStorefront from './pages/restaurant/RestaurantStorefront';
+
 
 import RoleRoute from './components/auth/RoleRoute';
 
@@ -30,7 +30,6 @@ function App() {
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/table/:restaurantId/:tableNumber" element={<TableRedirect />} />
-            <Route path="/restaurant/:id" element={<RestaurantStorefront />} />
             <Route path="/dashboard" element={
               <RoleRoute allowedRoles={['owner', 'admin', 'user']}>
                 <Dashboard />
