@@ -76,7 +76,6 @@ const OwnerLogin = () => {
 
         try {
             const result = await login(identifierToUse, password.trim());
-            
             if (result && result.requiresOtp) {
                 setOtpMethod(result.method);
                 setShowOtpModal(true);

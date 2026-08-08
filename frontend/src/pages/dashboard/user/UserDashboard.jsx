@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChefHat } from 'lucide-react';
 import { getAnalytics, getRestaurants } from '../../../services/api';
@@ -30,6 +31,7 @@ import {
 import { useTheme } from '../../../context/ThemeContext';
 
 const UserDashboard = ({ user, logout }) => {
+    const navigate = useNavigate();
     const { selectedRestaurant, setSelectedRestaurant, restaurants, refreshRestaurants } = useContext(AuthContext);
     const { theme, toggleTheme } = useTheme();
     const [loadingRestaurants, setLoadingRestaurants] = useState(false);
@@ -203,8 +205,7 @@ const UserDashboard = ({ user, logout }) => {
                                                     whileHover={{ y: -10 }}
                                                     className="group relative theme-card rounded-[2.5rem] border border-black/5 hover:border-rose-500/30 transition-all cursor-pointer overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-rose-600/10"
                                                     onClick={() => {
-                                                        setSelectedRestaurant(res);
-                                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                        navigate(`/restaurant/${res._id}`);
                                                     }}
                                                 >
                                                     <div className="h-48 overflow-hidden relative">

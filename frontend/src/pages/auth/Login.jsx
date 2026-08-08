@@ -80,6 +80,11 @@ const Login = () => {
         try {
             const result = await login(identifierToUse, password.trim());
             if (result && result.requiresOtp) {
+                if (result.devOtp) {
+                    console.log('\n========================================');
+                    console.log('🔑 [DEV OTP]:', result.devOtp);
+                    console.log('========================================\n');
+                }
                 setOtpMethod(result.method);
                 setShowOtpModal(true);
             } else {

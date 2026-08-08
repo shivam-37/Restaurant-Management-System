@@ -2,9 +2,7 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const asyncHandler = require('express-async-handler');
 
-// @desc    Create Razorpay Order
-// @route   POST /api/payment/create-order
-// @access  Private
+
 const createOrder = asyncHandler(async (req, res) => {
     const { amount } = req.body;
 
@@ -24,7 +22,7 @@ const createOrder = asyncHandler(async (req, res) => {
     });
 
     const options = {
-        amount: Math.round(amount * 100), // amount in the smallest currency unit (paise)
+        amount: Math.round(amount * 100), 
         currency: "INR",
         receipt: `receipt_order_${Date.now()}`
     };
@@ -34,7 +32,7 @@ const createOrder = asyncHandler(async (req, res) => {
         res.json({
             success: true,
             order,
-            key_id: process.env.RAZORPAY_KEY_ID // Send public key to frontend
+            key_id: process.env.RAZORPAY_KEY_ID 
         });
     } catch (error) {
         console.error('Razorpay Error:', error);
@@ -43,9 +41,7 @@ const createOrder = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Verify Razorpay Payment
-// @route   POST /api/payment/verify
-// @access  Private
+
 const verifyPayment = asyncHandler(async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
@@ -64,7 +60,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
     const isAuthentic = expectedSignature === razorpay_signature;
 
     if (isAuthentic) {
-        // Here you could technically save payment details to a DB if needed
+        
         res.json({
             success: true,
             message: "Payment verified successfully"
