@@ -212,14 +212,16 @@ const getRecommendations = asyncHandler(async (req, res) => {
 // @route   POST /api/ai/predict-inventory
 // @access  Private/Admin
 const predictInventory = asyncHandler(async (req, res) => {
-    const { restaurantId } = req.body;
+    const { restaurantId, forceRefresh } = req.body;
     const cacheId = restaurantId || 'all';
 
     // 1. Return cached version (6 hour cache — inventory changes slowly)
-    const cached = await getCache('inventory-prediction', cacheId);
-    if (cached) {
-        // console.log('[AI Cache HIT] inventory:', cacheId);
-        return res.json(cached);
+    if (!forceRefresh) {
+        const cached = await getCache('inventory-prediction', cacheId);
+        if (cached) {
+            // console.log('[AI Cache HIT] inventory:', cacheId);
+            return res.json(cached);
+        }
     }
 
     // 2. Gather data

@@ -63,10 +63,10 @@ const AdminDashboard = () => {
         fetchAIPredictions();
     }, [selectedRestaurant?._id]);
 
-    const fetchAIPredictions = async () => {
+    const fetchAIPredictions = async (force = false) => {
         setIsPredicting(true);
         try {
-            const { data } = await predictInventory(selectedRestaurant?._id);
+            const { data } = await predictInventory(selectedRestaurant?._id, force);
             setPredictions(data);
         } catch (error) {
             console.error("AI Prediction failed");
@@ -342,7 +342,7 @@ const AdminDashboard = () => {
                                                 </div>
                                             </div>
                                             <button
-                                                onClick={fetchAIPredictions}
+                                                onClick={() => fetchAIPredictions(true)}
                                                 disabled={isPredicting}
                                                 className="p-3 theme-card-item rounded-xl border border-black/5 hover:border-orange-500 transition group"
                                             >

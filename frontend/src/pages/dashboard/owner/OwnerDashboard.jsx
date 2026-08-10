@@ -80,10 +80,10 @@ const OwnerDashboard = () => {
         }
     }, [selectedRestaurant?._id]);
 
-    const fetchAIPredictions = async () => {
+    const fetchAIPredictions = async (force = false) => {
         setIsPredicting(true);
         try {
-            const { data } = await predictInventory(selectedRestaurant?._id);
+            const { data } = await predictInventory(selectedRestaurant?._id, force);
             setPredictions(data);
         } catch (error) {
             console.error("AI Prediction failed");
@@ -294,7 +294,7 @@ const OwnerDashboard = () => {
                                         </div>
                                     </div>
                                     <button 
-                                        onClick={fetchAIPredictions} 
+                                        onClick={() => fetchAIPredictions(true)} 
                                         className="flex items-center gap-3 px-6 py-4 bg-white/10 dark:bg-white/5 hover:bg-orange-600 hover:text-white rounded-2xl border border-black/5 transition-all group font-black text-[10px] uppercase tracking-widest shadow-lg"
                                     >
                                         <ArrowPathIcon className={`w-4 h-4 ${isPredicting ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-700'}`} />

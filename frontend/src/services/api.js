@@ -53,7 +53,7 @@ export const getOccupiedReservationTables = (restaurantId, date, time) => api.ge
 export const generateDescription = (data) => api.post('/ai/generate-description', data);
 export const generateOrderInstructions = (data) => api.post('/ai/generate-instructions', data);
 export const getRecommendations = (restaurantId) => api.post('/ai/recommendations', { restaurantId });
-export const predictInventory = (restaurantId) => api.post('/ai/predict-inventory', { restaurantId });
+export const predictInventory = (restaurantId, forceRefresh = false) => api.post('/ai/predict-inventory', { restaurantId, forceRefresh });
 export const chatWithAi = (messages, restaurantId) => api.post('/ai/chat', { messages, restaurantId });
 export const generateFullMenuItem = (prompt) => api.post('/ai/generate-full-item', { prompt });
 
