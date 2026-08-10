@@ -168,12 +168,13 @@ const TableMap = () => {
                         );
                     })}
 
-                    {/* Legend / Overlay */}
-                    <div className="absolute bottom-8 left-8 flex gap-6 text-[10px] font-black uppercase tracking-[0.2em] opacity-40">
-                        <span className="flex items-center gap-2"><MapPinIcon className="w-4 h-4" /> Entry Point</span>
-                        <span className="flex items-center gap-2"><FireIcon className="w-4 h-4 ml-4" /> Kitchen</span>
-                    </div>
                 </div>
+            </div>
+
+            {/* Legend / Overlay */}
+            <div className="flex gap-6 text-[10px] font-black uppercase tracking-[0.2em] opacity-40 px-6">
+                <span className="flex items-center gap-2"><MapPinIcon className="w-4 h-4" /> Entry Point</span>
+                <span className="flex items-center gap-2"><FireIcon className="w-4 h-4 ml-4" /> Kitchen</span>
             </div>
 
             {/* Selection Modal */}
