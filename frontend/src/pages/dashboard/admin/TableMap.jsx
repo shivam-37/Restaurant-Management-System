@@ -125,49 +125,41 @@ const TableMap = () => {
                 </div>
             </div>
 
-            <div className="relative w-full overflow-auto rounded-[3rem] border border-black/5 backdrop-blur-sm shadow-2xl scrollbar-hide" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                <div className="relative min-w-[800px] h-[600px]">
+            <div className="relative w-full max-h-[750px] overflow-auto rounded-[3rem] border border-black/5 backdrop-blur-sm shadow-2xl scrollbar-hide" style={{ background: 'var(--bg-secondary)', borderColor: 'var(--border-color)', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div className="relative min-h-[600px] p-6 md:p-12">
                     {/* Grid Pattern */}
                     <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.07]" style={{ backgroundImage: 'radial-gradient(circle at 1.5px 1.5px, currentColor 1.5px, transparent 0)', backgroundSize: '50px 50px' }} />
 
-                    {restaurant?.tables.map((table, idx) => {
-                        let posX = table.x;
-                        let posY = table.y;
+                    <div className="relative z-10 flex flex-wrap justify-center gap-6 md:gap-8">
+                        {restaurant?.tables.map((table) => {
+                            // Cap capacity dots to 8 visually so it doesn't break table layout
+                            const displayCapacity = Math.min(table.capacity || 4, 8);
 
-                        if (posX === 0 && posY === 0) {
-                            const cols = 5;
-                            const spacing = 18;
-                            const margin = 8;
-                            posX = margin + (idx % cols) * spacing;
-                            posY = margin + Math.floor(idx / cols) * spacing;
-                        }
-
-                        return (
-                            <motion.button
-                                key={table.number}
-                                layoutId={`table-${table.number}`}
-                                onClick={() => setSelectedTable(table)}
-                                whileHover={{ scale: 1.05, zIndex: 20 }}
-                                whileTap={{ scale: 0.95 }}
-                                className={`absolute w-36 h-36 rounded-3xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-500 shadow-lg ${table.status === 'Available' ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400 hover:bg-green-500/20' :
-                                    table.status === 'Occupied' ? 'bg-orange-600/10 border-orange-600/30 text-orange-700 dark:text-orange-400 hover:bg-orange-600/20' :
-                                        table.status === 'Reserved' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20' :
-                                            'bg-orange-500/10 border-red-500/30 text-red-700 dark:text-red-400 hover:bg-orange-500/20'
-                                    }`}
-                                style={{ left: `${posX}%`, top: `${posY}%` }}
-                            >
-                                <span className="text-[10px] font-black opacity-40 uppercase tracking-[0.3em]">TABLE-{table.number}</span>
-                                <div className="flex -space-x-1.5">
-                                    {[...Array(table.capacity)].map((_, i) => (
-                                        <div key={i} className={`w-3 h-3 rounded-full border border-black/5 ${table.status === 'Available' ? 'bg-green-500/50' : 'bg-current opacity-40'
-                                            }`} />
-                                    ))}
-                                </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest">{table.status}</span>
-                            </motion.button>
-                        );
-                    })}
-
+                            return (
+                                <motion.button
+                                    key={table.number}
+                                    layoutId={`table-${table.number}`}
+                                    onClick={() => setSelectedTable(table)}
+                                    whileHover={{ scale: 1.05, zIndex: 20 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className={`relative w-32 h-32 md:w-36 md:h-36 shrink-0 rounded-3xl border-2 flex flex-col items-center justify-center gap-3 transition-all duration-500 shadow-lg ${table.status === 'Available' ? 'bg-green-500/10 border-green-500/30 text-green-700 dark:text-green-400 hover:bg-green-500/20' :
+                                        table.status === 'Occupied' ? 'bg-orange-600/10 border-orange-600/30 text-orange-700 dark:text-orange-400 hover:bg-orange-600/20' :
+                                            table.status === 'Reserved' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-500/20' :
+                                                'bg-orange-500/10 border-red-500/30 text-red-700 dark:text-red-400 hover:bg-orange-500/20'
+                                        }`}
+                                >
+                                    <span className="text-[10px] font-black opacity-40 uppercase tracking-[0.3em]">TABLE-{table.number}</span>
+                                    <div className="flex -space-x-1.5 flex-wrap justify-center px-2">
+                                        {[...Array(displayCapacity)].map((_, i) => (
+                                            <div key={i} className={`w-3 h-3 rounded-full border border-black/5 ${table.status === 'Available' ? 'bg-green-500/50' : 'bg-current opacity-40'
+                                                }`} />
+                                        ))}
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest">{table.status}</span>
+                                </motion.button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
