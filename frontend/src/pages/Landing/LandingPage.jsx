@@ -6,6 +6,8 @@ import AuthContext from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Sun, Moon, Menu as MenuIcon, X } from 'lucide-react';
 
+import { getPublicReviews } from '../../services/api';
+
 const LandingPage = () => {
   const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -18,8 +20,7 @@ const LandingPage = () => {
     // Fetch live reviews
     const fetchReviews = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/reviews');
-        const data = await res.json();
+        const { data } = await getPublicReviews();
         if (data.success) {
           setReviews(data.data);
         }

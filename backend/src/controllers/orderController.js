@@ -314,8 +314,8 @@ const addOrderReview = asyncHandler(async (req, res) => {
         throw new Error('Can only review completed orders');
     }
 
-    // AI Sentiment Analysis (non-blocking - defaults to Neutral if rate-limited)
-    let sentiment = 'Neutral';
+    // AI Sentiment Analysis (non-blocking - defaults to rating-based if rate-limited)
+    let sentiment = rating >= 4 ? 'Positive' : (rating <= 2 ? 'Negative' : 'Neutral');
     if (comment) {
         try {
             require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
@@ -358,6 +358,18 @@ const addOrderReview = asyncHandler(async (req, res) => {
     };
 
     await order.save();
+
+    // Also create a public Review document for the landing page
+    const Review = require('../models/Review');
+    await Review.create({
+        user: req.user._id,
+        restaurant: order.restaurant,
+        rating,
+        comment,
+        role: req.user.role,
+        status: 'approved'
+    });
+
     res.json(order);
 });
 

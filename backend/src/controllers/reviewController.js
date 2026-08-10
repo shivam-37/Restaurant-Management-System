@@ -10,7 +10,8 @@ exports.getReviews = async (req, res) => {
         if (req.query.restaurantId) {
             query.restaurant = req.query.restaurantId;
         } else {
-            query.restaurant = null;
+            // For the landing page (no restaurantId), show top reviews from across the platform
+            query.rating = { $gte: 4 };
         }
 
         const reviews = await Review.find(query)

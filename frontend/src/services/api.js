@@ -38,6 +38,7 @@ export const createOrder = (order) => api.post('/orders', order);
 export const getOccupiedTables = (restaurantId) => api.get(`/orders/tables/occupied?restaurantId=${restaurantId}`);
 export const updateOrderStatus = (id, status) => api.put(`/orders/${id}`, { status });
 export const addOrderReview = (id, reviewData) => api.put(`/orders/${id}/review`, reviewData);
+export const getPublicReviews = () => api.get('/reviews');
 export const getAnalytics = (restaurantId) => api.get(`/orders/analytics${restaurantId ? `?restaurantId=${restaurantId}` : ''}`);
 
 export const updateProfile = (userData) => api.put('/users/profile', userData);
