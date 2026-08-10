@@ -54,7 +54,7 @@ export const generateDescription = (data) => api.post('/ai/generate-description'
 export const generateOrderInstructions = (data) => api.post('/ai/generate-instructions', data);
 export const getRecommendations = (restaurantId) => api.post('/ai/recommendations', { restaurantId });
 export const predictInventory = (restaurantId) => api.post('/ai/predict-inventory', { restaurantId });
-export const chatWithAi = (messages) => api.post('/ai/chat', { messages });
+export const chatWithAi = (messages, restaurantId) => api.post('/ai/chat', { messages, restaurantId });
 export const generateFullMenuItem = (prompt) => api.post('/ai/generate-full-item', { prompt });
 
 // Notification APIs

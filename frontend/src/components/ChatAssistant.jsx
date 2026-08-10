@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { chatWithAi } from '../services/api';
+import AuthContext from '../context/AuthContext';
 import {
     ChatBubbleLeftRightIcon,
     XMarkIcon,
@@ -9,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const ChatAssistant = () => {
+    const { selectedRestaurant } = useContext(AuthContext);
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
         { role: 'assistant', content: "Hello! I'm your AI assistant powered by Llama 3.1. How can I help you today?" }
@@ -38,7 +40,7 @@ const ChatAssistant = () => {
         setIsLoading(true);
 
         try {
-            const { data } = await chatWithAi(newMessages);
+            const { data } = await chatWithAi(newMessages, selectedRestaurant?._id);
             let replyContent = data.reply;
             if (replyContent.includes('<think>') && replyContent.includes('</think>')) {
                 replyContent = replyContent.replace(/<think>[\s\S]*?<\/think>\n?/g, '');
