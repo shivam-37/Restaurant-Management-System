@@ -369,12 +369,21 @@ const chatWithNvidia = asyncHandler(async (req, res) => {
             const menuItems = await Menu.find({ restaurant: restaurantId, isAvailable: true }).select('name category description price');
             
             if (restaurant) {
-                const menuList = menuItems.map(item => `- ${item.name} ($${item.price}): ${item.description || item.category}`).join('\n');
+                const menuList = menuItems.length > 0 
+                    ? menuItems.map(item => `- ${item.name} ($${item.price}): ${item.description || item.category}`).join('\n')
+                    : 'EMPTY_MENU_NO_ITEMS_AVAILABLE';
+                
                 restaurantContext = `
 You are specifically representing a restaurant named "${restaurant.name}".
 Cuisine Type/Description: ${restaurant.cuisine || restaurant.description || 'Not specified'}.
-Here is our current live menu. YOU MUST ONLY suggest, recommend, or discuss items from this specific menu. DO NOT invent or recommend any random items outside of this list:
-${menuList || 'No menu items available.'}
+
+CRITICAL INSTRUCTION: Here is our current live menu. YOU MUST ONLY suggest, recommend, or discuss items from this specific menu. 
+If the menu below says "EMPTY_MENU_NO_ITEMS_AVAILABLE", you MUST inform the customer that the menu is currently empty or still being set up, and you CANNOT recommend any dishes.
+DO NOT invent, hallucinate, or recommend ANY random items, dishes, or drinks outside of this exact list under ANY circumstances. Do not use generic examples like "Biryani" or "Paneer" unless they are explicitly in the list below.
+
+[LIVE MENU START]
+${menuList}
+[LIVE MENU END]
 `;
             }
         }
@@ -384,7 +393,7 @@ ${menuList || 'No menu items available.'}
         if (req.user && (req.user.role === 'owner' || req.user.role === 'admin')) {
              systemContent = `You are an intelligent, helpful, and polite Restaurant Management Assistant. Your job is to help the restaurant owner/admin manage their business, analyze inventory, understand orders, and generate menu ideas. Keep your answers reasonably concise, professional, and well-organized. If asked about something unrelated to restaurant management, politely steer the conversation back.\n${restaurantContext}`;
         } else {
-             systemContent = `You are 'Dine AI', a helpful, friendly, and polite Restaurant Concierge for a customer. Your job is to help the customer understand the menu, recommend dishes, answer questions about dining, and provide excellent customer service. Do NOT provide any information about restaurant management, stock predictions, revenue, or backend operations. Keep your answers concise, appetizing, and focused on the dining experience. If asked about something unrelated to dining or food, politely steer the conversation back.\nCRITICAL: ONLY recommend items from the provided menu list. DO NOT invent items.\n${restaurantContext}`;
+             systemContent = `You are 'Dine AI', a helpful, friendly, and polite Restaurant Concierge for a customer. Your job is to help the customer understand the menu, recommend dishes, answer questions about dining, and provide excellent customer service. Do NOT provide any information about restaurant management, stock predictions, revenue, or backend operations. Keep your answers concise, appetizing, and focused on the dining experience. If asked about something unrelated to dining or food, politely steer the conversation back.\n${restaurantContext}`;
         }
 
         const systemMessage = {
