@@ -359,16 +359,30 @@ const addOrderReview = asyncHandler(async (req, res) => {
 
     await order.save();
 
-    // Also create a public Review document for the landing page
-    const Review = require('../models/Review');
-    await Review.create({
-        user: req.user._id,
-        restaurant: order.restaurant,
-        rating,
-        comment,
-        role: req.user.role,
-        status: 'approved'
-    });
+    // Also create a public Review document for the landing page (non-blocking)
+    try {
+        const Review = require('../models/Review');
+        await Review.create({
+            user: req.user._id,
+            restaurant: order.restaurant,
+            rating,
+            comment,
+            role: req.user.role || 'user',
+            status: 'approved'
+        });
+
+        // Update restaurant average rating
+        if (order.restaurant) {
+            const Restaurant = require('../models/Restaurant');
+            const resReviews = await Review.find({ restaurant: order.restaurant, status: 'approved' });
+            if (resReviews.length > 0) {
+                const avgRating = resReviews.reduce((acc, r) => acc + r.rating, 0) / resReviews.length;
+                await Restaurant.findByIdAndUpdate(order.restaurant, { rating: avgRating });
+            }
+        }
+    } catch (err) {
+        console.error('Failed to create public review:', err.message);
+    }
 
     res.json(order);
 });
