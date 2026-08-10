@@ -386,6 +386,28 @@ ${menuList}
 [LIVE MENU END]
 `;
             }
+        } else {
+            const Restaurant = require('../models/Restaurant');
+            const allRestaurants = await Restaurant.find({}).select('name cuisine description');
+            
+            if (allRestaurants.length > 0) {
+                const restList = allRestaurants.map(r => `- ${r.name} (${r.cuisine || 'Various'}): ${r.description || 'A great place to dine.'}`).join('\n');
+                restaurantContext = `
+You are representing the Dine Flow global platform. The user has NOT selected a specific restaurant yet.
+Your job is to help the user choose a restaurant from our platform.
+Here is the list of available restaurants:
+${restList}
+
+CRITICAL INSTRUCTION: Since the user has not selected a restaurant, YOU DO NOT HAVE A MENU YET. 
+You MUST NOT recommend any specific dishes, appetizers, or drinks. DO NOT invent or hallucinate any menus.
+If the user asks for food recommendations, tell them they must first select a restaurant from the list above, or you can recommend one of the restaurants from the list based on their cuisine preferences.
+`;
+            } else {
+                restaurantContext = `
+You are representing the Dine Flow global platform. The user has NOT selected a specific restaurant yet.
+CRITICAL INSTRUCTION: There are currently NO restaurants available on the platform. You MUST inform the user that no restaurants are available yet. DO NOT invent or recommend any food or restaurants.
+`;
+            }
         }
 
         // Determine AI personality based on user role
