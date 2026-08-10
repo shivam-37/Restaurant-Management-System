@@ -384,24 +384,15 @@ const Reservations = () => {
                                                 </span>
                                             </label>
                                             
-                                            <div className="relative w-full overflow-x-auto theme-card-item rounded-3xl border-2 border-dashed border-black/10 shadow-inner scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', touchAction: 'pan-x' }}>
-                                                <div className="relative w-full min-w-[500px] sm:min-w-full aspect-[4/3] sm:aspect-[16/9] p-4 flex flex-col">
-                                                    <div className="absolute top-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">Entrance</div>
-                                                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">Kitchen</div>
+                                            <div className="relative w-full max-h-[350px] overflow-y-auto theme-card-item rounded-3xl border-2 border-dashed border-black/10 shadow-inner scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                                                <div className="relative w-full p-6 flex flex-col min-h-full">
+                                                    <div className="text-center mb-6">
+                                                        <span className="px-4 py-1.5 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">Entrance</span>
+                                                    </div>
                                                     
                                                     {/* Dynamic Floor Plan Layout */}
-                                                    <div className="absolute inset-0 mt-8 mb-8 mx-4">
-                                                        {selectedRestaurant?.tables?.map((table, idx) => {
-                                                            let posX = table.x;
-                                                            let posY = table.y;
-                                                            if (posX === 0 && posY === 0) {
-                                                                const cols = 5;
-                                                                const spacing = 18;
-                                                                const margin = 8;
-                                                                posX = margin + (idx % cols) * spacing;
-                                                                posY = margin + Math.floor(idx / cols) * spacing;
-                                                            }
-
+                                                    <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-6 relative z-10">
+                                                        {selectedRestaurant?.tables?.map((table) => {
                                                             const isOccupied = occupiedTables.includes(table.number);
                                                             const capacityTooSmall = (table.capacity || 4) < parseInt(formData.partySize || 2, 10);
                                                             const isDisabled = isOccupied || capacityTooSmall;
@@ -413,13 +404,12 @@ const Reservations = () => {
                                                                     type="button"
                                                                     disabled={isDisabled}
                                                                     onClick={() => setFormData({ ...formData, tableNumber: table.number.toString() })}
-                                                                    className={`absolute w-12 h-12 sm:w-16 sm:h-16 rounded-2xl transition-all flex flex-col items-center justify-center shadow-lg ${
+                                                                    className={`relative w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-2xl transition-all flex flex-col items-center justify-center shadow-lg ${
                                                                         isOccupied ? 'bg-orange-500/20 border-2 border-orange-500/30 text-orange-500 cursor-not-allowed' :
                                                                         capacityTooSmall ? 'bg-gray-500/10 border-2 border-gray-500/20 text-gray-500 opacity-50 cursor-not-allowed' :
                                                                         isSelected ? 'bg-emerald-500 border-2 border-emerald-600 text-white shadow-emerald-500/40 scale-110 z-10' :
                                                                         'bg-white dark:bg-gray-800 border-2 border-black/10 hover:border-emerald-500 text-black dark:text-white hover:scale-105'
                                                                     }`}
-                                                                    style={{ left: `${posX}%`, top: `${posY}%` }}
                                                                 >
                                                                     <span className="text-[10px] sm:text-xs font-black leading-none">T{table.number}</span>
                                                                     <span className={`text-[8px] sm:text-[9px] font-bold flex items-center gap-0.5 mt-1 ${isSelected ? 'text-white/80' : 'opacity-60'}`}>
@@ -429,6 +419,10 @@ const Reservations = () => {
                                                                 </button>
                                                             );
                                                         })}
+                                                    </div>
+
+                                                    <div className="text-center mt-auto">
+                                                        <span className="px-4 py-1.5 bg-black/5 rounded-full text-[8px] font-black uppercase tracking-widest opacity-40">Kitchen</span>
                                                     </div>
                                                 </div>
                                             </div>
