@@ -370,7 +370,7 @@ const chatWithNvidia = asyncHandler(async (req, res) => {
             
             if (restaurant) {
                 const menuList = menuItems.length > 0 
-                    ? menuItems.map(item => `- ${item.name} ($${item.price}): ${item.description || item.category}`).join('\n')
+                    ? menuItems.map(item => `- ${item.name} (₹${item.price}): ${item.description || item.category}`).join('\n')
                     : 'EMPTY_MENU_NO_ITEMS_AVAILABLE';
                 
                 restaurantContext = `
@@ -380,6 +380,7 @@ Cuisine Type/Description: ${restaurant.cuisine || restaurant.description || 'Not
 CRITICAL INSTRUCTION: Here is our current live menu. YOU MUST ONLY suggest, recommend, or discuss items from this specific menu. 
 If the menu below says "EMPTY_MENU_NO_ITEMS_AVAILABLE", you MUST inform the customer that the menu is currently empty or still being set up, and you CANNOT recommend any dishes.
 DO NOT invent, hallucinate, or recommend ANY random items, dishes, or drinks outside of this exact list under ANY circumstances. Do not use generic examples like "Biryani" or "Paneer" unless they are explicitly in the list below.
+CRITICAL INSTRUCTION: When mentioning prices, you MUST ALWAYS use the Indian Rupee symbol (₹). Do NOT use dollar signs ($) or any other currency format.
 
 [LIVE MENU START]
 ${menuList}
