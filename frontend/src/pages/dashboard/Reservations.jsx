@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { getReservations, createReservation, updateReservationStatus, getMyReservations, getOccupiedReservationTables } from '../../services/api';
+import { getReservations, createReservation, updateReservationStatus, getMyReservations, getOccupiedReservationTables, getRestaurantDetails } from '../../services/api';
 import AuthContext from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -31,6 +31,9 @@ const Reservations = () => {
         tableNumber: ''
     });
     const [occupiedTables, setOccupiedTables] = useState([]);
+    const [liveRestaurant, setLiveRestaurant] = useState(null);
+
+    const activeRestaurant = liveRestaurant || selectedRestaurant;
 
     useEffect(() => {
         fetchReservations();
@@ -51,20 +54,41 @@ const Reservations = () => {
     };
 
     useEffect(() => {
-        const fetchOccupied = async () => {
-            if (formData.date && formData.time && selectedRestaurant) {
+        let interval;
+        const fetchLiveData = async () => {
+            if (isModalOpen && selectedRestaurant) {
                 try {
-                    const { data } = await getOccupiedReservationTables(selectedRestaurant._id, formData.date, formData.time);
-                    setOccupiedTables(data);
+                    const { data } = await getRestaurantDetails(selectedRestaurant._id);
+                    setLiveRestaurant(data);
                 } catch (err) {
-                    console.error("Failed to fetch occupied tables", err);
+                    console.error("Failed to fetch live restaurant details", err);
                 }
-            } else {
-                setOccupiedTables([]);
+
+                if (formData.date && formData.time) {
+                    try {
+                        const { data } = await getOccupiedReservationTables(selectedRestaurant._id, formData.date, formData.time);
+                        setOccupiedTables(data);
+                    } catch (err) {
+                        console.error("Failed to fetch occupied tables", err);
+                    }
+                } else {
+                    setOccupiedTables([]);
+                }
             }
         };
-        fetchOccupied();
-    }, [formData.date, formData.time, selectedRestaurant]);
+
+        if (isModalOpen) {
+            fetchLiveData();
+            interval = setInterval(fetchLiveData, 5000);
+        } else {
+            setLiveRestaurant(null);
+            setOccupiedTables([]);
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isModalOpen, selectedRestaurant, formData.date, formData.time]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -252,7 +276,7 @@ const Reservations = () => {
                             <div className="p-6 sm:p-10 border-b border-black/5 flex justify-between items-center bg-orange-500/5 flex-shrink-0">
                                 <div>
                                     <h2 className="text-2xl font-black uppercase tracking-tighter">Reserve Table</h2>
-                                    <p className="text-xs text-orange-500 font-bold uppercase tracking-widest">{selectedRestaurant?.name}</p>
+                                    <p className="text-xs text-orange-500 font-bold uppercase tracking-widest">{activeRestaurant?.name}</p>
                                 </div>
                                 <button onClick={() => setIsModalOpen(false)} className="p-2 opacity-60 hover:opacity-100 theme-card-item rounded-xl transition">
                                     <XMarkIcon className="w-6 h-6" />
@@ -329,13 +353,13 @@ const Reservations = () => {
                                             <div className="flex justify-between items-center mb-2">
                                                 <label className="text-[9px] font-black uppercase tracking-widest opacity-40 ml-1 block">Select Time</label>
                                                 <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                                                    Operating Hours: {selectedRestaurant?.openingTime || '10:00'} - {selectedRestaurant?.closingTime || '22:00'}
+                                                    Operating Hours: {activeRestaurant?.openingTime || '10:00'} - {activeRestaurant?.closingTime || '22:00'}
                                                 </span>
                                             </div>
                                             <div className="flex flex-wrap gap-2">
                                                 {(() => {
-                                                    const startHour = parseInt((selectedRestaurant?.openingTime || '10:00').split(':')[0]);
-                                                    const endHour = parseInt((selectedRestaurant?.closingTime || '22:00').split(':')[0]);
+                                                    const startHour = parseInt((activeRestaurant?.openingTime || '10:00').split(':')[0]);
+                                                    const endHour = parseInt((activeRestaurant?.closingTime || '22:00').split(':')[0]);
                                                     const slots = [];
                                                     for (let i = startHour; i < endHour; i++) {
                                                         slots.push(`${i.toString().padStart(2, '0')}:00`);
@@ -392,7 +416,7 @@ const Reservations = () => {
                                                     
                                                     {/* Dynamic Floor Plan Layout */}
                                                     <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-6 relative z-10">
-                                                        {selectedRestaurant?.tables?.map((table) => {
+                                                        {activeRestaurant?.tables?.map((table) => {
                                                             const isOccupied = occupiedTables.includes(table.number);
                                                             const capacityTooSmall = (table.capacity || 4) < parseInt(formData.partySize || 2, 10);
                                                             const isDisabled = isOccupied || capacityTooSmall;
