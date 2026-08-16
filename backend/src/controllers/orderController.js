@@ -3,6 +3,7 @@ const Order = require('../models/Order');
 const Menu = require('../models/Menu');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const InventoryItem = require('../models/InventoryItem');
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -22,7 +23,7 @@ const createOrder = asyncHandler(async (req, res) => {
     } else {
         // Check stock and decrement
         for (const item of items) {
-            const menuItem = await Menu.findById(item.menuItem);
+            const menuItem = await Menu.findById(item.menuItem).populate('recipe.ingredient');
             if (!menuItem) {
                 res.status(404);
                 throw new Error(`Menu item not found: ${item.name}`);
@@ -33,6 +34,16 @@ const createOrder = asyncHandler(async (req, res) => {
             }
             menuItem.stock -= item.quantity;
             await menuItem.save();
+
+            if (menuItem.recipe && menuItem.recipe.length > 0) {
+                for (const recipeItem of menuItem.recipe) {
+                    if (recipeItem.ingredient) {
+                        const amountToDeduct = recipeItem.amountNeeded * item.quantity;
+                        recipeItem.ingredient.quantity -= amountToDeduct;
+                        await recipeItem.ingredient.save();
+                    }
+                }
+            }
         }
 
         const order = new Order({
@@ -411,8 +422,73 @@ const getOccupiedTables = asyncHandler(async (req, res) => {
     res.json(uniqueTables);
 });
 
+// @desc    Create new order for guests (no auth required)
+// @route   POST /api/orders/guest
+// @access  Public
+const createGuestOrder = asyncHandler(async (req, res) => {
+    const { items, totalPrice, tableNumber, specialInstructions, restaurantId, orderType, paymentMethod, deliveryAddress, guestName, guestPhone } = req.body;
+
+    if (!restaurantId) {
+        res.status(400);
+        throw new Error('Restaurant ID is required');
+    }
+
+    if (!guestName) {
+        res.status(400);
+        throw new Error('Guest Name is required');
+    }
+
+    if (items && items.length === 0) {
+        res.status(400);
+        throw new Error('No order items');
+    } else {
+        // Check stock and decrement
+        for (const item of items) {
+            const menuItem = await Menu.findById(item.menuItem).populate('recipe.ingredient');
+            if (!menuItem) {
+                res.status(404);
+                throw new Error(`Menu item not found: ${item.name}`);
+            }
+            if (menuItem.stock < item.quantity) {
+                res.status(400);
+                throw new Error(`Insufficient stock for ${item.name}`);
+            }
+            menuItem.stock -= item.quantity;
+            await menuItem.save();
+
+            if (menuItem.recipe && menuItem.recipe.length > 0) {
+                for (const recipeItem of menuItem.recipe) {
+                    if (recipeItem.ingredient) {
+                        const amountToDeduct = recipeItem.amountNeeded * item.quantity;
+                        recipeItem.ingredient.quantity -= amountToDeduct;
+                        await recipeItem.ingredient.save();
+                    }
+                }
+            }
+        }
+
+        const order = new Order({
+            isGuest: true,
+            guestName,
+            guestPhone: guestPhone || '',
+            restaurant: restaurantId,
+            items,
+            totalPrice,
+            tableNumber: tableNumber || 0,
+            specialInstructions,
+            orderType: orderType || 'Dine-In',
+            paymentMethod: paymentMethod || 'Cash',
+            deliveryAddress: deliveryAddress || ''
+        });
+
+        const createdOrder = await order.save();
+        res.status(201).json(createdOrder);
+    }
+});
+
 module.exports = {
     createOrder,
+    createGuestOrder,
     getOrders,
     updateOrderStatus,
     getAnalytics,

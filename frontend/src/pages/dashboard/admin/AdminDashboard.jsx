@@ -12,6 +12,7 @@ import TableMap from './TableMap';
 import Reservations from '../Reservations';
 import UserManagement from './UserManagement';
 import NotificationTray from '../NotificationTray';
+import Inventory from '../Inventory';
 import {
     HomeIcon,
     UsersIcon,
@@ -92,6 +93,7 @@ const AdminDashboard = () => {
         { name: 'Orders', icon: ShoppingBagIcon, color: 'from-green-500 to-emerald-500' },
         { name: 'Reservations', icon: CalendarIcon, color: 'from-yellow-500 to-orange-500' },
         { name: 'Customers', icon: UsersIcon, color: 'from-orange-500 to-red-500' },
+        { name: 'Inventory', icon: ClipboardDocumentListIcon, color: 'from-blue-500 to-teal-500' },
         { name: 'System Users', icon: ShieldCheckIcon, color: 'from-indigo-500 to-purple-500' },
         { name: 'Analytics', icon: ChartBarIcon, color: 'from-orange-500 to-purple-500' },
         { name: 'Settings', icon: Cog6ToothIcon, color: 'from-gray-500 to-gray-600' },
@@ -460,6 +462,7 @@ const AdminDashboard = () => {
                             {activeTab === 'Reservations' && <Reservations />}
                             {activeTab === 'Kitchen' && <KitchenDisplay />}
                             {activeTab === 'Table Map' && <TableMap />}
+                            {activeTab === 'Inventory' && <Inventory />}
                             {activeTab === 'Settings' && <Settings />}
                             {activeTab === 'Customers' && <Customers />}
                             {activeTab === 'System Users' && <UserManagement />}

@@ -58,6 +58,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/reservations', require('./routes/reservationRoutes'));
 app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
+app.use('/api/inventory', require('./routes/inventoryRoutes'));
 
 app.use(errorHandler);
 

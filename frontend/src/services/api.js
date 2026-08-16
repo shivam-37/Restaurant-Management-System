@@ -35,6 +35,7 @@ export const deleteMenuItem = (id) => api.delete(`/menu/${id}`);
 
 export const getOrders = (restaurantId) => api.get(`/orders${restaurantId ? `?restaurantId=${restaurantId}` : ''}`);
 export const createOrder = (order) => api.post('/orders', order);
+export const createGuestOrder = (order) => api.post('/orders/guest', order);
 export const getOccupiedTables = (restaurantId) => api.get(`/orders/tables/occupied?restaurantId=${restaurantId}`);
 export const updateOrderStatus = (id, status) => api.put(`/orders/${id}`, { status });
 export const addOrderReview = (id, reviewData) => api.put(`/orders/${id}/review`, reviewData);
@@ -57,6 +58,7 @@ export const getRecommendations = (restaurantId) => api.post('/ai/recommendation
 export const predictInventory = (restaurantId, forceRefresh = false) => api.post('/ai/predict-inventory', { restaurantId, forceRefresh });
 export const chatWithAi = (messages, restaurantId) => api.post('/ai/chat', { messages, restaurantId });
 export const generateFullMenuItem = (prompt) => api.post('/ai/generate-full-item', { prompt });
+export const getUpsellRecommendation = (cartItems, restaurantId) => api.post('/ai/upsell', { cartItems, restaurantId });
 
 // Notification APIs
 export const getNotifications = () => api.get('/notifications');
@@ -78,6 +80,12 @@ export const updateUserRole = (id, role) => api.put(`/users/${id}/role`, { role 
 export const deleteUser = (id) => api.delete(`/users/${id}`);
 export const deleteAccount = () => api.delete('/users/me');
 export const updateNotificationPrefs = (prefs) => api.put('/users/notifications', prefs);
+
+// Inventory APIs
+export const getInventory = (restaurantId) => api.get(`/inventory?restaurantId=${restaurantId}`);
+export const createInventoryItem = (data) => api.post('/inventory', data);
+export const updateInventoryItem = (id, data) => api.put(`/inventory/${id}`, data);
+export const deleteInventoryItem = (id) => api.delete(`/inventory/${id}`);
 
 // Payment APIs
 export const createRazorpayOrder = (data) => api.post('/payment/create-order', data);

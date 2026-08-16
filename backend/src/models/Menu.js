@@ -35,7 +35,20 @@ const menuSchema = mongoose.Schema({
         type: Number,
         default: 0,
         required: true
-    }
+    },
+    recipe: [
+        {
+            ingredient: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'InventoryItem',
+                required: true
+            },
+            amountNeeded: {
+                type: Number,
+                required: true
+            }
+        }
+    ]
 }, {
     timestamps: true
 });

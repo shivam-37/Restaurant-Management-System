@@ -9,9 +9,11 @@ import Settings from '../Settings';
 import KitchenDisplay from '../admin/KitchenDisplay'; // Reusing components
 import TableMap from '../admin/TableMap';
 import CreateRestaurant from '../../../components/owner/CreateRestaurant';
+import BranchManagement from '../../../components/owner/BranchManagement';
 import Reservations from '../Reservations';
 import Analytics from '../admin/Analytics';
 import NotificationTray from '../NotificationTray';
+import Inventory from '../Inventory';
 import AuthContext from '../../../context/AuthContext';
 import { useTheme } from '../../../context/ThemeContext';
 import {
@@ -34,7 +36,8 @@ import {
     UserGroupIcon,
     ChartBarIcon,
     CalendarIcon,
-    ChartPieIcon
+    ChartPieIcon,
+    BuildingStorefrontIcon
 } from '@heroicons/react/24/outline';
 
 const OwnerDashboard = () => {
@@ -150,10 +153,12 @@ const OwnerDashboard = () => {
 
     const navItems = [
         { name: 'Overview', icon: HomeIcon, color: 'from-blue-500 to-cyan-500' },
+        { name: 'Branches', icon: BuildingStorefrontIcon, color: 'from-orange-500 to-red-500' },
         { name: 'Menu', icon: ClipboardDocumentListIcon, color: 'from-purple-500 to-pink-500' },
         { name: 'Orders', icon: ShoppingBagIcon, color: 'from-orange-600 to-red-600' },
         { name: 'Kitchen', icon: UserGroupIcon, color: 'from-green-500 to-teal-500' },
         { name: 'Reservations', icon: CalendarIcon, color: 'from-yellow-500 to-orange-500' },
+        { name: 'Inventory', icon: ClipboardDocumentListIcon, color: 'from-blue-500 to-teal-500' },
         { name: 'Performance', icon: ChartPieIcon, color: 'from-cyan-500 to-blue-500' },
         { name: 'Table Map', icon: MapIcon, color: 'from-blue-500 to-orange-500' },
         { name: 'Settings', icon: Cog6ToothIcon, color: 'from-gray-500 to-gray-600' },
@@ -390,11 +395,13 @@ const OwnerDashboard = () => {
                     )}
                     <AnimatePresence mode="wait">
                         <motion.div key={activeTab} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                            {activeTab === 'Branches' && <BranchManagement onSelect={setActiveTab} />}
                             {activeTab === 'Menu' && <Menu />}
                             {(activeTab === 'Orders' || activeTab === 'My Orders') && <Orders />}
                             {activeTab === 'Kitchen' && <KitchenDisplay />}
                             {activeTab === 'Table Map' && <TableMap />}
                             {activeTab === 'Reservations' && <Reservations />}
+                            {activeTab === 'Inventory' && <Inventory />}
                             {activeTab === 'Performance' && <Analytics />}
                             {activeTab === 'Settings' && <Settings />}
                         </motion.div>

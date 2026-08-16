@@ -458,4 +458,71 @@ CRITICAL INSTRUCTION: There are currently NO restaurants available on the platfo
     }
 });
 
-module.exports = { generateDescription, generateOrderInstructions, getRecommendations, predictInventory, chatWithNvidia, generateFullMenuItem };
+// @desc    Generate a single upsell recommendation for the cart
+// @route   POST /api/ai/upsell
+// @access  Private
+const generateUpsellRecommendation = asyncHandler(async (req, res) => {
+    const { cartItems, restaurantId } = req.body;
+
+    if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+        return res.json(null);
+    }
+
+    if (!restaurantId) {
+        return res.json(null);
+    }
+
+    // Gather user's history
+    const userOrders = await Order.find({ user: req.user._id, restaurant: restaurantId }).sort({ createdAt: -1 }).limit(3).populate('items.menuItem');
+    const historyNames = userOrders.flatMap(o => o.items.map(i => i.name)).slice(0, 10);
+    const cartNames = cartItems.map(i => i.name || i.menuItem?.name || 'Item').join(', ');
+
+    // Gather available menu
+    const menuItems = await Menu.find({ restaurant: restaurantId, isAvailable: true }).select('name category price');
+    if (menuItems.length === 0) return res.json(null);
+
+    // Filter out items already in the cart
+    const cartItemNamesLower = cartItems.map(i => (i.name || i.menuItem?.name || '').toLowerCase());
+    const availableForUpsell = menuItems.filter(i => !cartItemNamesLower.includes(i.name.toLowerCase()));
+
+    if (availableForUpsell.length === 0) return res.json(null);
+
+    const menuText = availableForUpsell.map(i => `- ${i.name} (${i.category}, ₹${i.price})`).join('\n');
+
+    const prompt = `
+        User's current cart: ${cartNames}
+        User's past orders: ${historyNames.length > 0 ? historyNames.join(', ') : 'None'}
+        Available Menu Add-ons: 
+        ${menuText}
+        
+        Suggest exactly ONE high-margin or complimentary menu item from the "Available Menu Add-ons" list that the user should add to their current cart. 
+        Respond ONLY as a strict JSON object with two keys: "name" (exact name from the list) and "reason" (a short, appetizing 1-sentence reason to add it).
+        Example: {"name": "Garlic Bread", "reason": "It pairs perfectly with your pasta."}
+    `;
+
+    try {
+        const text = await rateLimitedAICall(prompt);
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error("No JSON found");
+        
+        const suggestion = JSON.parse(jsonMatch[0]);
+        
+        // Verify it actually exists in the db
+        const recommendedItem = await Menu.findOne({ name: suggestion.name, restaurant: restaurantId, isAvailable: true });
+        
+        if (recommendedItem) {
+            res.json({
+                item: recommendedItem,
+                reason: suggestion.reason
+            });
+        } else {
+            // AI hallucinated or picked something unavailable
+            res.json(null);
+        }
+    } catch (error) {
+        console.error('[AI FALLBACK] upsell:', error.message);
+        res.json(null);
+    }
+});
+
+module.exports = { generateDescription, generateOrderInstructions, getRecommendations, predictInventory, chatWithNvidia, generateFullMenuItem, generateUpsellRecommendation };

@@ -18,6 +18,7 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [restaurants, setRestaurants] = useState([]);
+    const [myRestaurants, setMyRestaurants] = useState([]);
     const [selectedRestaurant, setSelectedRestaurant] = useState(() => {
         let activeRole = sessionStorage.getItem('activeRole');
         if (!activeRole) {
@@ -60,21 +61,16 @@ const AuthProvider = ({ children }) => {
                     const { data } = await getMe();
                     setUser(data);
 
-                    // If owner, ensure they have a selected restaurant
-                    if (data.role === 'owner' && !selectedRestaurant) {
-                        if (data.restaurant) {
-                            const restaurantObj = typeof data.restaurant === 'string'
-                                ? { _id: data.restaurant, name: 'My Restaurant' }
-                                : data.restaurant;
-                            setSelectedRestaurant(restaurantObj);
-                        } else if (data.role === 'owner') {
-                            // Fallback for owners: try to fetch by owner ID from server
-                            try {
-                                const { data: myRest } = await getMyRestaurant();
-                                if (myRest) setSelectedRestaurant(myRest);
-                            } catch (err) {
-                                console.log("No restaurant found for this owner yet");
+                    // If owner, fetch all their restaurants
+                    if (data.role === 'owner') {
+                        try {
+                            const { data: myRests } = await getMyRestaurant(); // This now returns an array of restaurants
+                            setMyRestaurants(myRests);
+                            if (!selectedRestaurant && myRests && myRests.length > 0) {
+                                setSelectedRestaurant(myRests[0]);
                             }
+                        } catch (err) {
+                            console.log("No restaurants found for this owner yet");
                         }
                     }
                 }
@@ -105,19 +101,20 @@ const AuthProvider = ({ children }) => {
 
         let restaurantToSet = null;
 
-        if (data.role !== 'admin') {
-            if (data.restaurant) {
-                restaurantToSet = typeof data.restaurant === 'string'
-                    ? { _id: data.restaurant, name: data.restaurantName || 'My Restaurant' }
-                    : data.restaurant;
-            } else if (data.role === 'owner') {
-                try {
-                    const { data: myRest } = await getMyRestaurant();
-                    if (myRest) restaurantToSet = myRest;
-                } catch (err) {
-                    console.log("Owner auth: No restaurant found to auto-select");
+        if (data.role === 'owner') {
+            try {
+                const { data: myRests } = await getMyRestaurant();
+                setMyRestaurants(myRests);
+                if (myRests && myRests.length > 0) {
+                    restaurantToSet = myRests[0];
                 }
+            } catch (err) {
+                console.log("Owner auth: No restaurants found to auto-select");
             }
+        } else if (data.role !== 'admin' && data.restaurant) {
+            restaurantToSet = typeof data.restaurant === 'string'
+                ? { _id: data.restaurant, name: data.restaurantName || 'My Restaurant' }
+                : data.restaurant;
         }
 
         if (restaurantToSet) setSelectedRestaurant(restaurantToSet);
@@ -170,6 +167,7 @@ const AuthProvider = ({ children }) => {
         sessionStorage.removeItem('activeRole');
         setUser(null);
         setSelectedRestaurant(null);
+        setMyRestaurants([]);
     }, [user]);
 
     const forgotPassword = async (payload) => {
@@ -189,6 +187,18 @@ const AuthProvider = ({ children }) => {
             setRestaurants(data);
         } catch (e) {
             console.error('Failed to refresh restaurants', e);
+        }
+    }, []);
+
+    // Fetch my restaurants (for owners)
+    const refreshMyRestaurants = useCallback(async () => {
+        try {
+            const { data } = await getMyRestaurant();
+            setMyRestaurants(data);
+            return data;
+        } catch (e) {
+            console.error('Failed to refresh my restaurants', e);
+            return [];
         }
     }, []);
 
@@ -253,7 +263,9 @@ const AuthProvider = ({ children }) => {
             loading,
             restaurants,
             setRestaurants,
+            myRestaurants,
             refreshRestaurants,
+            refreshMyRestaurants,
             updateRestaurantInList,
             selectedRestaurant,
             setSelectedRestaurant

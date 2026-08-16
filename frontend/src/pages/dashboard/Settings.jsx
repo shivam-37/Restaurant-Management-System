@@ -25,8 +25,11 @@ import {
     CameraIcon,
     Squares2X2Icon,
     PlusIcon,
-    SparklesIcon
+    SparklesIcon,
+    QrCodeIcon,
+    PrinterIcon
 } from '@heroicons/react/24/outline';
+import api from '../../services/api';
 
 
 // ─── Toast ─────────────────────────────────────────────────────────────────────
@@ -835,6 +838,84 @@ const TablesTab = ({ selectedRestaurant, updateRestaurantInList, showMessage }) 
     );
 };
 
+// ─── QR Codes Tab ─────────────────────────────────────────────────────────────
+const QRCodesTab = ({ selectedRestaurant, showMessage }) => {
+    const [qrCodes, setQrCodes] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const generateQRCodes = async () => {
+        if (!selectedRestaurant?._id || !selectedRestaurant?.tables?.length) {
+            return showMessage('error', 'No tables found for this restaurant.');
+        }
+        setLoading(true);
+        try {
+            const codes = await Promise.all(
+                selectedRestaurant.tables.map(async (table) => {
+                    const { data } = await api.get(`/restaurant/${selectedRestaurant._id}/table/${table.number}/qr`);
+                    return data;
+                })
+            );
+            setQrCodes(codes);
+            showMessage('success', 'Generated QR Codes for all tables');
+        } catch (error) {
+            showMessage('error', 'Failed to generate QR Codes');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePrint = () => {
+        window.print();
+    };
+
+    return (
+        <div className="p-6 space-y-6">
+            <div className="flex items-center justify-between pb-6 border-b border-black/5">
+                <div>
+                    <h3 className="font-semibold flex items-center gap-2"><QrCodeIcon className="w-5 h-5 text-orange-500" /> Table QR Codes</h3>
+                    <p className="text-sm opacity-60">Generate and print QR codes for guest table ordering</p>
+                </div>
+                <div className="flex gap-3">
+                    <button
+                        type="button"
+                        onClick={generateQRCodes}
+                        disabled={loading}
+                        className="px-4 py-2 bg-orange-600 text-white rounded-xl text-xs font-bold shadow-lg shadow-orange-600/20 hover:bg-orange-700 transition disabled:opacity-50"
+                    >
+                        {loading ? 'Generating...' : 'Generate Codes'}
+                    </button>
+                    {qrCodes.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={handlePrint}
+                            className="px-4 py-2 theme-card-item border border-black/10 rounded-xl text-xs font-bold hover:bg-black/5 transition flex items-center gap-2"
+                        >
+                            <PrinterIcon className="w-4 h-4" /> Print All
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {qrCodes.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 print:grid-cols-3 print:gap-8">
+                    {qrCodes.map((qr) => (
+                        <div key={qr.tableNumber} className="theme-card border border-black/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center print:border-black/30 print:shadow-none break-inside-avoid">
+                            <h4 className="font-black text-lg mb-2">Table {qr.tableNumber}</h4>
+                            <img src={qr.qrCode} alt={`Table ${qr.tableNumber} QR Code`} className="w-32 h-32 mb-3" />
+                            <p className="text-[9px] uppercase tracking-widest opacity-60">Scan to Order</p>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="py-12 flex flex-col items-center justify-center opacity-40">
+                    <QrCodeIcon className="w-16 h-16 mb-4" />
+                    <p className="font-bold text-sm">No QR Codes generated yet.</p>
+                </div>
+            )}
+        </div>
+    );
+};
+
 const Settings = () => {
     const { user, setUser, selectedRestaurant, updateRestaurantInList, logout } = useContext(AuthContext);
     const [activeTab, setActiveTab] = useState('profile');
@@ -865,7 +946,8 @@ const Settings = () => {
         { id: 'security', name: 'Security', icon: ShieldCheckIcon },
         ...(user?.role === 'owner' ? [
             { id: 'restaurant', name: 'Restaurant', icon: HomeIcon },
-            { id: 'tables', name: 'Tables', icon: Squares2X2Icon }
+            { id: 'tables', name: 'Tables', icon: Squares2X2Icon },
+            { id: 'qrcodes', name: 'QR Codes', icon: QrCodeIcon }
         ] : []),
         { id: 'notifications', name: 'Notifications', icon: BellIcon },
     ];
@@ -920,6 +1002,12 @@ const Settings = () => {
                     <TablesTab
                         selectedRestaurant={selectedRestaurant}
                         updateRestaurantInList={updateRestaurantInList}
+                        showMessage={showMessage}
+                    />
+                )}
+                {activeTab === 'qrcodes' && (
+                    <QRCodesTab
+                        selectedRestaurant={selectedRestaurant}
                         showMessage={showMessage}
                     />
                 )}

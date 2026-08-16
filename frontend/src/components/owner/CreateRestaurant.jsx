@@ -46,9 +46,9 @@ const compressImage = (file) => {
     });
 };
 
-const CreateRestaurant = () => {
+const CreateRestaurant = ({ onSuccess }) => {
     const { theme } = useTheme();
-    const { setSelectedRestaurant } = useContext(AuthContext);
+    const { setSelectedRestaurant, refreshMyRestaurants } = useContext(AuthContext);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [formData, setFormData] = useState({
@@ -85,7 +85,11 @@ const CreateRestaurant = () => {
                 tables
             });
 
+            await refreshMyRestaurants?.();
             setSelectedRestaurant(data);
+            if (onSuccess) {
+                onSuccess();
+            }
         } catch (error) {
             console.error('Failed to create restaurant:', error);
             setError(error.response?.data?.message || error.message || 'Failed to create restaurant. Please try again.');

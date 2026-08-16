@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getMenu, createMenuItem, updateMenuItem, deleteMenuItem, generateDescription, createOrder, generateOrderInstructions, getRecommendations, generateFullMenuItem, createRazorpayOrder, verifyRazorpayPayment, getOccupiedTables } from '../../services/api';
+import { getMenu, createMenuItem, updateMenuItem, deleteMenuItem, generateDescription, createOrder, generateOrderInstructions, getRecommendations, generateFullMenuItem, createRazorpayOrder, verifyRazorpayPayment, getOccupiedTables, getUpsellRecommendation, getInventory } from '../../services/api';
 import { SparklesIcon as SparklesOutline, ShoppingCartIcon, SparklesIcon, UsersIcon } from '@heroicons/react/24/outline';
 import PremiumModal from '../../components/PremiumModal';
 import {
@@ -55,19 +55,51 @@ const Menu = () => {
     const [occupiedTables, setOccupiedTables] = useState([]);
     const [guests, setGuests] = useState(1);
     const [showPremiumModal, setShowPremiumModal] = useState(false);
+    const [upsellRecommendation, setUpsellRecommendation] = useState(null);
+    const [isUpsellLoading, setIsUpsellLoading] = useState(false);
+    const [inventoryItems, setInventoryItems] = useState([]);
 
     useEffect(() => {
         fetchMenu();
         if (user?.role === 'user') {
             fetchAIRecommendations();
         }
+        if ((user?.role === 'admin' || user?.role === 'owner') && selectedRestaurant?._id) {
+            fetchInventory();
+        }
     }, [user?.role, selectedRestaurant?._id]);
+
+    const fetchInventory = async () => {
+        try {
+            const { data } = await getInventory(selectedRestaurant._id);
+            setInventoryItems(data);
+        } catch (error) {
+            console.error("Failed to fetch inventory", error);
+        }
+    };
 
     useEffect(() => {
         if (orderType === 'Dine-In' && isCartOpen && selectedRestaurant) {
             fetchOccupiedTables();
         }
     }, [orderType, isCartOpen, selectedRestaurant]);
+
+    useEffect(() => {
+        const fetchUpsell = async () => {
+            if (isCartOpen && cart.length > 0 && selectedRestaurant) {
+                setIsUpsellLoading(true);
+                try {
+                    const { data } = await getUpsellRecommendation(cart, selectedRestaurant._id);
+                    setUpsellRecommendation(data);
+                } catch (err) {
+                    console.error("Upsell fetch failed", err);
+                } finally {
+                    setIsUpsellLoading(false);
+                }
+            }
+        };
+        fetchUpsell();
+    }, [isCartOpen, cart.length, selectedRestaurant]);
 
     const fetchOccupiedTables = async () => {
         try {
@@ -111,7 +143,8 @@ const Menu = () => {
                 price: item.price,
                 category: item.category,
                 image: item.image,
-                stock: item.stock || 0
+                stock: item.stock || 0,
+                recipe: item.recipe || []
             });
         } else {
             setCurrentItem(null);
@@ -121,7 +154,8 @@ const Menu = () => {
                 price: '',
                 category: 'Main Course',
                 image: 'https://via.placeholder.com/150',
-                stock: 0
+                stock: 0,
+                recipe: []
             });
         }
         setIsModalOpen(true);
@@ -200,7 +234,8 @@ const Menu = () => {
                 price: formData.price || '',
                 category: data.category || 'Main Course',
                 image: data.image || 'https://via.placeholder.com/150',
-                stock: formData.stock || 0
+                stock: formData.stock || 0,
+                recipe: formData.recipe || []
             });
             setAiDishPrompt('');
         } catch (error) {
@@ -765,6 +800,60 @@ const Menu = () => {
                                         </div>
                                     </div>
                                     <div>
+                                        <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Recipe (Ingredients to Deduct on Order)</label>
+                                        <div className="space-y-3">
+                                            {formData.recipe?.map((ing, idx) => (
+                                                <div key={idx} className="flex items-center gap-3">
+                                                    <select
+                                                        value={ing.ingredient}
+                                                        onChange={(e) => {
+                                                            const newRecipe = [...formData.recipe];
+                                                            newRecipe[idx].ingredient = e.target.value;
+                                                            setFormData({ ...formData, recipe: newRecipe });
+                                                        }}
+                                                        className="flex-1 theme-card-item border border-black/5 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                                    >
+                                                        <option value="">Select Ingredient</option>
+                                                        {inventoryItems.map(inv => (
+                                                            <option key={inv._id} value={inv._id}>{inv.name} ({inv.unit})</option>
+                                                        ))}
+                                                    </select>
+                                                    <input
+                                                        type="number"
+                                                        step="0.01"
+                                                        value={ing.amountNeeded}
+                                                        placeholder="Amount"
+                                                        onChange={(e) => {
+                                                            const newRecipe = [...formData.recipe];
+                                                            newRecipe[idx].amountNeeded = parseFloat(e.target.value);
+                                                            setFormData({ ...formData, recipe: newRecipe });
+                                                        }}
+                                                        className="w-24 theme-card-item border border-black/5 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const newRecipe = formData.recipe.filter((_, i) => i !== idx);
+                                                            setFormData({ ...formData, recipe: newRecipe });
+                                                        }}
+                                                        className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition"
+                                                    >
+                                                        <TrashIcon className="w-5 h-5" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setFormData({ ...formData, recipe: [...(formData.recipe || []), { ingredient: '', amountNeeded: 0 }] });
+                                                }}
+                                                className="flex items-center gap-2 px-4 py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-xl text-xs font-bold transition"
+                                            >
+                                                <PlusIcon className="w-4 h-4" /> Add Ingredient
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
                                         <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Dish Photo (Upload from device or enter URL)</label>
                                         <div className="space-y-3">
                                             <div className="flex flex-col sm:flex-row gap-3">
@@ -918,6 +1007,46 @@ const Menu = () => {
                                                 </div>
                                             </div>
                                         ))}
+
+                                        {/* AI Upsell Box */}
+                                        {(isUpsellLoading || upsellRecommendation) && (
+                                            <div className="mt-4 theme-card border border-orange-500/20 rounded-2xl p-4 bg-orange-500/5 relative overflow-hidden">
+                                                <div className="absolute -right-4 -top-4 opacity-[0.05]">
+                                                    <SparklesIcon className="w-24 h-24 text-orange-500" />
+                                                </div>
+                                                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-600 flex items-center gap-2 mb-3">
+                                                    <SparklesIcon className="w-4 h-4 animate-pulse" /> AI Suggestion
+                                                </h3>
+                                                {isUpsellLoading ? (
+                                                    <div className="animate-pulse flex gap-3">
+                                                        <div className="w-12 h-12 bg-black/10 rounded-xl"></div>
+                                                        <div className="flex-1 space-y-2 py-1">
+                                                            <div className="h-3 bg-black/10 rounded w-3/4"></div>
+                                                            <div className="h-3 bg-black/10 rounded w-1/2"></div>
+                                                        </div>
+                                                    </div>
+                                                ) : upsellRecommendation?.item ? (
+                                                    <div className="flex gap-4 items-center">
+                                                        <div className="w-12 h-12 rounded-xl overflow-hidden shadow-md shrink-0 border border-white/10">
+                                                            <img src={upsellRecommendation.item.image} alt={upsellRecommendation.item.name} className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex justify-between items-start">
+                                                                <h4 className="font-black text-xs uppercase truncate">{upsellRecommendation.item.name}</h4>
+                                                                <span className="text-[10px] font-black text-orange-600">₹{upsellRecommendation.item.price}</span>
+                                                            </div>
+                                                            <p className="text-[9px] font-bold opacity-60 mt-0.5 leading-tight">{upsellRecommendation.reason}</p>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => addToCart(upsellRecommendation.item)}
+                                                            className="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center shrink-0 hover:bg-orange-700 transition hover:scale-110 active:scale-95 shadow-md shadow-orange-600/30"
+                                                        >
+                                                            <PlusIcon className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                ) : null}
+                                            </div>
+                                        )}
 
                                         <div className="mt-8 space-y-6">
                                             <div>

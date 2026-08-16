@@ -23,28 +23,13 @@ const getRestaurantDetails = asyncHandler(async (req, res) => {
     res.json(restaurant);
 });
 
-// @desc    Get current user's restaurant
+// @desc    Get current user's restaurants (branches)
 // @route   GET /api/restaurant/my
 // @access  Private
-const getMyRestaurant = asyncHandler(async (req, res) => {
-    // 1. Try to find by the linked ID on user
-    if (req.user.restaurant) {
-        const restaurant = await Restaurant.findById(req.user.restaurant);
-        if (restaurant) return res.json(restaurant);
-    }
-
-    // 2. Fallback: Find by owner field (for owners)
-    const restaurant = await Restaurant.findOne({ owner: req.user._id });
-    if (!restaurant) {
-        res.status(404);
-        throw new Error('Restaurant not found for this owner');
-    }
-
-    // Also link it back to user for future speed
-    const User = require('../models/User');
-    await User.findByIdAndUpdate(req.user._id, { restaurant: restaurant._id });
-
-    res.json(restaurant);
+const getMyRestaurants = asyncHandler(async (req, res) => {
+    // Find all restaurants where this user is the owner
+    const restaurants = await Restaurant.find({ owner: req.user._id });
+    res.json(restaurants);
 });
 
 // @desc    Update a table status
@@ -100,12 +85,10 @@ const createRestaurant = asyncHandler(async (req, res) => {
         ]
     });
 
-    // Link restaurant to the user
-    const User = require('../models/User');
-    await User.findByIdAndUpdate(req.user._id, { restaurant: restaurant._id });
-
     res.status(201).json(restaurant);
 });
+
+const QRCode = require('qrcode');
 
 const updateRestaurant = asyncHandler(async (req, res) => {
     const restaurant = await Restaurant.findById(req.params.id);
@@ -124,4 +107,41 @@ const updateRestaurant = asyncHandler(async (req, res) => {
     res.json(updatedRestaurant);
 });
 
-module.exports = { getRestaurants, getRestaurantDetails, getMyRestaurant, updateTableStatus, createRestaurant, updateRestaurant };
+// @desc    Generate a QR code for a specific table
+// @route   GET /api/restaurant/:id/table/:number/qr
+// @access  Private/Admin
+const generateTableQRCode = asyncHandler(async (req, res) => {
+    const { id, number } = req.params;
+
+    const restaurant = await Restaurant.findById(id);
+    if (!restaurant) {
+        res.status(404);
+        throw new Error('Restaurant not found');
+    }
+
+    // Check if table exists
+    const table = restaurant.tables.find(t => t.number === parseInt(number));
+    if (!table) {
+        res.status(404);
+        throw new Error('Table not found');
+    }
+
+    // Determine the base URL for the frontend
+    // In production, this might be from an env var like process.env.FRONTEND_URL
+    // For now, we will assume standard Vite dev port if not provided.
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    
+    // The guest menu route we will create in Phase 2
+    const qrData = `${frontendUrl}/r/${id}/t/${number}`;
+
+    try {
+        // Generate QR code as a data URI (base64 image)
+        const qrCodeImage = await QRCode.toDataURL(qrData);
+        res.json({ qrCode: qrCodeImage, url: qrData, tableNumber: number });
+    } catch (err) {
+        res.status(500);
+        throw new Error('Failed to generate QR Code');
+    }
+});
+
+module.exports = { getRestaurants, getRestaurantDetails, getMyRestaurants, updateTableStatus, createRestaurant, updateRestaurant, generateTableQRCode };
