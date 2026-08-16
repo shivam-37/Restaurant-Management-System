@@ -18,16 +18,16 @@ app.use((req, res, next) => {
 });
 
 app.use(helmet());
-// app.use(xss());
+app.use(xss());
 app.use(mongoSanitize());
-// app.use(hpp());
+app.use(hpp());
 
 // Rate Limiting
 const limiter = rateLimit({
     windowMs: 10 * 60 * 1000, // 10 minutes
     max: 500 // Increased for development
 });
-// app.use(limiter);
+app.use(limiter);
 
 const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5174', 'http://127.0.0.1:5174'];
 app.use(cors({
