@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, ChefHat, Star, Users, Clock, Sparkles, Coffee, Smartphone, Sun, Moon } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, ChefHat, Star, Users, Clock, Sparkles, Coffee, Smartphone, Sun, Moon } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
 import AuthContext from '../../context/AuthContext';
 import VerifyOtpModal from '../../components/auth/VerifyOtpModal';
@@ -24,6 +24,7 @@ const Login = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     // OTP Modal State
     const [showOtpModal, setShowOtpModal] = useState(false);
@@ -406,16 +407,25 @@ const Login = () => {
                                         <input
                                             id="password"
                                             name="password"
-                                            type="password"
+                                            type={showPassword ? "text" : "password"}
                                             autoComplete="current-password"
                                             required
                                             value={password}
                                             onChange={onChange}
                                             onFocus={() => setFocusedField('password')}
                                             onBlur={() => setFocusedField(null)}
-                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
+                                            className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                             placeholder="••••••••"
                                         />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-40 hover:opacity-100 transition cursor-pointer text-gray-500 dark:text-gray-300"
+                                            tabIndex="-1"
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                        >
+                                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4 text-orange-500" />}
+                                        </button>
                                     </div>
                                 </div>
                         </motion.div>

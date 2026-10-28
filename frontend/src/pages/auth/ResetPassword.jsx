@@ -10,6 +10,7 @@ const ResetPassword = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [status, setStatus] = useState(null); // 'success', 'error', 'loading'
     const [message, setMessage] = useState('');
 
@@ -125,13 +126,16 @@ const ResetPassword = () => {
                                             <div className="relative group">
                                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                                 <input
-                                                    type="password"
+                                                    type={showConfirmPassword ? "text" : "password"}
                                                     required
                                                     value={confirmPassword}
                                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
+                                                    className="w-full theme-card-item border border-black/10 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none focus:border-orange-500 transition-all"
                                                     placeholder="Confirm new password"
                                                 />
+                                                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-500 transition cursor-pointer">
+                                                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

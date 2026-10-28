@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ChefHat, Smartphone, Sun, Moon, Briefcase, Building } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ChefHat, Smartphone, Sun, Moon, Briefcase, Building } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
 import AuthContext from '../../context/AuthContext';
 import VerifyOtpModal from '../../components/auth/VerifyOtpModal';
@@ -24,6 +24,7 @@ const OwnerLogin = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
+    const [showPassword, setShowPassword] = useState(false);
 
     // OTP Modal State
     const [showOtpModal, setShowOtpModal] = useState(false);
@@ -293,16 +294,25 @@ const OwnerLogin = () => {
                                 <input
                                     id="password"
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"}
                                     autoComplete="current-password"
                                     required
                                     value={password}
                                     onChange={onChange}
                                     onFocus={() => setFocusedField('password')}
                                     onBlur={() => setFocusedField(null)}
-                                    className={`w-full bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'password' ? 'border-[#f97316] shadow-[0_0_0_4px_rgba(79,70,229,0.1)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none transition-all text-gray-900 dark:text-white`}
+                                    className={`w-full bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'password' ? 'border-[#f97316] shadow-[0_0_0_4px_rgba(249,115,22,0.15)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none transition-all text-gray-900 dark:text-white`}
                                     placeholder="••••••••"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-40 hover:opacity-100 transition cursor-pointer text-gray-500 dark:text-gray-300"
+                                    tabIndex="-1"
+                                    aria-label={showPassword ? "Hide password" : "Show password"}
+                                >
+                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4 text-[#f97316]" />}
+                                </button>
                             </div>
                         </motion.div>
 
