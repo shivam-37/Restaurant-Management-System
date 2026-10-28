@@ -213,41 +213,6 @@ const AuthProvider = ({ children }) => {
         );
     }, []);
 
-    // Auto-logout on 10 min inactivity or back button press
-    useEffect(() => {
-        if (!user) return;
-
-        let timeoutId;
-
-        const handleActivity = () => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
-                logout();
-                alert('You have been automatically logged out due to 10 minutes of inactivity.');
-            }, 10 * 60 * 1000); // 10 minutes
-        };
-
-        const handlePopState = () => {
-            logout();
-        };
-
-        const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-        
-        // Listeners for inactivity
-        activityEvents.forEach(event => window.addEventListener(event, handleActivity));
-        // Listener for back button
-        window.addEventListener('popstate', handlePopState);
-
-        // Start the timer immediately
-        handleActivity();
-
-        return () => {
-            clearTimeout(timeoutId);
-            activityEvents.forEach(event => window.removeEventListener(event, handleActivity));
-            window.removeEventListener('popstate', handlePopState);
-        };
-    }, [user, logout]);
-
     return (
         <AuthContext.Provider value={{
             user,

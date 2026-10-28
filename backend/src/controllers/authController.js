@@ -15,6 +15,7 @@ const generateToken = (id) => {
 };
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
+const isDevOtpEnabled = () => process.env.NODE_ENV !== 'production' || process.env.SHOW_DEV_OTP === 'true';
 
 // @desc    Register new user
 // @route   POST /api/auth/register
@@ -105,7 +106,7 @@ const registerUser = asyncHandler(async (req, res) => {
             userId: user._id,
             requiresOtp: true,
             method: email ? 'email' : 'phone',
-            devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined
+            devOtp: isDevOtpEnabled() ? otp : undefined
         });
     } else {
         res.status(400);
@@ -201,59 +202,6 @@ const loginUser = asyncHandler(async (req, res) => {
     }).populate('restaurant');
 
     if (user && (await user.matchPassword(password))) {
-        // Enforce 2FA (Two-Factor Authentication) on every login
-        const isEmailLogin = identifier.includes('@');
-        const isPhoneLogin = !isEmailLogin;
-
-        if (isEmailLogin) {
-            const otp = identifier.endsWith('@example.com') ? '123456' : generateOtp();
-            user.emailOtp = otp;
-            user.emailOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
-            await user.save();
-            
-            console.log(`\n========================================`);
-            console.log(`🔑 [LOGIN OTP] Target User: ${user.name} (${user.email || 'No Email'}) | OTP Code: ${otp}`);
-            console.log(`========================================\n`);
-
-            if (!identifier.endsWith('@example.com')) {
-                sendEmail({
-                    email: user.email,
-                    subject: 'Login Verification Code',
-                    message: `Your login verification OTP is: ${otp}`
-                }).catch(err => console.error('Background Email Sending Failed:', err));
-            }
-            return res.status(200).json({ 
-                requiresOtp: true, 
-                method: 'email', 
-                userId: user._id, 
-                message: 'Please verify your identity with the OTP sent to your email.',
-                devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined
-            });
-        }
-
-        if (isPhoneLogin) {
-            const otp = generateOtp();
-            user.phoneOtp = otp;
-            user.phoneOtpExpiry = new Date(Date.now() + 10 * 60 * 1000);
-            await user.save();
-
-            console.log(`\n========================================`);
-            console.log(`🔑 [LOGIN OTP] Target User: ${user.name} (${user.phone || 'No Phone'}) | OTP Code: ${otp}`);
-            console.log(`========================================\n`);
-
-            sendSms({
-                phone: user.phone,
-                message: `Your login verification OTP is: ${otp}`
-            }).catch(err => console.error('Background SMS Sending Failed:', err));
-            return res.status(200).json({ 
-                requiresOtp: true, 
-                method: 'phone', 
-                userId: user._id, 
-                message: 'Please verify your identity with the OTP sent to your phone.',
-                devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined
-            });
-        }
-
         res.json({
             _id: user.id,
             name: user.name,
@@ -413,7 +361,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
         method: deliveryMethod,
         target: displayTarget,
         userId: user._id,
-        devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined
+        devOtp: isDevOtpEnabled() ? otp : undefined
     });
 });
 
@@ -567,7 +515,7 @@ const sendOtp = asyncHandler(async (req, res) => {
         res.status(200).json({ 
             message: 'OTP sent to email', 
             method: 'email',
-            devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined 
+            devOtp: isDevOtpEnabled() ? otp : undefined 
         });
     } else if (phone) {
         sendSms({
@@ -577,7 +525,7 @@ const sendOtp = asyncHandler(async (req, res) => {
         res.status(200).json({ 
             message: 'OTP sent to phone', 
             method: 'phone',
-            devOtp: process.env.NODE_ENV !== 'production' ? otp : undefined 
+            devOtp: isDevOtpEnabled() ? otp : undefined 
         });
     }
 });
