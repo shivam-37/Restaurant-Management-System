@@ -37,10 +37,39 @@ const createOrder = asyncHandler(async (req, res) => {
 
             if (menuItem.recipe && menuItem.recipe.length > 0) {
                 for (const recipeItem of menuItem.recipe) {
-                    if (recipeItem.ingredient) {
-                        const amountToDeduct = recipeItem.amountNeeded * item.quantity;
-                        recipeItem.ingredient.quantity -= amountToDeduct;
-                        await recipeItem.ingredient.save();
+                    const ingredientId = recipeItem.ingredient?._id || recipeItem.ingredient;
+                    const amountNeeded = Number(recipeItem.amountNeeded) || 0;
+                    const amountToDeduct = amountNeeded * item.quantity;
+
+                    if (!ingredientId || amountToDeduct <= 0) continue;
+
+                    try {
+                        let updatedInv = await InventoryItem.findByIdAndUpdate(
+                            ingredientId,
+                            { $inc: { quantity: -amountToDeduct } },
+                            { returnDocument: 'after' }
+                        );
+
+                        // Fallback: If not found by ID (e.g. ID mismatched), fallback to matching by ingredient name
+                        if (!updatedInv && (recipeItem.ingredient?.name || recipeItem.name)) {
+                            const ingName = recipeItem.ingredient?.name || recipeItem.name;
+                            updatedInv = await InventoryItem.findOneAndUpdate(
+                                {
+                                    restaurant: menuItem.restaurant || restaurantId,
+                                    name: { $regex: new RegExp(`^${ingName}$`, 'i') }
+                                },
+                                { $inc: { quantity: -amountToDeduct } },
+                                { returnDocument: 'after' }
+                            );
+                        }
+
+                        if (updatedInv) {
+                            console.log(`Deducted ${amountToDeduct} ${updatedInv.unit || ''} of ${updatedInv.name}. New stock: ${updatedInv.quantity}`);
+                        } else {
+                            console.warn(`Could not find inventory item ${ingredientId} to deduct stock for ${menuItem.name}`);
+                        }
+                    } catch (invErr) {
+                        console.error(`Failed to deduct inventory for ${menuItem.name}:`, invErr.message);
                     }
                 }
             }
@@ -458,10 +487,39 @@ const createGuestOrder = asyncHandler(async (req, res) => {
 
             if (menuItem.recipe && menuItem.recipe.length > 0) {
                 for (const recipeItem of menuItem.recipe) {
-                    if (recipeItem.ingredient) {
-                        const amountToDeduct = recipeItem.amountNeeded * item.quantity;
-                        recipeItem.ingredient.quantity -= amountToDeduct;
-                        await recipeItem.ingredient.save();
+                    const ingredientId = recipeItem.ingredient?._id || recipeItem.ingredient;
+                    const amountNeeded = Number(recipeItem.amountNeeded) || 0;
+                    const amountToDeduct = amountNeeded * item.quantity;
+
+                    if (!ingredientId || amountToDeduct <= 0) continue;
+
+                    try {
+                        let updatedInv = await InventoryItem.findByIdAndUpdate(
+                            ingredientId,
+                            { $inc: { quantity: -amountToDeduct } },
+                            { returnDocument: 'after' }
+                        );
+
+                        // Fallback: If not found by ID (e.g. ID mismatched), fallback to matching by ingredient name
+                        if (!updatedInv && (recipeItem.ingredient?.name || recipeItem.name)) {
+                            const ingName = recipeItem.ingredient?.name || recipeItem.name;
+                            updatedInv = await InventoryItem.findOneAndUpdate(
+                                {
+                                    restaurant: menuItem.restaurant || restaurantId,
+                                    name: { $regex: new RegExp(`^${ingName}$`, 'i') }
+                                },
+                                { $inc: { quantity: -amountToDeduct } },
+                                { returnDocument: 'after' }
+                            );
+                        }
+
+                        if (updatedInv) {
+                            console.log(`Deducted ${amountToDeduct} ${updatedInv.unit || ''} of ${updatedInv.name}. New stock: ${updatedInv.quantity}`);
+                        } else {
+                            console.warn(`Could not find inventory item ${ingredientId} to deduct stock for ${menuItem.name}`);
+                        }
+                    } catch (invErr) {
+                        console.error(`Failed to deduct inventory for ${menuItem.name}:`, invErr.message);
                     }
                 }
             }

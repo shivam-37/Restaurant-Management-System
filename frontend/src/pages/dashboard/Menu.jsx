@@ -144,7 +144,10 @@ const Menu = () => {
                 category: item.category,
                 image: item.image,
                 stock: item.stock || 0,
-                recipe: item.recipe || []
+                recipe: (item.recipe || []).map(r => ({
+                    ingredient: r.ingredient?._id || r.ingredient || '',
+                    amountNeeded: r.amountNeeded || 0
+                }))
             });
         } else {
             setCurrentItem(null);
@@ -171,10 +174,18 @@ const Menu = () => {
 
         setIsLoading(true);
         try {
+            const sanitizedRecipe = (formData.recipe || [])
+                .filter(r => (r.ingredient?._id || r.ingredient) && Number(r.amountNeeded) > 0)
+                .map(r => ({
+                    ingredient: r.ingredient?._id || r.ingredient,
+                    amountNeeded: Number(r.amountNeeded)
+                }));
+            const payload = { ...formData, recipe: sanitizedRecipe };
+
             if (currentItem) {
-                await updateMenuItem(currentItem._id, formData);
+                await updateMenuItem(currentItem._id, payload);
             } else {
-                await createMenuItem({ ...formData, restaurantId: selectedRestaurant._id });
+                await createMenuItem({ ...payload, restaurantId: selectedRestaurant._id });
             }
             await fetchMenu();
             setIsModalOpen(false);
@@ -802,46 +813,51 @@ const Menu = () => {
                                     <div>
                                         <label className="block text-[10px] font-black uppercase tracking-[0.2em] opacity-40 ml-1 mb-2">Recipe (Ingredients to Deduct on Order)</label>
                                         <div className="space-y-3">
-                                            {formData.recipe?.map((ing, idx) => (
-                                                <div key={idx} className="flex items-center gap-3">
-                                                    <select
-                                                        value={ing.ingredient}
-                                                        onChange={(e) => {
-                                                            const newRecipe = [...formData.recipe];
-                                                            newRecipe[idx].ingredient = e.target.value;
-                                                            setFormData({ ...formData, recipe: newRecipe });
-                                                        }}
-                                                        className="flex-1 theme-card-item border border-black/5 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 font-bold text-sm"
-                                                    >
-                                                        <option value="">Select Ingredient</option>
-                                                        {inventoryItems.map(inv => (
-                                                            <option key={inv._id} value={inv._id}>{inv.name} ({inv.unit})</option>
-                                                        ))}
-                                                    </select>
-                                                    <input
-                                                        type="number"
-                                                        step="0.01"
-                                                        value={ing.amountNeeded}
-                                                        placeholder="Amount"
-                                                        onChange={(e) => {
-                                                            const newRecipe = [...formData.recipe];
-                                                            newRecipe[idx].amountNeeded = parseFloat(e.target.value);
-                                                            setFormData({ ...formData, recipe: newRecipe });
-                                                        }}
-                                                        className="w-24 theme-card-item border border-black/5 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 font-bold text-sm"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            const newRecipe = formData.recipe.filter((_, i) => i !== idx);
-                                                            setFormData({ ...formData, recipe: newRecipe });
-                                                        }}
-                                                        className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition"
-                                                    >
-                                                        <TrashIcon className="w-5 h-5" />
-                                                    </button>
-                                                </div>
-                                            ))}
+                                            {formData.recipe?.map((ing, idx) => {
+                                                const currentIngId = typeof ing.ingredient === 'object'
+                                                    ? ing.ingredient?._id || ''
+                                                    : ing.ingredient || '';
+                                                return (
+                                                    <div key={idx} className="flex items-center gap-3">
+                                                        <select
+                                                            value={currentIngId}
+                                                            onChange={(e) => {
+                                                                const newRecipe = [...formData.recipe];
+                                                                newRecipe[idx] = { ...newRecipe[idx], ingredient: e.target.value };
+                                                                setFormData({ ...formData, recipe: newRecipe });
+                                                            }}
+                                                            className="flex-1 theme-card-item border border-black/5 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                                        >
+                                                            <option value="">Select Ingredient</option>
+                                                            {inventoryItems.map(inv => (
+                                                                <option key={inv._id} value={inv._id}>{inv.name} ({inv.unit})</option>
+                                                            ))}
+                                                        </select>
+                                                        <input
+                                                            type="number"
+                                                            step="0.01"
+                                                            value={ing.amountNeeded || ''}
+                                                            placeholder="Amount"
+                                                            onChange={(e) => {
+                                                                const newRecipe = [...formData.recipe];
+                                                                newRecipe[idx] = { ...newRecipe[idx], amountNeeded: parseFloat(e.target.value) || 0 };
+                                                                setFormData({ ...formData, recipe: newRecipe });
+                                                            }}
+                                                            className="w-24 theme-card-item border border-black/5 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 font-bold text-sm"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const newRecipe = formData.recipe.filter((_, i) => i !== idx);
+                                                                setFormData({ ...formData, recipe: newRecipe });
+                                                            }}
+                                                            className="p-3 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition"
+                                                        >
+                                                            <TrashIcon className="w-5 h-5" />
+                                                        </button>
+                                                    </div>
+                                                );
+                                            })}
                                             <button
                                                 type="button"
                                                 onClick={() => {

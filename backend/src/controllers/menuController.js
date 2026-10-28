@@ -12,7 +12,7 @@ const getMenuItems = asyncHandler(async (req, res) => {
         return;
     }
 
-    const menuItems = await Menu.find({ restaurant: restaurantId });
+    const menuItems = await Menu.find({ restaurant: restaurantId }).populate('recipe.ingredient');
     res.json(menuItems);
 });
 
@@ -20,7 +20,7 @@ const getMenuItems = asyncHandler(async (req, res) => {
 // @route   POST /api/menu
 // @access  Private/Admin
 const createMenuItem = asyncHandler(async (req, res) => {
-    const { name, description, price, category, image, stock, restaurantId } = req.body;
+    const { name, description, price, category, image, stock, restaurantId, recipe } = req.body;
 
     console.log('Creating menu item with data:', { name, price, category, restaurantId });
 
@@ -30,6 +30,15 @@ const createMenuItem = asyncHandler(async (req, res) => {
         throw new Error('Please add all fields including restaurantId');
     }
 
+    const cleanRecipe = Array.isArray(recipe)
+        ? recipe
+            .filter(r => r && (r.ingredient?._id || r.ingredient) && Number(r.amountNeeded) > 0)
+            .map(r => ({
+                ingredient: r.ingredient?._id || r.ingredient,
+                amountNeeded: Number(r.amountNeeded)
+            }))
+        : [];
+
     const menuItem = await Menu.create({
         name,
         description,
@@ -37,10 +46,12 @@ const createMenuItem = asyncHandler(async (req, res) => {
         category,
         image,
         stock: stock || 0,
+        recipe: cleanRecipe,
         restaurant: restaurantId
     });
 
-    res.status(201).json(menuItem);
+    const populatedItem = await Menu.findById(menuItem._id).populate('recipe.ingredient');
+    res.status(201).json(populatedItem || menuItem);
 });
 
 // @desc    Update menu item
@@ -54,9 +65,18 @@ const updateMenuItem = asyncHandler(async (req, res) => {
         throw new Error('Menu item not found');
     }
 
+    if (req.body.recipe && Array.isArray(req.body.recipe)) {
+        req.body.recipe = req.body.recipe
+            .filter(r => r && (r.ingredient?._id || r.ingredient) && Number(r.amountNeeded) > 0)
+            .map(r => ({
+                ingredient: r.ingredient?._id || r.ingredient,
+                amountNeeded: Number(r.amountNeeded)
+            }));
+    }
+
     const updatedMenuItem = await Menu.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
-    });
+    }).populate('recipe.ingredient');
 
     res.json(updatedMenuItem);
 });
