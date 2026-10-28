@@ -555,6 +555,15 @@ const Register = () => {
                                     Sign In
                                 </Link>
                             </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 pt-3 border-t border-black/5 dark:border-white/5">
+                                Are you a restaurant owner?{' '}
+                                <Link
+                                    to="/owner/register"
+                                    className="text-orange-500 font-bold hover:underline ml-1"
+                                >
+                                    Register on Partner Portal →
+                                </Link>
+                            </p>
                         </motion.div>
 
                         {/* Google Auth */}

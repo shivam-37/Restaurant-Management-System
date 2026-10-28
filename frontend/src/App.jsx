@@ -24,7 +24,8 @@ function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/owner/login" element={<OwnerLogin />} />
+            <Route path="/owner/login" element={<OwnerLogin initialMode="login" />} />
+            <Route path="/owner/register" element={<OwnerLogin initialMode="register" />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />

@@ -1,30 +1,37 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff, ChefHat, Smartphone, Sun, Moon, Briefcase, Building } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Lock, Eye, EyeOff, ChefHat, Smartphone, Sun, Moon, Briefcase, Building, User, ArrowRight } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
 import AuthContext from '../../context/AuthContext';
 import VerifyOtpModal from '../../components/auth/VerifyOtpModal';
 import { countries } from '../../utils/countries';
 import { useTheme } from '../../context/ThemeContext';
 
-const OwnerLogin = () => {
+const OwnerLogin = ({ initialMode = 'login' }) => {
+    const location = useLocation();
+    const [isRegistering, setIsRegistering] = useState(
+        initialMode === 'register' || location.pathname.includes('register')
+    );
+
     const [formData, setFormData] = useState({
+        name: '',
         identifier: '',
         countryCode: '+91',
         password: '',
+        confirmPassword: '',
     });
 
-    const { identifier, countryCode, password } = formData;
+    const { name, identifier, countryCode, password, confirmPassword } = formData;
     const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
-    const location = useLocation();
-    const { login, loginWithGoogle, verifyUserOtp } = useContext(AuthContext);
+    const { login, register, loginWithGoogle, verifyUserOtp } = useContext(AuthContext);
     const [successMessage, setSuccessMessage] = useState(location.state?.message || null);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [focusedField, setFocusedField] = useState(null);
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     // OTP Modal State
     const [showOtpModal, setShowOtpModal] = useState(false);
@@ -38,16 +45,16 @@ const OwnerLogin = () => {
                 setError(null);
                 const result = await loginWithGoogle(tokenResponse.credential || tokenResponse.access_token, 'owner');
                 if (result.role !== 'owner' && result.role !== 'admin') {
-                    throw new Error('This portal is only for restaurant owners and admins.');
+                    throw new Error('This portal is strictly for restaurant partners. Please use the regular login.');
                 }
                 navigate('/dashboard');
             } catch (err) {
-                setError(err.response?.data?.message || err.message || 'Google Login failed');
+                setError(err.response?.data?.message || err.message || 'Google authentication failed');
             } finally {
                 setIsLoading(false);
             }
         },
-        onError: () => setError('Google Login Failed')
+        onError: () => setError('Google authentication failed')
     });
 
     const onChange = (e) => {
@@ -65,16 +72,63 @@ const OwnerLogin = () => {
         const cleanIdentifier = identifier.trim();
 
         if (!cleanIdentifier) {
-            setError('Please enter your email address or phone number');
+            setError('Please enter your business email address or phone number');
             setIsLoading(false);
             return;
         }
 
         const isEmail = cleanIdentifier.includes('@');
+        if (isEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanIdentifier)) {
+            setError('Please enter a valid email address');
+            setIsLoading(false);
+            return;
+        }
+
         const identifierToUse = isEmail 
             ? cleanIdentifier 
             : (cleanIdentifier.startsWith('+') ? cleanIdentifier : `${countryCode}${cleanIdentifier}`);
 
+        // Owner Registration Flow
+        if (isRegistering) {
+            if (!name.trim()) {
+                setError('Please enter your full name or business owner name');
+                setIsLoading(false);
+                return;
+            }
+
+            if (password.length < 6) {
+                setError('Password must be at least 6 characters long');
+                setIsLoading(false);
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                setError('Passwords do not match');
+                setIsLoading(false);
+                return;
+            }
+
+            const emailParam = isEmail ? cleanIdentifier : '';
+            const phoneParam = isEmail ? '' : (cleanIdentifier.startsWith('+') ? cleanIdentifier : `${countryCode}${cleanIdentifier}`);
+
+            try {
+                const result = await register(name.trim(), emailParam, phoneParam, password.trim(), 'owner');
+                if (result && result.requiresOtp) {
+                    setOtpMethod(result.method);
+                    setShowOtpModal(true);
+                } else {
+                    navigate('/dashboard');
+                }
+            } catch (err) {
+                console.error('Owner Registration Error:', err);
+                setError(err.response?.data?.message || err.message || 'Registration failed');
+            } finally {
+                setIsLoading(false);
+            }
+            return;
+        }
+
+        // Owner Sign In Flow
         try {
             const result = await login(identifierToUse, password.trim());
             if (result && result.requiresOtp) {
@@ -82,9 +136,7 @@ const OwnerLogin = () => {
                 setShowOtpModal(true);
             } else {
                 if (result.role !== 'owner' && result.role !== 'admin') {
-                    // Prevent user from logging in here
                     setError('This portal is strictly for restaurant partners. Please use the regular login.');
-                    // In a real app we might want to log them out here since login() already set the token
                     localStorage.removeItem('token');
                     return;
                 }
@@ -129,12 +181,12 @@ const OwnerLogin = () => {
 
     return (
         <div className="min-h-screen flex font-sans" style={{ background: 'var(--bg-primary)' }}>
-            {/* Left Side - Login Form for Owners */}
+            {/* Left Side - Form for Owners */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative shadow-2xl z-20 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
                 {/* Theme Toggle - top left */}
                 <button
                     onClick={toggleTheme}
-                    className="theme-toggle absolute top-6 left-6 z-20 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+                    className="theme-toggle absolute top-6 left-6 z-20 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition cursor-pointer"
                     title="Toggle theme"
                 >
                     {theme === 'dark' ? <Sun className="w-5 h-5 text-gray-500" /> : <Moon className="w-5 h-5 text-gray-500" />}
@@ -144,10 +196,10 @@ const OwnerLogin = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="w-full max-w-md relative z-10"
+                    className="w-full max-w-md relative z-10 my-8"
                 >
                     {/* Form Header */}
-                    <div className="mb-10">
+                    <div className="mb-6">
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -168,7 +220,7 @@ const OwnerLogin = () => {
                             transition={{ delay: 0.2 }}
                             className="text-4xl font-extrabold mb-3 text-gray-900 dark:text-white"
                         >
-                            Partner Portal
+                            {isRegistering ? 'Register as Partner' : 'Partner Portal'}
                         </motion.h2>
                         <motion.p 
                             initial={{ opacity: 0 }}
@@ -176,8 +228,36 @@ const OwnerLogin = () => {
                             transition={{ delay: 0.3 }}
                             className="text-base text-gray-600 dark:text-gray-400"
                         >
-                            Manage your business securely.
+                            {isRegistering 
+                                ? 'Create your restaurant partner account in minutes.' 
+                                : 'Manage your business securely.'}
                         </motion.p>
+                    </div>
+
+                    {/* Mode Switcher Tabs (Sign In vs Create Account) */}
+                    <div className="flex bg-gray-100 dark:bg-gray-800/80 p-1.5 rounded-2xl mb-8 border border-gray-200 dark:border-gray-700/60 w-full">
+                        <button
+                            type="button"
+                            onClick={() => { setIsRegistering(false); setError(null); }}
+                            className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                                !isRegistering
+                                    ? 'bg-white dark:bg-gray-900 text-[#f97316] shadow-sm'
+                                    : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                            }`}
+                        >
+                            Partner Sign In
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setIsRegistering(true); setError(null); }}
+                            className={`flex-1 py-2.5 px-4 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                                isRegistering
+                                    ? 'bg-[#f97316] text-white shadow-sm shadow-orange-500/30'
+                                    : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                            }`}
+                        >
+                            Register Business
+                        </button>
                     </div>
 
                     {/* Success Message */}
@@ -190,7 +270,7 @@ const OwnerLogin = () => {
                             <p className="text-sm text-green-600 dark:text-green-400 text-center">{successMessage}</p>
                             <button 
                                 onClick={() => setSuccessMessage(null)}
-                                className="absolute top-2 right-2 text-green-500/50 hover:text-green-500 transition"
+                                className="absolute top-2 right-2 text-green-500/50 hover:text-green-500 transition cursor-pointer"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -210,8 +290,45 @@ const OwnerLogin = () => {
                         </motion.div>
                     )}
 
-                    {/* Login Form */}
-                    <form onSubmit={onSubmit} className="space-y-6">
+                    {/* Form */}
+                    <form onSubmit={onSubmit} className="space-y-5">
+                        {/* Full Name Field (Only in Register Mode) */}
+                        {isRegistering && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                <label 
+                                    htmlFor="name" 
+                                    className={`text-sm font-semibold mb-2 block transition-colors duration-300 ${
+                                        focusedField === 'name' ? 'text-[#f97316]' : 'text-gray-700 dark:text-gray-300'
+                                    }`}
+                                >
+                                    Full Name / Business Owner Name
+                                </label>
+                                <div className="relative">
+                                    <User className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+                                        focusedField === 'name' ? 'text-[#f97316]' : 'text-gray-400'
+                                    }`} />
+                                    <input
+                                        id="name"
+                                        name="name"
+                                        type="text"
+                                        autoComplete="name"
+                                        required={isRegistering}
+                                        value={name}
+                                        onChange={onChange}
+                                        onFocus={() => setFocusedField('name')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className={`w-full bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'name' ? 'border-[#f97316] shadow-[0_0_0_4px_rgba(249,115,22,0.15)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl py-4 pl-12 pr-6 text-sm font-medium focus:outline-none transition-all text-gray-900 dark:text-white`}
+                                        placeholder="e.g. Shivam Kumar"
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
+
                         {/* Unified Email or Phone Field */}
                         <motion.div
                             initial={{ opacity: 0, y: 10 }}
@@ -224,10 +341,10 @@ const OwnerLogin = () => {
                                     focusedField === 'identifier' ? 'text-[#f97316]' : 'text-gray-700 dark:text-gray-300'
                                 }`}
                             >
-                                Work Email or Phone
+                                {isRegistering ? 'Business Email or Phone Number' : 'Work Email or Phone'}
                             </label>
                             <div className="relative group">
-                                <div className={`relative flex items-center bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'identifier' ? 'border-[#f97316] shadow-[0_0_0_4px_rgba(79,70,229,0.1)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl transition-all overflow-hidden`}>
+                                <div className={`relative flex items-center bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'identifier' ? 'border-[#f97316] shadow-[0_0_0_4px_rgba(249,115,22,0.15)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl transition-all overflow-hidden`}>
                                     {!identifier.includes('@') ? (
                                         <div className="flex items-center pl-4 border-r border-gray-200 dark:border-gray-700 shrink-0">
                                             <Smartphone className={`w-5 h-5 mr-2 transition-colors duration-300 ${
@@ -267,7 +384,7 @@ const OwnerLogin = () => {
                                         className={`w-full bg-transparent py-4 text-sm font-medium focus:outline-none transition-all text-gray-900 dark:text-white ${
                                             identifier.includes('@') ? 'pl-12 pr-4' : 'pl-4 pr-4'
                                         }`}
-                                        placeholder="partner@restaurant.com"
+                                        placeholder={identifier.includes('@') ? "partner@restaurant.com" : "9876543210"}
                                     />
                                 </div>
                             </div>
@@ -295,14 +412,14 @@ const OwnerLogin = () => {
                                     id="password"
                                     name="password"
                                     type={showPassword ? "text" : "password"}
-                                    autoComplete="current-password"
+                                    autoComplete={isRegistering ? "new-password" : "current-password"}
                                     required
                                     value={password}
                                     onChange={onChange}
                                     onFocus={() => setFocusedField('password')}
                                     onBlur={() => setFocusedField(null)}
                                     className={`w-full bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'password' ? 'border-[#f97316] shadow-[0_0_0_4px_rgba(249,115,22,0.15)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none transition-all text-gray-900 dark:text-white`}
-                                    placeholder="••••••••"
+                                    placeholder={isRegistering ? "At least 6 characters" : "••••••••"}
                                 />
                                 <button
                                     type="button"
@@ -316,20 +433,68 @@ const OwnerLogin = () => {
                             </div>
                         </motion.div>
 
-                        {/* Forgot Password */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.6 }}
-                            className="flex justify-end"
-                        >
-                            <Link
-                                to="/forgot-password"
-                                className="text-sm font-semibold text-[#f97316] hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-all"
+                        {/* Confirm Password Field (Only in Register Mode) */}
+                        {isRegistering && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.2 }}
                             >
-                                Forgot password?
-                            </Link>
-                        </motion.div>
+                                <label 
+                                    htmlFor="confirmPassword" 
+                                    className={`text-sm font-semibold mb-2 block transition-colors duration-300 ${
+                                        focusedField === 'confirmPassword' ? 'text-[#f97316]' : 'text-gray-700 dark:text-gray-300'
+                                    }`}
+                                >
+                                    Confirm Password
+                                </label>
+                                <div className="relative">
+                                    <Lock className={`absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${
+                                        focusedField === 'confirmPassword' ? 'text-[#f97316]' : 'text-gray-400'
+                                    }`} />
+                                    <input
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        autoComplete="new-password"
+                                        required={isRegistering}
+                                        value={confirmPassword}
+                                        onChange={onChange}
+                                        onFocus={() => setFocusedField('confirmPassword')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className={`w-full bg-gray-50 dark:bg-gray-800/50 border ${focusedField === 'confirmPassword' ? 'border-[#f97316] shadow-[0_0_0_4px_rgba(249,115,22,0.15)]' : 'border-gray-200 dark:border-gray-700'} rounded-xl py-4 pl-12 pr-12 text-sm font-medium focus:outline-none transition-all text-gray-900 dark:text-white`}
+                                        placeholder="Re-enter password"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        className="absolute right-4 top-1/2 transform -translate-y-1/2 opacity-40 hover:opacity-100 transition cursor-pointer text-gray-500 dark:text-gray-300"
+                                        tabIndex="-1"
+                                        aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                                    >
+                                        {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4 text-[#f97316]" />}
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* Forgot Password (Login Mode only) */}
+                        {!isRegistering && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.6 }}
+                                className="flex justify-end"
+                            >
+                                <Link
+                                    to="/forgot-password"
+                                    className="text-sm font-semibold text-[#f97316] hover:text-orange-600 transition-all"
+                                >
+                                    Forgot password?
+                                </Link>
+                            </motion.div>
+                        )}
 
                         {/* Submit Button */}
                         <motion.div
@@ -340,9 +505,16 @@ const OwnerLogin = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full py-4 bg-[#f97316] text-white rounded-xl text-base font-bold shadow-lg shadow-orange-500/30 hover:bg-indigo-700 hover:shadow-orange-500/50 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+                                className="w-full py-4 bg-[#f97316] text-white rounded-xl text-base font-bold shadow-lg shadow-orange-500/30 hover:bg-orange-600 hover:shadow-orange-500/50 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
                             >
-                                {isLoading ? 'Authenticating...' : 'Access Dashboard'}
+                                {isLoading ? (
+                                    <span>{isRegistering ? 'Registering Business...' : 'Authenticating...'}</span>
+                                ) : (
+                                    <>
+                                        <span>{isRegistering ? 'Register Business' : 'Access Dashboard'}</span>
+                                        <ArrowRight className="w-4 h-4" />
+                                    </>
+                                )}
                             </button>
                         </motion.div>
                         
@@ -352,7 +524,7 @@ const OwnerLogin = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.8 }}
                         >
-                            <div className="relative my-8">
+                            <div className="relative my-6">
                                 <div className="absolute inset-0 flex items-center">
                                     <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
                                 </div>
@@ -364,7 +536,7 @@ const OwnerLogin = () => {
                                 type="button"
                                 onClick={() => handleGoogleLogin()}
                                 disabled={isLoading}
-                                className="w-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl py-4 flex items-center justify-center space-x-3 transition duration-300 disabled:opacity-50"
+                                className="w-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 rounded-xl py-4 flex items-center justify-center space-x-3 transition duration-300 disabled:opacity-50 cursor-pointer"
                             >
                                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -375,6 +547,42 @@ const OwnerLogin = () => {
                                 <span className="text-gray-700 dark:text-gray-200 font-semibold">Google</span>
                             </button>
                         </motion.div>
+
+                        {/* Bottom Switcher */}
+                        <div className="text-center pt-2">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {isRegistering ? (
+                                    <>
+                                        Already registered as a partner?{' '}
+                                        <button
+                                            type="button"
+                                            onClick={() => { setIsRegistering(false); setError(null); }}
+                                            className="font-bold text-[#f97316] hover:underline cursor-pointer ml-1"
+                                        >
+                                            Sign In here
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        New restaurant partner?{' '}
+                                        <button
+                                            type="button"
+                                            onClick={() => { setIsRegistering(true); setError(null); }}
+                                            className="font-bold text-[#f97316] hover:underline cursor-pointer ml-1"
+                                        >
+                                            Register your business
+                                        </button>
+                                    </>
+                                )}
+                            </p>
+                        </div>
+
+                        {/* Customer Portal Link */}
+                        <div className="text-center pt-1 border-t border-gray-100 dark:border-gray-800">
+                            <Link to="/login" className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition">
+                                Looking for the customer dining portal? Click here
+                            </Link>
+                        </div>
                     </form>
                 </motion.div>
             </div>
@@ -403,23 +611,23 @@ const OwnerLogin = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
                     >
-                        <h3 className="text-4xl font-bold mb-4">Empower Your Business</h3>
+                        <h3 className="text-4xl font-bold mb-4">Empower Your Restaurant</h3>
                         <p className="text-lg text-gray-300 max-w-lg mb-8 leading-relaxed">
-                            Access real-time analytics, manage your team, and streamline operations from our centralized partner portal.
+                            Access live tables, track kitchen orders in real-time, predict inventory with AI, and manage multiple locations from our centralized partner portal.
                         </p>
                         
                         <div className="grid grid-cols-2 gap-6">
                             <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
-                                    <Building className="w-5 h-5 text-indigo-400" />
+                                    <Building className="w-5 h-5 text-orange-400" />
                                 </div>
-                                <span className="font-medium">Multi-location</span>
+                                <span className="font-medium">Multi-branch Ready</span>
                             </div>
                             <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
-                                    <ChefHat className="w-5 h-5 text-indigo-400" />
+                                    <ChefHat className="w-5 h-5 text-orange-400" />
                                 </div>
-                                <span className="font-medium">Kitchen Display</span>
+                                <span className="font-medium">Live Kitchen Display</span>
                             </div>
                         </div>
                     </motion.div>
