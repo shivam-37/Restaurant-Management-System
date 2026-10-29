@@ -13,7 +13,7 @@ const ChatAssistant = () => {
     const { selectedRestaurant } = useContext(AuthContext);
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { role: 'assistant', content: "Hello! I'm your AI assistant powered by Llama 3.1. How can I help you today?" }
+        { role: 'assistant', content: "Hello! I'm your AI concierge. How can I help you today?" }
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -109,7 +109,7 @@ const ChatAssistant = () => {
                                 </div>
                                 <div>
                                     <h3 className="font-black uppercase tracking-tighter text-lg leading-none">Dine AI</h3>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-orange-500 mt-1">Powered by Llama 3.1</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-orange-500 mt-1">Smart Restaurant AI</p>
                                 </div>
                             </div>
                             <button
