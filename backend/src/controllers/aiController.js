@@ -6,6 +6,7 @@ const path = require('path');
 const Order = require('../models/Order');
 const Menu = require('../models/Menu');
 const Restaurant = require('../models/Restaurant');
+const InventoryItem = require('../models/InventoryItem');
 
 // ── Rate limiter configuration ──────────────────────────────────────────────
 let lastCallTime = 0;
@@ -180,16 +181,103 @@ const descriptionFallback = (name, category) => {
     return `${name} — ${desc}`;
 };
 
-const inventoryFallback = (items) => {
-    return items
-        .filter(i => (i.stock < (i.recentSales || 0) * 2 && i.stock < 10) || i.stock <= 3)
-        .slice(0, 3)
-        .map(i => ({
-            name: i.name,
-            risk: i.stock < 3 ? 'High' : 'Medium',
-            reason: `Current stock is ${i.stock} units with ${i.recentSales || 0} units sold recently.`,
-            recommendation: `Reorder ${i.name} immediately to prevent operational stockouts.`
-        }));
+const calculateSmartStockPredictions = (rawMaterials = [], menuItems = [], recentOrders = []) => {
+    // 1. Calculate dish sales volume
+    const dishSales = {};
+    recentOrders.forEach(order => {
+        (order.items || []).forEach(item => {
+            const name = item.name || item.menuItem?.name;
+            if (name) {
+                dishSales[name] = (dishSales[name] || 0) + (item.quantity || 1);
+            }
+        });
+    });
+
+    // 2. Calculate ingredient consumption based on recipes
+    const ingredientBurn = {};
+    menuItems.forEach(item => {
+        const sales = dishSales[item.name] || 0;
+        if (sales > 0 && Array.isArray(item.recipe)) {
+            item.recipe.forEach(r => {
+                const ingId = (r.ingredient?._id || r.ingredient)?.toString();
+                if (ingId) {
+                    ingredientBurn[ingId] = (ingredientBurn[ingId] || 0) + (Number(r.amountNeeded) || 1) * sales;
+                }
+            });
+        }
+    });
+
+    const risks = [];
+
+    // 3. Evaluate raw material ingredients from pantry
+    rawMaterials.forEach(item => {
+        const qty = Number(item.quantity) || 0;
+        const threshold = Number(item.lowStockThreshold) || 10;
+        const burn = ingredientBurn[item._id.toString()] || 0;
+
+        if (qty <= threshold) {
+            risks.push({
+                name: `${item.name} (Ingredient)`,
+                risk: 'High',
+                priority: 1,
+                reason: `Pantry stock is critical at ${qty} ${item.unit} (alert threshold: ${threshold} ${item.unit})${burn > 0 ? ` with ${burn} ${item.unit} consumed in recent orders` : ''}.`,
+                recommendation: `Urgent: Restock at least ${Math.ceil(threshold * 3)} ${item.unit} of ${item.name} immediately to avoid kitchen stockouts.`
+            });
+        } else if (qty <= threshold * 3 || (burn > 0 && qty < burn * 2.5)) {
+            risks.push({
+                name: `${item.name} (Ingredient)`,
+                risk: 'Medium',
+                priority: 2,
+                reason: `Current stock is ${qty} ${item.unit} (threshold: ${threshold} ${item.unit}). Usage is high across active menu recipes.`,
+                recommendation: `Order ${Math.ceil(threshold * 2)} ${item.unit} of ${item.name} within 48 hours to maintain kitchen buffer.`
+            });
+        }
+    });
+
+    // 4. Evaluate prepared menu dishes
+    menuItems.forEach(item => {
+        const stock = Number(item.stock) || 0;
+        const sales = dishSales[item.name] || 0;
+
+        if (stock <= 5) {
+            risks.push({
+                name: item.name,
+                risk: 'High',
+                priority: 1,
+                reason: `Only ${stock} portions available with ${sales} recent sales recorded.`,
+                recommendation: `Prepare a fresh batch of ${item.name} immediately to fulfill incoming orders.`
+            });
+        } else if (stock <= sales * 4 || stock <= 30) {
+            risks.push({
+                name: item.name,
+                risk: 'Medium',
+                priority: 2,
+                reason: `Stock is ${stock} portions with strong recent customer demand (${sales} ordered recently).`,
+                recommendation: `Monitor sales rate and prep ingredients before peak dining periods.`
+            });
+        }
+    });
+
+    // 5. If still fewer than 3 risks, highlight highest velocity menu items
+    if (risks.length < 3) {
+        const sortedBySales = [...menuItems].sort((a, b) => (dishSales[b.name] || 0) - (dishSales[a.name] || 0));
+        for (const item of sortedBySales) {
+            if (risks.some(r => r.name === item.name || r.name.startsWith(item.name))) continue;
+            const sales = dishSales[item.name] || 0;
+            const stock = Number(item.stock) || 0;
+            risks.push({
+                name: item.name,
+                risk: stock < 100 ? 'Medium' : 'Low',
+                priority: 3,
+                reason: `Popular item with ${sales} recent orders. Current stock of ${stock} portions will require regular monitoring.`,
+                recommendation: `Keep recipe ingredients ready and schedule regular kitchen restocks.`
+            });
+            if (risks.length >= 3) break;
+        }
+    }
+
+    risks.sort((a, b) => a.priority - b.priority);
+    return risks.slice(0, 3).map(({ priority, ...rest }) => rest);
 };
 
 const generateSmartGridTables = (numTables = 8, capacity = 4) => {
@@ -331,55 +419,95 @@ const getRecommendations = asyncHandler(async (req, res) => {
 // @route   POST /api/ai/predict-inventory
 // @access  Private/Admin
 const predictInventory = asyncHandler(async (req, res) => {
-    const { restaurantId, forceRefresh } = req.body;
-    const cacheId = restaurantId || 'all';
+    let { restaurantId, forceRefresh } = req.body;
 
+    // Resolve restaurant context (handle owner/admin defaults)
+    if (!restaurantId && req.user) {
+        restaurantId = req.user.restaurant?._id || req.user.restaurant;
+    }
+    if (!restaurantId) {
+        const anyRest = await Restaurant.findOne({});
+        if (anyRest) restaurantId = anyRest._id;
+    }
+
+    const cacheId = restaurantId ? restaurantId.toString() : 'all';
+
+    // 1. Check cache (only return if non-empty array)
     if (!forceRefresh) {
         const cached = await getCache('inventory-prediction', cacheId);
-        if (cached) {
+        if (cached && Array.isArray(cached) && cached.length > 0) {
             return res.json(cached);
         }
     }
 
-    const menuQuery = {};
-    if (restaurantId) menuQuery.restaurant = restaurantId;
-    const menuItems = await Menu.find(menuQuery).select('name stock category');
+    // 2. Fetch raw materials, menu items, and recent orders
+    const invQuery = restaurantId ? { restaurant: restaurantId } : {};
+    const menuQuery = restaurantId ? { restaurant: restaurantId } : {};
+    const orderQuery = restaurantId ? { restaurant: restaurantId } : {};
 
-    const orderQuery = {};
-    if (restaurantId) orderQuery.restaurant = restaurantId;
-    const recentOrders = await Order.find(orderQuery).sort({ createdAt: -1 }).limit(100);
+    const [rawMaterials, menuItems, recentOrders] = await Promise.all([
+        InventoryItem.find(invQuery),
+        Menu.find(menuQuery).select('name stock category recipe'),
+        Order.find(orderQuery).sort({ createdAt: -1 }).limit(100)
+    ]);
 
-    const salesVolume = {};
-    recentOrders.forEach(order => {
-        order.items.forEach(item => {
-            salesVolume[item.name] = (salesVolume[item.name] || 0) + item.quantity;
-        });
-    });
+    const fallbackPredictions = calculateSmartStockPredictions(rawMaterials, menuItems, recentOrders);
 
-    const inventoryData = menuItems.map(item => ({
-        name: item.name,
-        stock: item.stock,
-        category: item.category,
-        recentSales: salesVolume[item.name] || 0
-    }));
+    if (fallbackPredictions.length === 0) {
+        return res.json([]);
+    }
+
+    // 3. Try AI for richer, contextual culinary predictions
+    const summaryData = {
+        rawIngredients: rawMaterials.map(r => ({ name: r.name, stock: `${r.quantity} ${r.unit}`, threshold: `${r.lowStockThreshold} ${r.unit}` })),
+        menuDishes: menuItems.map(m => ({ name: m.name, stock: m.stock })),
+        computedPredictions: fallbackPredictions
+    };
 
     const prompt = `
-        Restaurant inventory data: ${JSON.stringify(inventoryData)}
-        Identify up to 3 items at risk of running out. Consider: low stock + high recent sales.
-        Respond ONLY as JSON: [{"name":"...","risk":"High|Medium","reason":"...","recommendation":"..."}]
+        Restaurant Inventory & Sales Data:
+        ${JSON.stringify(summaryData)}
+
+        Analyze this stock data. Output exactly 3 inventory stock risk predictions.
+        Focus on items with low stock or high sales burn rate.
+        Respond ONLY as a strict JSON array without markdown formatting:
+        [
+          {
+            "name": "Item or Ingredient Name",
+            "risk": "High or Medium",
+            "reason": "1-2 sentence data-backed reason mentioning current stock or sales",
+            "recommendation": "1-2 sentence concrete reorder or kitchen prep action"
+          }
+        ]
     `;
 
     try {
         const text = await rateLimitedAICall(prompt);
-        const jsonMatch = text.match(/\[.*\]/s);
-        const prediction = jsonMatch ? JSON.parse(jsonMatch[0]) : inventoryFallback(inventoryData);
+        const jsonMatch = text.match(/\[[\s\S]*\]/);
+        let prediction = null;
+        if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                prediction = parsed.map(p => ({
+                    name: p.name || 'Stock Item',
+                    risk: p.risk === 'High' ? 'High' : 'Medium',
+                    reason: p.reason || 'Stock is low relative to recent order volume.',
+                    recommendation: p.recommendation || 'Reorder from supplier soon.'
+                }));
+            }
+        }
 
-        await setCache('inventory-prediction', cacheId, prediction, 6);
-        res.json(prediction);
+        const finalResult = (prediction && prediction.length > 0) ? prediction : fallbackPredictions;
+        if (finalResult.length > 0) {
+            await setCache('inventory-prediction', cacheId, finalResult, 6);
+        }
+        res.json(finalResult);
     } catch (error) {
-        console.error('[AI FALLBACK] inventory:', error.message);
-        const fallback = inventoryFallback(inventoryData);
-        res.json(fallback);
+        console.warn('[AI FALLBACK] inventory:', error.message);
+        if (fallbackPredictions.length > 0) {
+            await setCache('inventory-prediction', cacheId, fallbackPredictions, 6);
+        }
+        res.json(fallbackPredictions);
     }
 });
 

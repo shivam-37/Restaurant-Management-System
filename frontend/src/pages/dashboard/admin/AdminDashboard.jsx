@@ -68,7 +68,7 @@ const AdminDashboard = () => {
         setIsPredicting(true);
         try {
             const { data } = await predictInventory(selectedRestaurant?._id, force);
-            setPredictions(data);
+            setPredictions(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("AI Prediction failed");
         } finally {
